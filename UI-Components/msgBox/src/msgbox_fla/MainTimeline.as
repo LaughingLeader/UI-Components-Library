@@ -295,7 +295,7 @@
          }
          else
          {
-            this.popup_mc.input_mc.copy_mc.x = 494; // Default = 526
+            this.popup_mc.input_mc.copy_mc.x = 494; // Default = 526 -- I have no idea what this is but whatever.
          }
       }
       

@@ -59,7 +59,9 @@
       {
          this.input_mc.input_txt.maxChars = param3;
          this.input_mc.visible = param1;
-            // Commenting out restrictions
+
+         // Commenting out the separate layouts. Will figure out new positions later.
+
          // if(param1)
          // {
          //    this.posDis = 30;
@@ -70,6 +72,9 @@
          //    this.posDis = 70;
          //    this.setPopupType(1);
          // }
+
+         // Commenting out restrictions to text.
+
          // if(param2 == 0)
          // {
          //    this.input_mc.input_txt.restrict = "^<>\\\\/`´\',.:;|$€%#£+&*?\"";
@@ -78,6 +83,7 @@
          // {
          //    this.input_mc.input_txt.restrict = "^<>";
          // }
+         
          this.INT_SetTextPosition();
       }
       
@@ -107,6 +113,8 @@
 	  
       public function INT_SetTextPosition() : *
       {
+         // Commenting out postional layouts. Will figure this out later.
+
          // var _loc3_:Number = NaN;
          // var _loc4_:Number = NaN;
          // var _loc1_:Number = this.posDis;

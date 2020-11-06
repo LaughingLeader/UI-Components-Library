@@ -26,10 +26,12 @@ package msgbox_fla
       public function acceptSave() : *
       {
          var _loc1_:String = this.input_txt.text;
-         // Commenting Out Exceptions
+
+         // Commenting Out strReplace -- will enable newline and tabs.
          //_loc1_ = this.strReplace(_loc1_,"\n","");
          //_loc1_ = this.strReplace(_loc1_,"\r","");
          //_loc1_ = this.strReplace(_loc1_,"\t","");
+         
          ExternalInterface.call("acceptInput",_loc1_);
       }
       
@@ -65,7 +67,7 @@ package msgbox_fla
       {
          this.copy_mc.pressedFuncStr = "copyPressed";
          this.paste_mc.pressedFuncStr = "pastePressed";
-         this.input_txt.restrict = "a-zA-Z0-9_ \\-";
+         //this.input_txt.restrict = "a-zA-Z0-9_ \\-";   // No Restrictions to text. I hope I don't come to regret this.
          this.input_txt.addEventListener(Event.CHANGE,this.onChange);
          this.input_txt.addEventListener(FocusEvent.FOCUS_IN,this.onFocus,false,0,true);
          addEventListener(FocusEvent.FOCUS_OUT,this.onFocusLost,false,0,true);
