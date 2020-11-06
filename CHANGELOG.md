@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.1.0.0] --- 6th November 2020 --- **_Added msgBox Files_**
+
+### NEW
+
+* _Added_ `msgBox` source files.
+
 ## [0.1.0.0] --- 6th November 2020 --- **_Initialized Script-Extender_**
 
 ### NEW
