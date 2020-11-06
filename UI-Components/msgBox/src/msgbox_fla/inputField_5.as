@@ -28,6 +28,7 @@ package msgbox_fla
          var _loc1_:String = this.input_txt.text;
 
          // Commenting Out strReplace -- will enable newline and tabs.
+         
          //_loc1_ = this.strReplace(_loc1_,"\n","");
          //_loc1_ = this.strReplace(_loc1_,"\r","");
          //_loc1_ = this.strReplace(_loc1_,"\t","");

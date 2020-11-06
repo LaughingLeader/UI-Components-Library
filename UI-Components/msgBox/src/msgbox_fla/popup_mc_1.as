@@ -113,7 +113,7 @@
 	  
       public function INT_SetTextPosition() : *
       {
-         // Commenting out postional layouts. Will figure this out later.
+         // Commenting out positional layouts. Will figure this out later.
 
          // var _loc3_:Number = NaN;
          // var _loc4_:Number = NaN;
