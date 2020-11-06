@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.0.0] --- 7th November 2020 --- **_Added GMJournal Files_**
+
+### NEW
+
+* _Added_ `GMJournal` files.
+
 ## [0.1.0.0] --- 6th November 2020 --- **_Added msgBox Files_**
 
 ### NEW
