@@ -7,7 +7,7 @@
 ### NEW
 
 * _Added_ `msgBox` source files.
-* _Created_ `BootstrapClient.lua` and `BootstrapServer.lua`.
+* _Created_ `BootstrapClient.lua`, `BootstrapServer.lua` and `S7_UCL_Auxiliary.lua`.
 
 ## [0.1.0.0] --- 6th November 2020 --- **_Initialized Script-Extender_**
 
