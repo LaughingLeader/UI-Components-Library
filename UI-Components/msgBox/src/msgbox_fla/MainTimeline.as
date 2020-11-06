@@ -209,7 +209,6 @@
 	  public function setTitleText(param1:String) : *
       {
          this.popup_mc.title_txt.htmlText = param1;
-         trace("Magic");
       }	  
 	  
       public function showMsgbox() : *

@@ -7,7 +7,7 @@
    import flash.events.Event;
    import flash.external.ExternalInterface;
    import flash.text.TextField;
-   
+
    public dynamic class popup_mc_1 extends MovieClip
    {
        
@@ -23,7 +23,7 @@
       public var title_txt:TextField;
       
       public var btnList:listDisplay;
-      
+
       public var factor:Number;
       
       public var posDis:Number;
@@ -33,6 +33,8 @@
       public var iconId:Number;
       
       public var shownIcon:int;
+
+      public var popupType:Number;
       
       public function popup_mc_1()
       {
@@ -53,6 +55,8 @@
       {
          this.iconId = param1;
          this.bg_mc.gotoAndStop(param1);
+         popupType = param1
+         this.INT_SetTextPosition();
       }
       
       public function setInputEnabled(param1:Boolean, param2:Number, param3:Number) : *
@@ -92,6 +96,7 @@
          this.title_txt.htmlText = param1;
          textHelpers.smallCaps(this.title_txt,7,true);
          this.setText(param2);
+         this.INT_SetTextPosition();
       }
       
       public function setText(param1:String) : *
@@ -109,6 +114,7 @@
 	  public function setTitleText(param1:String) : * {
 		  this.title_txt.htmlText = param1;
 		  textHelpers.smallCaps(this.title_txt,7,true);
+        this.INT_SetTextPosition();
 	  }
 	  
       public function INT_SetTextPosition() : *
@@ -148,6 +154,35 @@
          //       }
          //    }
          // }
+
+         // MANUALLY POSITIONING ELEMENTS -- Redo This in LUA if possible
+
+         var _loc1_:Number = this.height/2;
+         var _loc2_:Number = (this.title_txt.height + this.text_mc.height + this.input_mc.height + 20)/2;
+         var _loc3_:Number = _loc1_ - _loc2_;
+
+         if (this.input_mc.visible) {
+            _loc3_ = -47;
+         }
+
+         this.title_txt.y = _loc3_;
+         this.text_mc.y = _loc3_ + this.title_txt.height + 10;
+         this.input_mc.y = _loc3_ + this.title_txt.height + this.text_mc.height + 20;
+      
+         if(this.popupType == 3) {
+            this.input_mc.y = 140;
+            this.input_mc.input_text.height = 18;
+            this.input_mc.height = 20;
+            this.title_txt.y = this.input_mc.y - this.title_txt.height - 40;
+            this.text_mc.y = this.input_mc.y + this.input_mc.height + 10; 
+
+            // Change this so that copy and paste buttons are side-by-side. 
+            this.input_mc.copy_mc.visible = false; 
+            this.input_mc.paste_mc.visible = false; 
+         } else {
+            this.input_mc.input_text.height = 108;
+            this.input_mc.height = 130;
+         }
       }
       
       public function onEF(param1:Event) : *
@@ -176,8 +211,9 @@
          }
          this.shownIcon = this.iconId;
          this.visible = true;
+         this.INT_SetTextPosition();
       }
-      
+
       public function addButton(param1:Number, param2:String, param3:String, param4:String) : *
       {
          var _loc5_:MovieClip = null;
@@ -250,6 +286,7 @@
       public function removeButtons() : *
       {
          this.btnList.clearElements();
+         this.INT_SetTextPosition();
       }
       
       function frame1() : *
