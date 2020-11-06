@@ -168,21 +168,6 @@
          this.title_txt.y = _loc3_;
          this.text_mc.y = _loc3_ + this.title_txt.height + 10;
          this.input_mc.y = _loc3_ + this.title_txt.height + this.text_mc.height + 20;
-      
-         if(this.popupType == 3) {
-            this.input_mc.y = 140;
-            this.input_mc.input_text.height = 18;
-            this.input_mc.height = 20;
-            this.title_txt.y = this.input_mc.y - this.title_txt.height - 40;
-            this.text_mc.y = this.input_mc.y + this.input_mc.height + 10; 
-
-            // Change this so that copy and paste buttons are side-by-side. 
-            this.input_mc.copy_mc.visible = false; 
-            this.input_mc.paste_mc.visible = false; 
-         } else {
-            this.input_mc.input_text.height = 108;
-            this.input_mc.height = 130;
-         }
       }
       
       public function onEF(param1:Event) : *
