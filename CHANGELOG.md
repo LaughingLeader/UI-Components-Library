@@ -8,6 +8,7 @@
 
 * _Added_ `GMJournal` files.
 * _Wrote_ python script (`syncSWF.py`) to automatically move `.swf`s to the `Public/ModName/GUI` folder.
+* _Created_ a close button for the message-box! - You won't believe how long this took me to implement.
 
 ## [0.1.0.0] --- 6th November 2020 --- **_Added msgBox Files_**
 

@@ -7,8 +7,6 @@
    
    public dynamic class MainTimeline extends MovieClip
    {
-       
-      
       public var popup_mc:MovieClip;
       
       public var CloseTimeline:larTween;
@@ -39,6 +37,8 @@
       
       public const anchorTarget:String = "screen";
       
+      public var closeButton_mc:closeButton;
+
       public var S7_InputText:String = "";
 
       public function MainTimeline()
@@ -128,6 +128,12 @@
          return _loc2_;
       }
       
+      public function onClose() : *
+      {
+         ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
+         ExternalInterface.call("closeUI");
+      }
+
       public function setWaiting(param1:Boolean) : *
       {
       }
@@ -140,6 +146,7 @@
       public function onEventInit() : *
       {
          this.popup_mc.init();
+         this.popup_mc.closeButton_mc.init(this.onClose);
          ExternalInterface.call("setPosition","center","screen","center");
       }
       
@@ -290,11 +297,11 @@
          this.popup_mc.input_mc.paste_mc.visible = param1;
          if(this.popup_mc.input_mc.paste_mc.visible)
          {
-            this.popup_mc.input_mc.copy_mc.x = 494;
+            // this.popup_mc.input_mc.copy_mc.x = 494;
          }
          else
          {
-            this.popup_mc.input_mc.copy_mc.x = 494; // Default = 526 -- I have no idea what this is but whatever.
+            // this.popup_mc.input_mc.copy_mc.x = 526;
          }
       }
       
@@ -344,6 +351,14 @@
       {
       }
       
+      public function switchInputMode(param1:Number): * {
+         this.popup_mc.input_mc.gotoAndStop(param1);
+      }
+
+      public function switchTextMode(param1:Number): * {
+         this.popup_mc.text_mc.gotoAndStop(param1);
+      }
+
       function frame1() : *
       {
          this.events = new Array("IE UIAccept","IE UIBack","IE UICancel","IE UIUp","IE UIDown","IE UIPaste","IE UICopy");
