@@ -26,6 +26,7 @@ for subdirectory, directory, files in os.walk(sourceDir):
     for fileName in files:
         filePath = subdirectory + os.sep + fileName
 
-    if filePath.endswith(".swf"):
-        shutil.copy(filePath, os.path.join(targetDir + fileName))
-        print(f"Moved swf at {sourceDir + fileName}\n to {targetDir + fileName}\n")
+        if filePath.endswith(".swf"):
+            print(fileName)
+            shutil.copy(filePath, os.path.join(targetDir + fileName))
+            print(f"Moved swf at {sourceDir + fileName}\n to {targetDir + fileName}\n")
