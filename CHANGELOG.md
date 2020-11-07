@@ -8,6 +8,12 @@
 
 * _Added_ `GMJournal` files.
 
+## [0.2.0.0] --- 7th November 2020 --- **_Python_**
+
+### NEW
+
+* _Wrote_ python script (`syncSWF.py`) to automatically move `.swf`s to the `Public/ModName/GUI` folder.
+
 ## [0.1.0.0] --- 6th November 2020 --- **_Added msgBox Files_**
 
 ### NEW
