@@ -254,17 +254,20 @@
          param1.x = -param1.width * 0.5;
          this.btnList.addElement(param1);
          this.cButtons_mc.y = 347 - this.btnList.height;
-         if(!this.input_mc.visible)
-         {
-            if(this.btnList.length > 1)
-            {
-               this.setPopupType(2);
-            }
-            else
-            {
-               this.setPopupType(1);
-            }
-         }
+
+         // There is functionally no difference between 1 and 2 as far as I can tell.
+
+         // if(!this.input_mc.visible)
+         // {
+         //    if(this.btnList.length > 1)
+         //    {
+         //       this.setPopupType(2);
+         //    }
+         //    else
+         //    {
+         //       this.setPopupType(1);
+         //    }
+         // }
          this.INT_SetTextPosition();
       }
       
