@@ -20,6 +20,7 @@ package msgbox_fla
       
       function frame1() : *
       {
+         stop();
          this.sb = new scrollbar_text();
          this.addChild(this.sb);
          this.sb.m_hideWhenDisabled = true;

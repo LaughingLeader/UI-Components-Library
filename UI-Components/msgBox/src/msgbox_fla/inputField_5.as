@@ -1,4 +1,4 @@
-package msgbox_fla
+﻿package msgbox_fla
 {
    import flash.display.MovieClip;
    import flash.events.Event;
@@ -9,8 +9,6 @@ package msgbox_fla
    
    public dynamic class inputField_5 extends MovieClip
    {
-       
-      
       public var copy_mc:MovieClip;
       
       public var input_txt:TextField;
@@ -66,6 +64,7 @@ package msgbox_fla
       
       function frame1() : *
       {
+         stop();
          this.copy_mc.pressedFuncStr = "copyPressed";
          this.paste_mc.pressedFuncStr = "pastePressed";
          //this.input_txt.restrict = "a-zA-Z0-9_ \\-";   // No Restrictions to text. I hope I don't come to regret this.

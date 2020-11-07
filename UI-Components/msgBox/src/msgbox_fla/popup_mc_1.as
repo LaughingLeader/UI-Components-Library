@@ -10,8 +10,6 @@
 
    public dynamic class popup_mc_1 extends MovieClip
    {
-       
-      
       public var bg_mc:MovieClip;
       
       public var cButtons_mc:MovieClip;
