@@ -3,12 +3,24 @@ Ext.Require("S7_UCL_Auxiliary.lua")
 msgBox = {}
 
 local defaultMsgBox = {
-    ["Type"] = 1
+    ["Type"] = 1,
+    ["TitleText"] = "Title",
+    ["Text"] = "Default Text",
+    ["InputEnable"] = false,
+    ["InputMinChar"] = 0,
+    ["InputMaxChar"] = 46,
+    ["CopyBtnVisible"] = false,
+    ["PasteBtnVisible"] = false,
+    ["InputText"] = "Enter your text..."
 }
+
+local function determineParams(type, subcomponent)
+    return subcomponent[type] or defaultMsgBox[type]
+end
 
 function createMsgBox(buildPlan)
     msgBox = Ext.GetBuiltinUI(Dir.GameGUI .. "msgBox.swf")
-    msgBox:Invoke("setPopupType", buildPlan.Component.Type or defaultMsgBox.Type)
+    msgBox:Invoke("setPopupType", determineParams("Type", buildPlan.Component))
 
     for index, subcomponent in ipairs(buildPlan.Layout) do
         createMsgBox_SubComponent(msgBox, subcomponent.Name, subcomponent)
@@ -25,20 +37,24 @@ end
 
 function createMsgBox_SubComponent(msgBox, subcomponentName, subcomponentPlan)
     if subcomponentName == "Title" then
-        msgBox:Invoke("setTitleText", subcomponentPlan.TitleText or "LuL")
+        msgBox:Invoke("setTitleText", determineParams("TitleText", subcomponentPlan))
     elseif subcomponentName == "Text" then
-        msgBox:Invoke("setText", subcomponentPlan.Text or "LuL")
+        msgBox:Invoke("setText", determineParams("Text", subcomponentPlan))
     elseif subcomponentName == "Popup" then
-        msgBox:Invoke("showPopup", subcomponentPlan.PopupTitle, subcomponentPlan.PopupText)
+        msgBox:Invoke(
+            "showPopup",
+            determineParams("TitleText", subcomponentPlan),
+            determineParams("Text", subcomponentPlan)
+        )
     elseif subcomponentName == "InputText" then
         msgBox:Invoke(
             "setInputEnabled",
-            subcomponentPlan.InputEnable,
-            subcomponentPlan.MinChar,
-            subcomponentPlan.MaxChar
+            determineParams("InputEnable", subcomponentPlan),
+            determineParams("InputMinChar", subcomponentPlan),
+            determineParams("InputMaxChar", subcomponentPlan)
         )
-        msgBox:Invoke("setCopyBtnVisible", subcomponentPlan.CopyVisible)
-        msgBox:Invoke("setPasteBtnVisible", subcomponentPlan.PasteVisible)
-        msgBox:Invoke("setInputText", subcomponentPlan.InputText)
+        msgBox:Invoke("setCopyBtnVisible", determineParams("CopyBtnVisible", subcomponentPlan))
+        msgBox:Invoke("setPasteBtnVisible", determineParams("PasteBtnVisible", subcomponentPlan))
+        msgBox:Invoke("setInputText", determineParams("InputText", subcomponentPlan))
     end
 end

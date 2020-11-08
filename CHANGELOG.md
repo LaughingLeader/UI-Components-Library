@@ -8,6 +8,7 @@
 
 * _Added_ `actionProgression` files.
 * _Created_ `msgBox.lua` to handle everything msgBox related.
+* Lua calls to generate msgBox. -- kinda works. Needs more time.
 
 ### CHANGED
 

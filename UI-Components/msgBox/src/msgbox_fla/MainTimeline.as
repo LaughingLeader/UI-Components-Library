@@ -329,12 +329,18 @@
       {
          stage.focus = this.popup_mc.input_mc.input_txt;
          this.popup_mc.input_mc.input_txt.setSelection(0,this.popup_mc.input_mc.input_txt.text.length);
+         if (this.popup_mc.input_mc.input_txt == "Enter your text...") {
+            this.popup_mc.input_mc.input_txt = ""
+         }
       }
       
       public function setInputText(param1:String) : *
       {
          this.popup_mc.input_mc.input_txt.text = param1;
          this.popup_mc.input_mc.input_txt.setSelection(0,this.popup_mc.input_mc.input_txt.text.length);
+         if (this.popup_mc.input_mc.input_txt == "") {
+            this.popup_mc.input_mc.input_txt = "Enter your text..."
+         }
       }
       
       public function getInputText() : *

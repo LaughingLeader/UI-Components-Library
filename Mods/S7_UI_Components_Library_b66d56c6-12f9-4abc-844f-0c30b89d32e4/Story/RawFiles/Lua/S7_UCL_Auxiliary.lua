@@ -18,8 +18,13 @@ local files2Override = {
 
 for target, fileList in pairs(files2Override) do
     for _, file in ipairs(fileList) do
-        Ext.RegisterListener("ModuleLoadStarted", function()
-            Ext.AddPathOverride(Dir[target] .. file, Dir.ModGUI .. file)
-        end)
+        --  REGISTER LISTENER
+        --  =================
+        Ext.RegisterListener(
+            "ModuleLoadStarted",
+            function()
+                Ext.AddPathOverride(Dir[target] .. file, Dir.ModGUI .. file)
+            end
+        )
     end
 end

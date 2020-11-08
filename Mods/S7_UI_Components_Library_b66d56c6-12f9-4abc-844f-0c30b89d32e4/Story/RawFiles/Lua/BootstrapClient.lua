@@ -6,7 +6,9 @@ activeUI = {}
 buildPlan = {
     ["Component"] = {["Name"] = "msgBox", ["Type"] = 4, ["ShowOnCreation"] = true},
     ["Layout"] = {
-        [1] = {["Name"] = "Title", ["TitleText"] = "MyTitle"}
+        [1] = {["Name"] = "Title", ["TitleText"] = "MyTitle"},
+        [2] = {["Name"] = "Text"},
+        [3] = {["Name"] = "InputText", ["InputEnable"] = true, ["InputText"] = "Enter Your Text..."}
     }
 }
 
