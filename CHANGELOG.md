@@ -2,11 +2,12 @@
 
 ----------
 
-## [0.2.1.0] --- 8th November 2020 --- **_Added actionProgression Files_**
+## [0.2.1.0] --- 8th November 2020 --- **_Added actionProgression Files and Testing Lua side of things_**
 
 ### NEW
 
 * _Added_ `actionProgression` files.
+* _Created_ `msgBox.lua` to handle everything msgBox related.
 
 ### CHANGED
 
