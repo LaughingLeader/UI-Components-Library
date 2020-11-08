@@ -1,4 +1,4 @@
-# S7_UI_Components_Library
+# UI Components Library
 
 ## Divinity: Original Sin 2 - Definitive Edition
 
@@ -17,7 +17,7 @@ A collection of UI components.
 
 ## Features
 
-* Feature 1
+* 🚧🚧Work-In-Progress🚧🚧
 
 ----------
 
