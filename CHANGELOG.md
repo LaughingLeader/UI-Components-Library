@@ -2,6 +2,16 @@
 
 ----------
 
+## [0.2.1.0] --- 8th November 2020 --- **_Added actionProgression Files_**
+
+### NEW
+
+* _Added_ `actionProgression` files.
+
+### CHANGED
+
+* _Updated_ `.gitignore`.
+
 ## [0.2.0.0] --- 7th November 2020 --- **_Added GMJournal Files and Python_**
 
 ### NEW
