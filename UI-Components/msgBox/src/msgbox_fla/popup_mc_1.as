@@ -155,17 +155,6 @@
 
          // MANUALLY POSITIONING ELEMENTS -- Redo This in LUA if possible
 
-         var _loc1_:Number = this.height/2;
-         var _loc2_:Number = (this.title_txt.height + this.text_mc.height + this.input_mc.height + 20)/2;
-         var _loc3_:Number = _loc1_ - _loc2_;
-
-         if (this.input_mc.visible) {
-            _loc3_ = -47;
-         }
-
-         this.title_txt.y = _loc3_;
-         this.text_mc.y = _loc3_ + this.title_txt.height + 10;
-         this.input_mc.y = _loc3_ + this.title_txt.height + this.text_mc.height + 20;
       }
       
       public function onEF(param1:Event) : *

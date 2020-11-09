@@ -54,6 +54,10 @@ package
          this.bg_mc.gotoAndStop(3);
       }
       
+      public function setLabelText(param1:String): * {
+         this.label_mc.text = param1;
+      }
+
       function frame1() : *
       {
          this.label_mc.mouseEnabled = false;
