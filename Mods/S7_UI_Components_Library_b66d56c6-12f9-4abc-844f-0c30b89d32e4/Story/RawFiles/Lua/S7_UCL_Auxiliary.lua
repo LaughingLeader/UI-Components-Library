@@ -28,3 +28,11 @@ for target, fileList in pairs(files2Override) do
         )
     end
 end
+
+--  =============
+--  REMATERIALIZE
+--  =============
+
+function Rematerialize(element)
+    return Ext.JsonParse(Ext.JsonStringify(element))
+end

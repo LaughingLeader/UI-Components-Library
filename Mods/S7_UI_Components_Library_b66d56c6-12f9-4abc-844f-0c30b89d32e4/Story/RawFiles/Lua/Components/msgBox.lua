@@ -1,60 +1,172 @@
+--  =======
+--  IMPORTS
+--  =======
+
 Ext.Require("S7_UCL_Auxiliary.lua")
+
+--  ======
+--  msgBox
+--  ======
 
 msgBox = {}
 
-local defaultMsgBox = {
-    ["Type"] = 1,
-    ["TitleText"] = "Title",
-    ["Text"] = "Default Text",
-    ["InputEnable"] = false,
-    ["InputMinChar"] = 0,
-    ["InputMaxChar"] = 46,
-    ["CopyBtnVisible"] = false,
-    ["PasteBtnVisible"] = false,
-    ["InputText"] = "Enter your text..."
-}
+--  Reinitialize msgBox
+--  ===================
 
-local function determineParams(type, subcomponent)
-    return subcomponent[type] or defaultMsgBox[type]
+function ReinitializeMsgBox()
+    defaultMsgBox = {
+        ["Exists"] = false, --  msgBox element exists
+        ["Element"] = {
+            ["UI"] = {}, -- The actual element
+            ["Root"] = {} --  Root Object
+        },
+        --  --------------
+        --  Main Component
+        --  --------------
+        ["Component"] = {
+            ["Name"] = "msgBox", --  Name of UI element
+            ["PopupType"] = 1, --  Variant
+            ["Visible"] = false, -- Visibility
+            ["renderImmediately"] = true --  Visible as soon as created
+        },
+        --  --------------
+        --  Sub Components
+        --  --------------
+        ["SubComponent"] = {
+            --  TITLE
+            --  -----
+            ["Title"] = {
+                ["Name"] = "Title", --  Sub-Component Name
+                ["TitleText"] = "", --  Default Value
+                ["Visible"] = false --  Visiblility
+            },
+            --  TEXT
+            --  ----
+            ["Text"] = {
+                ["Name"] = "Text", --  Sub-Component Name
+                ["Text"] = "", --  Default Value
+                ["Visible"] = false --  Visiblility
+            },
+            --  INPUT-TEXT
+            --  ----------
+            ["InputText"] = {
+                ["Name"] = "InputText", --  Sub-Component Name
+                ["InputText"] = "", --  Default Value
+                ["MinChar"] = 0, --  Minimum number of input characters
+                ["MaxChar"] = 46, --  Maximum number of input characters
+                ["CopyBtnVisible"] = false, --  Copy from input-field Button Visibility
+                ["PasteBtnVisible"] = false, -- Paste to input-field Button Visibility
+                ["Visible"] = false --  Visiblility
+            }
+        }
+    }
+    return defaultMsgBox
 end
 
-function createMsgBox(buildPlan)
-    msgBox = Ext.GetBuiltinUI(Dir.GameGUI .. "msgBox.swf")
-    msgBox:Invoke("setPopupType", determineParams("Type", buildPlan.Component))
+msgBox = Rematerialize(ReinitializeMsgBox())
 
-    for index, subcomponent in ipairs(buildPlan.Layout) do
-        createMsgBox_SubComponent(msgBox, subcomponent.Name, subcomponent)
+--  ###################################################################################################################################################
+
+--  ==================
+--  RENDER MESSAGE-BOX
+--  ==================
+
+function renderMsgBox(Specs)
+    if msgBox.Exists ~= true then
+        --  -------------
+        --  Create msgBox
+        --  -------------
+
+        ReinitializeMsgBox()
+        msgBox.Element.UI = Ext.GetBuiltinUI(Dir.GameGUI .. "msgBox.swf")
+        msgBox.Element.Root = msgBox.Element.UI:GetRoot()
     end
 
-    if buildPlan.Component.ShowOnCreation then
-        msgBox:Show()
+    msgBox.Exists = true
+
+    if Specs ~= nil then
+        for key, value in pairs(Specs) do
+            if key == "Component" then
+                if functionMapper["msgBox"][key] ~= nil then
+                    functionMapper["msgBox"][key](value)
+                end
+            elseif key == "SubComponent" then
+                for k, v in pairs(value) do
+                    if functionMapper["msgBox"][key][k] ~= nil then
+                        functionMapper["msgBox"][key][k](v)
+                    end
+                end
+            end
+        end
+    end
+
+    --  ------------------
+    --  Render Immediately
+    --  ------------------
+
+    if msgBox.Component.renderImmediately then
+        msgBox.Element.UI:Show()
     else
-        msgBox:Hide()
+        msgBox.Element.UI:Hide()
     end
 
     return msgBox
 end
 
-function createMsgBox_SubComponent(msgBox, subcomponentName, subcomponentPlan)
-    if subcomponentName == "Title" then
-        msgBox:Invoke("setTitleText", determineParams("TitleText", subcomponentPlan))
-    elseif subcomponentName == "Text" then
-        msgBox:Invoke("setText", determineParams("Text", subcomponentPlan))
-    elseif subcomponentName == "Popup" then
-        msgBox:Invoke(
-            "showPopup",
-            determineParams("TitleText", subcomponentPlan),
-            determineParams("Text", subcomponentPlan)
-        )
-    elseif subcomponentName == "InputText" then
-        msgBox:Invoke(
-            "setInputEnabled",
-            determineParams("InputEnable", subcomponentPlan),
-            determineParams("InputMinChar", subcomponentPlan),
-            determineParams("InputMaxChar", subcomponentPlan)
-        )
-        msgBox:Invoke("setCopyBtnVisible", determineParams("CopyBtnVisible", subcomponentPlan))
-        msgBox:Invoke("setPasteBtnVisible", determineParams("PasteBtnVisible", subcomponentPlan))
-        msgBox:Invoke("setInputText", determineParams("InputText", subcomponentPlan))
-    end
-end
+--  ===============
+--  FUNCTION MAPPER
+--  ===============
+
+functionMapper = {}
+
+functionMapper["msgBox"] = {
+    --  ==============
+    --  MAIN COMPONENT
+    --  ==============
+
+    ["Component"] = function(Component)
+        msgBox.Element.UI:Invoke("setPopupType", Component.PopupType or msgBox.Component.PopupType)
+        msgBox.Element.Root.popup_mc.visible = Component.Visible or msgBox.Component.Visible
+    end,
+    --  =============
+    --  SUBCOMPONENTS
+    --  =============
+
+    ["SubComponent"] = {
+        --      TITLE
+        --      -----
+
+        ["Title"] = function(SubComponent)
+            Ext.Print(Ext.JsonStringify(SubComponent))
+            msgBox.Element.UI:Invoke("setTitleText", SubComponent.TitleText or msgBox.SubComponent.Title.TitleText)
+            msgBox.Element.Root.popup_mc.title_txt.visible = SubComponent.Visible or msgBox.SubComponent.Title.Visible
+        end,
+        --      TEXT
+        --      ----
+
+        ["Text"] = function(SubComponent)
+            msgBox.Element.UI:Invoke("setText", SubComponent.Text or msgBox.SubComponent.Text.Text)
+            msgBox.Element.Root.popup_mc.text_mc.visible = SubComponent.Visible or msgBox.SubComponent.Title.Visible
+        end,
+        --      INPUT-TEXT
+        --      ----------
+
+        ["InputText"] = function(SubComponent)
+            msgBox.Element.UI:Invoke(
+                "setInputEnabled",
+                SubComponent.Visible or msgBox.SubComponent.InputText.Visible,
+                SubComponent.MinChar or msgBox.SubComponent.InputText.MinChar,
+                SubComponent.MaxChar or msgBox.SubComponent.InputText.MaxChar
+            )
+            msgBox.Element.UI:Invoke("setInputText", SubComponent.InputText or msgBox.SubComponent.InputText.InputText)
+            msgBox.Element.UI:Invoke(
+                "setCopyBtnVisible",
+                SubComponent.CopyBtnVisible or msgBox.SubComponent.InputText.CopyBtnVisible
+            )
+            msgBox.Element.UI:Invoke(
+                "setPasteBtnVisible",
+                SubComponent.PasteBtnVisible or msgBox.SubComponent.InputText.PasteBtnVisible
+            )
+        end
+    }
+}

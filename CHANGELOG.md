@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.2.0] --- 11th November 2020 --- **Building msgBox using BuildSpecifications**
+
+### NEW
+
+* Dynamically _generate_ msgBox based on passed parameters.
+
 ## [0.2.1.0] --- 8th November 2020 --- **_Added actionProgression Files and Testing Lua side of things_**
 
 ### NEW

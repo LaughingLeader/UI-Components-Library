@@ -1,20 +1,59 @@
+--  =======
+--  IMPORTS
+--  =======
+
 Ext.Require("S7_UCL_Auxiliary.lua")
 Ext.Require("Components/msgBox.lua")
 
-activeUI = {}
+--  ==============================
+--  TEMPORARY BUILD SPECIFICATIONS
+--  ==============================
 
-buildPlan = {
-    ["Component"] = {["Name"] = "msgBox", ["Type"] = 4, ["ShowOnCreation"] = true},
-    ["Layout"] = {
-        [1] = {["Name"] = "Title", ["TitleText"] = "MyTitle"},
-        [2] = {["Name"] = "Text"},
-        [3] = {["Name"] = "InputText", ["InputEnable"] = true, ["InputText"] = "Enter Your Text..."}
+buildSpecifications = {
+    ["msgBox"] = {
+        ["Component"] = {
+            ["PopupType"] = 4,
+            ["renderImmediately"] = true
+        },
+        ["SubComponent"] = {
+            ["Title"] = {
+                ["Name"] = "Title",
+                ["Order"] = 1,
+                ["TitleText"] = "MyAwesomeTitle",
+                ["Visible"] = true
+            },
+            ["Text"] = {
+                ["Name"] = "Text",
+                ["Order"] = 2,
+                ["Visible"] = true
+            },
+            ["InputText"] = {
+                ["Name"] = "InputText",
+                ["InputEnable"] = true,
+                ["Order"] = 3,
+                ["InputText"] = "Enter your text here ...",
+                ["Visible"] = true
+            }
+        }
     }
 }
 
+--  ===========
+--  BUILDER MAP
+--  ===========
+
+local builder = {
+    ["msgBox"] = renderMsgBox
+}
+
+--  ================
+--  BUILDER FUNCTION
+--  ================
+
 function S7_UCL_Build()
-    if buildPlan.Component.Name == "msgBox" then
-        activeUI = createMsgBox(buildPlan)
+    for UIName, Specs in pairs(buildSpecifications) do
+        activeUI = builder[UIName](Specs)
+        Ext.Print("Building " .. UIName)
     end
     return activeUI
 end
