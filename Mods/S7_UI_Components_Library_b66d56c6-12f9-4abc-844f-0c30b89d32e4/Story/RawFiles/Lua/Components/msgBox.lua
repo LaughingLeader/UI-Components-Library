@@ -26,6 +26,10 @@ function ReinitializeMsgBox()
         ["Component"] = {
             ["Name"] = "msgBox", --  Name of UI element
             ["PopupType"] = 1, --  Variant
+            ["Size"] = {["Width"] = 760, ["Height"] = 430},
+            ["Position"] = {["X"] = 580, ["Y"] = 330},
+            ["BackgroundSize"] = {["Width"] = 760, ["Height"] = 427.95},
+            ["BackgroundPosition"] = {["X"] = 0, ["Y"] = 0},
             ["Visible"] = false, -- Visibility
             ["renderImmediately"] = true --  Visible as soon as created
         },
@@ -38,6 +42,8 @@ function ReinitializeMsgBox()
             ["Title"] = {
                 ["Name"] = "Title", --  Sub-Component Name
                 ["TitleText"] = "", --  Default Value
+                ["Size"] = {["Width"] = 500, ["Height"] = 45},
+                ["Position"] = {["X"] = 130, ["Y"] = 70},
                 ["Visible"] = false --  Visiblility
             },
             --  TEXT
@@ -45,6 +51,8 @@ function ReinitializeMsgBox()
             ["Text"] = {
                 ["Name"] = "Text", --  Sub-Component Name
                 ["Text"] = "", --  Default Value
+                ["Size"] = {["Width"] = 500, ["Height"] = 127.55},
+                ["Position"] = {["X"] = 130, ["Y"] = 120},
                 ["Visible"] = false --  Visiblility
             },
             --  INPUT-TEXT
@@ -56,6 +64,8 @@ function ReinitializeMsgBox()
                 ["MaxChar"] = 46, --  Maximum number of input characters
                 ["CopyBtnVisible"] = false, --  Copy from input-field Button Visibility
                 ["PasteBtnVisible"] = false, -- Paste to input-field Button Visibility
+                ["Size"] = {["Width"] = 475, ["Height"] = 50},
+                ["Position"] = {["X"] = 150, ["Y"] = 120},
                 ["Visible"] = false --  Visiblility
             }
         }
@@ -100,6 +110,8 @@ function renderMsgBox(Specs)
         end
     end
 
+    ReorganizeLayoutMsgBox(Specs)
+
     --  ------------------
     --  Render Immediately
     --  ------------------
@@ -111,6 +123,36 @@ function renderMsgBox(Specs)
     end
 
     return msgBox
+end
+
+function ReorganizeLayoutMsgBox(Specs)
+    local order = {}
+    for k, v in pairs(Specs.SubComponent) do
+        if v.Order ~= nil then
+            order[v.Order] = k
+        end
+    end
+    for k, v in pairs(Specs.SubComponent) do
+        if v.Order == nil then
+            order[#order + 1] = k
+        end
+    end
+
+    Ext.Print(Ext.JsonStringify(order))
+
+    local flexStart = 100
+    for index, element in ipairs(order) do
+        if element == "Title" then
+            msgBox.Element.Root.popup_mc.title_txt.y = flexStart
+            flexStart = flexStart + msgBox.Element.Root.popup_mc.title_txt.height + 20
+        elseif element == "Text" then
+            msgBox.Element.Root.popup_mc.text_mc.y = flexStart
+            flexStart = flexStart + msgBox.Element.Root.popup_mc.text_mc.height + 20
+        elseif element == "InputText" then
+            msgBox.Element.Root.popup_mc.input_mc.y = flexStart
+            flexStart = flexStart + msgBox.Element.Root.popup_mc.input_mc.height + 20
+        end
+    end
 end
 
 --  ===============
@@ -137,7 +179,6 @@ functionMapper["msgBox"] = {
         --      -----
 
         ["Title"] = function(SubComponent)
-            Ext.Print(Ext.JsonStringify(SubComponent))
             msgBox.Element.UI:Invoke("setTitleText", SubComponent.TitleText or msgBox.SubComponent.Title.TitleText)
             msgBox.Element.Root.popup_mc.title_txt.visible = SubComponent.Visible or msgBox.SubComponent.Title.Visible
         end,
@@ -170,3 +211,5 @@ functionMapper["msgBox"] = {
         end
     }
 }
+
+--  ###################################################################################################################################################

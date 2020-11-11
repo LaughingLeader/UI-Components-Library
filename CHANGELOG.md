@@ -7,6 +7,7 @@
 ### NEW
 
 * Dynamically _generate_ msgBox based on passed parameters.
+* _Implemented_ basic repositioning of msgBox subcomponents.
 
 ## [0.2.1.0] --- 8th November 2020 --- **_Added actionProgression Files and Testing Lua side of things_**
 

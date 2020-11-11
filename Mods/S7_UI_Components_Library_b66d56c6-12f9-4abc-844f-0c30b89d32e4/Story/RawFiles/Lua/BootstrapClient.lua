@@ -18,19 +18,20 @@ buildSpecifications = {
         ["SubComponent"] = {
             ["Title"] = {
                 ["Name"] = "Title",
-                ["Order"] = 1,
+                ["Order"] = 3,
                 ["TitleText"] = "MyAwesomeTitle",
                 ["Visible"] = true
             },
             ["Text"] = {
                 ["Name"] = "Text",
+                ["Text"] = "Lorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulorLorem Ipsum Dolor amit de sulor",
                 ["Order"] = 2,
                 ["Visible"] = true
             },
             ["InputText"] = {
                 ["Name"] = "InputText",
                 ["InputEnable"] = true,
-                ["Order"] = 3,
+                ["Order"] = 1,
                 ["InputText"] = "Enter your text here ...",
                 ["Visible"] = true
             }
