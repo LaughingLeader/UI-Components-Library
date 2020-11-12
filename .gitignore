@@ -121,7 +121,6 @@ Thumbs.db
 #    ########################
 
 *.code-workspace
-.markdownlint.json
 
 UI-Components/msgBox/src/RECOVER_msgBox.fla
 UI-Components/GMJournal/src/RECOVER_GMJournal.fla
