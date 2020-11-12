@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.3.0] --- 13th November 2020 --- **⭐ OpenMessageBox Reborn ⭐**
+
+### NEW
+
+* _Created_ a `lua` implementation of OpenMessageBox with superior UI elements and no 256 characters crash!!!
+
 ## [0.2.2.0] --- 11th November 2020 --- **Building msgBox using BuildSpecifications**
 
 ### NEW

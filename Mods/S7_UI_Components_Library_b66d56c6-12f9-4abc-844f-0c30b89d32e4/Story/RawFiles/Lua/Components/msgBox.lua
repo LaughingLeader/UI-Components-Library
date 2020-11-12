@@ -149,11 +149,11 @@ function renderMsgBox(Specs)
     --  Render Immediately
     --  ------------------
 
-    if msgBox.Component.renderImmediately then
-        msgBox.Element.UI:Show()
-    else
+    if msgBox.Component.renderImmediately == false then
         msgBox.Element.UI:Hide()
     end
+
+    msgBox.Element.UI:Show()
 
     return msgBox
 end
@@ -216,3 +216,25 @@ functionMapper["msgBox"] = {
 }
 
 --  ###################################################################################################################################################
+
+function S7_OpenMessageBox(TitleText, Text)
+    buildSpecifications.msgBox.SubComponent.Title.TitleText = TitleText
+    if type(Text) == "string" then
+        buildSpecifications.msgBox.SubComponent.Text.Text = Text
+    elseif type(Text) == "table" then
+        local concat = ""
+        for _, txt in ipairs(Text) do
+            local translatedString = Ext.GetTranslatedStringFromKey(txt)
+            if translatedString ~= "" then
+                concat = concat .. translatedString
+            else
+                concat = concat .. txt
+            end
+        end
+        buildSpecifications.msgBox.SubComponent.Text.Text = concat
+    end
+
+    S7_UCL_Build()
+end
+
+Ext.RegisterConsoleCommand("YOLO", S7_OpenMessageBox)
