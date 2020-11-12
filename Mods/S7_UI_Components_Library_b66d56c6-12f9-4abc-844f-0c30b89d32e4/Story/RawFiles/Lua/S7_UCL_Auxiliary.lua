@@ -36,3 +36,9 @@ end
 function Rematerialize(element)
     return Ext.JsonParse(Ext.JsonStringify(element))
 end
+
+--  ============================
+--  DECLARATION OF GLOBAL TABLES
+--  ============================
+
+functionMapper = {}

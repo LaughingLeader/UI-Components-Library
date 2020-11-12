@@ -30,6 +30,9 @@ function ReinitializeMsgBox()
             ["Position"] = {["X"] = 580, ["Y"] = 330},
             ["BackgroundSize"] = {["Width"] = 760, ["Height"] = 427.95},
             ["BackgroundPosition"] = {["X"] = 0, ["Y"] = 0},
+            ["Order"] = "NoOrder",
+            ["flexStart"] = 70,
+            ["padding"] = 20,
             ["Visible"] = false, -- Visibility
             ["renderImmediately"] = true --  Visible as soon as created
         },
@@ -51,8 +54,9 @@ function ReinitializeMsgBox()
             ["Text"] = {
                 ["Name"] = "Text", --  Sub-Component Name
                 ["Text"] = "", --  Default Value
-                ["Size"] = {["Width"] = 500, ["Height"] = 127.55},
+                ["Size"] = {["Width"] = 480, ["Height"] = 148.2},
                 ["Position"] = {["X"] = 130, ["Y"] = 120},
+                ["Type"] = 1,
                 ["Visible"] = false --  Visiblility
             },
             --  INPUT-TEXT
@@ -60,12 +64,13 @@ function ReinitializeMsgBox()
             ["InputText"] = {
                 ["Name"] = "InputText", --  Sub-Component Name
                 ["InputText"] = "", --  Default Value
+                ["Type"] = 1,
                 ["MinChar"] = 0, --  Minimum number of input characters
                 ["MaxChar"] = 46, --  Maximum number of input characters
                 ["CopyBtnVisible"] = false, --  Copy from input-field Button Visibility
                 ["PasteBtnVisible"] = false, -- Paste to input-field Button Visibility
                 ["Size"] = {["Width"] = 475, ["Height"] = 50},
-                ["Position"] = {["X"] = 150, ["Y"] = 120},
+                ["Position"] = {["X"] = 145, ["Y"] = 120},
                 ["Visible"] = false --  Visiblility
             }
         }
@@ -110,8 +115,36 @@ function renderMsgBox(Specs)
         end
     end
 
-    ReorganizeLayoutMsgBox(Specs)
+    local order = {}
+    for k, v in pairs(Specs.SubComponent) do
+        if v.Order ~= nil then
+            order[v.Order] = k
+        end
+    end
 
+    if Specs.Component.Order ~= "WithSpecification" then
+        for k, v in pairs(Specs.SubComponent) do
+            if v.Order == nil then
+                order[#order + 1] = k
+            end
+        end
+    end
+
+    local flexStart = msgBox.Component.flexStart
+    if Specs.Component.Order ~= "NoOrder" then
+        for index, element in ipairs(order) do
+            if element == "Title" then
+                msgBox.Element.Root.popup_mc.title_txt.y = flexStart
+                flexStart = flexStart + msgBox.Element.Root.popup_mc.title_txt.height + msgBox.Component.padding
+            elseif element == "Text" then
+                msgBox.Element.Root.popup_mc.text_mc.y = flexStart
+                flexStart = flexStart + msgBox.Element.Root.popup_mc.text_mc.height + msgBox.Component.padding
+            elseif element == "InputText" then
+                msgBox.Element.Root.popup_mc.input_mc.y = flexStart
+                flexStart = flexStart + msgBox.Element.Root.popup_mc.input_mc.height + msgBox.Component.padding
+            end
+        end
+    end
     --  ------------------
     --  Render Immediately
     --  ------------------
@@ -125,41 +158,9 @@ function renderMsgBox(Specs)
     return msgBox
 end
 
-function ReorganizeLayoutMsgBox(Specs)
-    local order = {}
-    for k, v in pairs(Specs.SubComponent) do
-        if v.Order ~= nil then
-            order[v.Order] = k
-        end
-    end
-    for k, v in pairs(Specs.SubComponent) do
-        if v.Order == nil then
-            order[#order + 1] = k
-        end
-    end
-
-    Ext.Print(Ext.JsonStringify(order))
-
-    local flexStart = 100
-    for index, element in ipairs(order) do
-        if element == "Title" then
-            msgBox.Element.Root.popup_mc.title_txt.y = flexStart
-            flexStart = flexStart + msgBox.Element.Root.popup_mc.title_txt.height + 20
-        elseif element == "Text" then
-            msgBox.Element.Root.popup_mc.text_mc.y = flexStart
-            flexStart = flexStart + msgBox.Element.Root.popup_mc.text_mc.height + 20
-        elseif element == "InputText" then
-            msgBox.Element.Root.popup_mc.input_mc.y = flexStart
-            flexStart = flexStart + msgBox.Element.Root.popup_mc.input_mc.height + 20
-        end
-    end
-end
-
 --  ===============
 --  FUNCTION MAPPER
 --  ===============
-
-functionMapper = {}
 
 functionMapper["msgBox"] = {
     --  ==============
@@ -187,6 +188,7 @@ functionMapper["msgBox"] = {
 
         ["Text"] = function(SubComponent)
             msgBox.Element.UI:Invoke("setText", SubComponent.Text or msgBox.SubComponent.Text.Text)
+            msgBox.Element.Root.popup_mc.text_mc.gotoAndStop(SubComponent.Type or msgBox.SubComponent.Text.Type)
             msgBox.Element.Root.popup_mc.text_mc.visible = SubComponent.Visible or msgBox.SubComponent.Title.Visible
         end,
         --      INPUT-TEXT
@@ -204,6 +206,7 @@ functionMapper["msgBox"] = {
                 "setCopyBtnVisible",
                 SubComponent.CopyBtnVisible or msgBox.SubComponent.InputText.CopyBtnVisible
             )
+            msgBox.Element.Root.popup_mc.input_mc.gotoAndStop(SubComponent.Type or msgBox.SubComponent.InputText.Type)
             msgBox.Element.UI:Invoke(
                 "setPasteBtnVisible",
                 SubComponent.PasteBtnVisible or msgBox.SubComponent.InputText.PasteBtnVisible
