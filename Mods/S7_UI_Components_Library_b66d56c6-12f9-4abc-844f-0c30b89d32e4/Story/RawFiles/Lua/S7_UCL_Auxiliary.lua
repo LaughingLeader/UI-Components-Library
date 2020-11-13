@@ -42,3 +42,4 @@ end
 --  ============================
 
 functionMapper = {}
+buildSpecifications = {}

@@ -8,6 +8,10 @@
 
 * _Created_ a `lua` implementation of OpenMessageBox with superior UI elements and no 256 characters crash!!!
 
+### REMOVED
+
+* _Deleted_ actionProgression and font_en for now. Weren't needed.
+
 ## [0.2.2.0] --- 11th November 2020 --- **Building msgBox using BuildSpecifications**
 
 ### NEW
