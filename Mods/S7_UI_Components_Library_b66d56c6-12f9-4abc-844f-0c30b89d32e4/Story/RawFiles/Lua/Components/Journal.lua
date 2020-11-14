@@ -11,7 +11,7 @@ Ext.Require("S7_UCL_Auxiliary.lua")
 Journal = {}
 
 function ReinitializeJournal()
-    defaultJournal = {
+    local defaultJournal = {
         ["Exists"] = false, --  Journal element exists
         ["Element"] = {
             ["UI"] = {}, -- The actual element
@@ -35,7 +35,7 @@ Journal = Rematerialize(ReinitializeJournal())
 
 --  ##########################################################################################################
 
-function renderJournal(Specs)
+function RenderJournal(Specs)
     if Journal.Exists ~= true then
         --  --------------
         --  Create Journal
@@ -52,13 +52,13 @@ function renderJournal(Specs)
     if Specs ~= nil then
         for key, value in pairs(Specs) do
             if key == "Component" then
-                if functionMapper["Journal"][key] ~= nil then
-                    functionMapper["Journal"][key](value)
+                if FunctionMapper["Journal"][key] ~= nil then
+                    FunctionMapper["Journal"][key](value)
                 end
             elseif key == "SubComponent" then
                 for k, v in pairs(value) do
-                    if functionMapper["Journal"][key][k] ~= nil then
-                        functionMapper["Journal"][key][k](v)
+                    if FunctionMapper["Journal"][key][k] ~= nil then
+                        FunctionMapper["Journal"][key][k](v)
                     end
                 end
             end
@@ -82,7 +82,7 @@ end
 --  FUNCTION MAPPER
 --  ===============
 
-functionMapper["Journal"] = {
+FunctionMapper["Journal"] = {
     --  ==============
     --  MAIN COMPONENT
     --  ==============

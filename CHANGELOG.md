@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.4.0] --- 14th November 2020 --- **_Minor Refactoring_**
+
+### CHANGED
+
+* _Refactored_ stuff.
+
 ## [0.2.3.0] --- 13th November 2020 --- **⭐ OpenMessageBox Reborn ⭐**
 
 ### NEW
