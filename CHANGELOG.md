@@ -8,6 +8,10 @@
 
 * _Deciphered_ GMJournal.swf. - partly. 🤯
 
+### CHANGED
+
+* _Moved_ Listeners to a new local function.
+
 ## [0.2.3.0] --- 13th November 2020 --- **⭐ OpenMessageBox Reborn ⭐**
 
 ### NEW

@@ -49,36 +49,11 @@ Journal = Rematerialize(ReinitializeJournal())
 
 --  ##########################################################################################################
 
-function RenderJournal(Specs)
-    if Journal.Exists ~= true then
-        --  --------------
-        --  Create Journal
-        --  --------------
+--  ==========================
+--  REGISTER JOURNAL LISTENERS
+--  ==========================
 
-        ReinitializeJournal()
-        Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
-        Journal.Element.UI = Ext.GetUI("S7Journal")
-        Journal.Element.Root = Journal.Element.UI:GetRoot()
-    end
-
-    Journal.Exists = true
-
-    if Specs ~= nil then
-        for key, value in pairs(Specs) do
-            if key == "Component" then
-                if FunctionMapper["Journal"][key] ~= nil then
-                    FunctionMapper["Journal"][key](value)
-                end
-            elseif key == "SubComponent" then
-                for k, v in pairs(value) do
-                    if FunctionMapper["Journal"][key][k] ~= nil then
-                        FunctionMapper["Journal"][key][k](v)
-                    end
-                end
-            end
-        end
-    end
-
+local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.Element.UI, 'addCategory', function (ui, call, ...)
         Journal.Element.Root.entries[0] = 1 --  Journal Node Type 1
 
@@ -181,6 +156,38 @@ function RenderJournal(Specs)
             Journal.Component.SortedParagraphPositionsMap[id][#Journal.Component.SortedParagraphPositionsMap[id]] = nil
         end
     end)
+end
+
+function RenderJournal(Specs)
+    if Journal.Exists ~= true then
+        --  --------------
+        --  Create Journal
+        --  --------------
+
+        ReinitializeJournal()
+        Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
+        Journal.Element.UI = Ext.GetUI("S7Journal")
+        Journal.Element.Root = Journal.Element.UI:GetRoot()
+        RegisterJournalListeners()
+    end
+
+    Journal.Exists = true
+
+    if Specs ~= nil then
+        for key, value in pairs(Specs) do
+            if key == "Component" then
+                if FunctionMapper["Journal"][key] ~= nil then
+                    FunctionMapper["Journal"][key](value)
+                end
+            elseif key == "SubComponent" then
+                for k, v in pairs(value) do
+                    if FunctionMapper["Journal"][key][k] ~= nil then
+                        FunctionMapper["Journal"][key][k](v)
+                    end
+                end
+            end
+        end
+    end
 
     --  ------------------
     --  Render Immediately
