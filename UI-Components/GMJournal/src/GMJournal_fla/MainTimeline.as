@@ -1,5 +1,10 @@
-package GMJournal_fla
+﻿package GMJournal_fla
 {
+
+   // =======   
+   // IMPORTS
+   // =======   
+
    import LS_Classes.textHelpers;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
@@ -11,44 +16,37 @@ package GMJournal_fla
    
    public dynamic class MainTimeline extends MovieClip
    {
-       
       
+      // =====================
+      // VARIABLE DECLARATIONS
+      // =====================
+
       public var caption_mc:TextField;
-      
       public var closeButton_mc:closeButton;
-      
       public var content_mc:MovieClip;
-      
       public var paragraphs_mc:MovieClip;
-      
       public var shareWithParty_mc:CheckBoxWlabel;
-      
       public var toggleEditButton_mc:toggleEditButton;
-      
       public var layout:String;
-      
       public var isDragging:Boolean;
-      
       public const CONTEXT_MENU_EVENT:String = "IE ContextMenu";
-      
       public var events:Array;
-      
       public var contextTarget:Number;
-      
       public var strings:Object;
-      
       public var editable:Boolean;
-      
       public var entries:Array;
-      
       public var EGMJournalNodeType:Object;
-      
       public var entriesMap:Object;
+      public var debugPrint:int;
       
+      // =============
+      // MAIN TIMELINE
+      // =============
+
       public function MainTimeline()
       {
          super();
-         addFrameScript(0,this.frame1);
+         addFrameScript(0, this.frame1);
       }
       
       public function _mouse_press_hack_(param1:MouseEvent) : void
@@ -60,10 +58,10 @@ package GMJournal_fla
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
          ExternalInterface.call("closeUI");
       }
-      
+
       public function onToggleEdit() : *
       {
-         this.editable = !this.editable;
+         this.editable = !this.editable;  // Boolean to control editable state
          if(!this.editable)
          {
             stage.focus = null;
@@ -81,68 +79,76 @@ package GMJournal_fla
       {
          ExternalInterface.call("registerAnchorId","gmjournal");
          ExternalInterface.call("setPosition","center","screen","center");
+         
          this.HideSharedThings();
          this.caption_mc.text = textHelpers.toUpperCase(this.strings.caption);
-         this.toggleEditButton_mc.initialize(textHelpers.toUpperCase(this.strings.editButtonCaption),this.onToggleEdit);
+         this.toggleEditButton_mc.initialize(textHelpers.toUpperCase(this.strings.editButtonCaption), this.onToggleEdit);
+         
          this.closeButton_mc.init(this.onClose);
          this.content_mc.Init();
          this.paragraphs_mc.Init();
          this.shareWithParty_mc.init(this.onShareWithParty);
       }
       
+      //    UPDATE ENTRIES
+      //    ==============
+
       public function updateEntries() : *
       {
-         var _loc2_:int = 0;
-         var _loc3_:int = 0;
-         var _loc4_:Number = NaN;
-         var _loc5_:Number = NaN;
-         var _loc6_:String = null;
-         var _loc7_:Boolean = false;
-         var _loc8_:* = undefined;
-         var _loc1_:int = 0;
-         while(_loc1_ < this.entries.length)
+         var i:int = 0;
+         var journalNodeTypeIndex:int = 0;
+         var positionIndex:int = 0;
+         var entriesMapIndex:Number = NaN;
+         var categoryIndex:Number = NaN;
+         var strContent:String = null;
+         var isShared:Boolean = false;
+         var entryMovieClip:* = undefined;
+         
+         while(i < this.entries.length)
          {
-            _loc2_ = this.entries[_loc1_++];
-            _loc3_ = this.entries[_loc1_++];
-            _loc4_ = this.entries[_loc1_++];
-            _loc5_ = this.entries[_loc1_++];
-            _loc6_ = this.entries[_loc1_++];
-            _loc7_ = this.entries[_loc1_++];
-            _loc8_ = this.entriesMap[_loc4_];
-            switch(_loc2_)
+            journalNodeTypeIndex = this.entries[i++]; // this.entries[1]
+            positionIndex = this.entries[i++];        // this.entries[2]
+            entriesMapIndex = this.entries[i++];      // this.entries[3]
+            categoryIndex = this.entries[i++];        // this.entries[4]
+            strContent = this.entries[i++];           // this.entries[5]
+            isShared = this.entries[i++];             // this.entries[6]
+
+            entryMovieClip = this.entriesMap[entriesMapIndex];
+            
+            switch(journalNodeTypeIndex)
             {
                case this.EGMJournalNodeType.EGMJournalNodeType_Unassigned:
                case this.EGMJournalNodeType.EGMJournalNodeType_Journal:
                default:
                   continue;
                case this.EGMJournalNodeType.EGMJournalNodeType_Category:
-                  if(_loc8_ == null)
+                  if(entryMovieClip == null)
                   {
-                     this.createCategory(_loc4_,_loc3_,_loc6_,_loc7_);
+                     this.createCategory(entriesMapIndex, positionIndex, strContent, isShared);
                   }
                   else
                   {
-                     this.updateCategory(_loc8_,_loc3_,_loc6_,_loc7_);
+                     this.updateCategory(entryMovieClip, positionIndex, strContent, isShared);
                   }
                   continue;
                case this.EGMJournalNodeType.EGMJournalNodeType_Chapter:
-                  if(_loc8_ == null)
+                  if(entryMovieClip == null)
                   {
-                     this.createChapter(_loc4_,_loc5_,_loc3_,_loc6_,_loc7_);
+                     this.createChapter(entriesMapIndex, categoryIndex, positionIndex, strContent, isShared);
                   }
                   else
                   {
-                     this.updateChapter(_loc8_,_loc5_,_loc3_,_loc6_,_loc7_);
+                     this.updateChapter(entryMovieClip, categoryIndex, positionIndex, strContent, isShared);
                   }
                   continue;
                case this.EGMJournalNodeType.EGMJournalNodeType_Paragraph:
-                  if(_loc8_ == null)
+                  if(entryMovieClip == null)
                   {
-                     this.createParagraph(_loc4_,_loc5_,_loc3_,_loc6_,_loc7_);
+                     this.createParagraph(entriesMapIndex, categoryIndex, positionIndex, strContent, isShared);
                   }
                   else
                   {
-                     this.updateParagraph(_loc8_,_loc5_,_loc3_,_loc6_,_loc7_);
+                     this.updateParagraph(entryMovieClip, categoryIndex, positionIndex, strContent, isShared);
                   }
                   continue;
             }
@@ -151,182 +157,185 @@ package GMJournal_fla
          this.entries = new Array();
       }
       
-      public function createCategory(param1:Number, param2:int, param3:String, param4:Boolean) : MovieClip
+      public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         var _loc5_:* = this.content_mc.createCategory(param1,param2,param3,param4);
-         _loc5_.editableElement_mc.ownerScrollList = this.content_mc.categories;
-         this.entriesMap[param1] = _loc5_;
-         _loc5_.onDestroy = this.onCategoryDestroy;
-         return _loc5_;
+         var catElement:* = this.content_mc.createCategory(entriesMapIndex, positionIndex, strContent, isShared);
+         catElement.editableElement_mc.ownerScrollList = this.content_mc.categories;
+         this.entriesMap[entriesMapIndex] = catElement;
+         catElement.onDestroy = this.onCategoryDestroy;
+         return catElement;
       }
       
-      public function updateCategory(param1:MovieClip, param2:int, param3:String, param4:Boolean) : *
+      public function updateCategory(entryMovieClip:MovieClip, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         if(param1.list_pos != param2)
+         if(entryMovieClip.list_pos != positionIndex)
          {
-            this.content_mc.categories.addElementOnPos(param1,param2,false);
+            this.content_mc.categories.addElementOnPos(entryMovieClip, positionIndex, false);
             this.content_mc.rebuildLayout();
          }
-         param1.editableElement_mc.updateText(param3);
-         param1.editableElement_mc.setShared(param4);
+         entryMovieClip.editableElement_mc.updateText(strContent);
+         entryMovieClip.editableElement_mc.setShared(isShared);
       }
       
-      public function createChapter(param1:Number, param2:Number, param3:int, param4:String, param5:Boolean) : MovieClip
+      public function createChapter(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         var _loc6_:MovieClip = this.entriesMap[param2] as MovieClip;
-         if(_loc6_ == null)
+         var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
+         if(catElement == null)
          {
-            _loc6_ = this.createCategory(param2,this.content_mc.categories.length,"",false);
+            catElement = this.createCategory(categoryIndex, this.content_mc.categories.length, "", false);
          }
-         var _loc7_:MovieClip = _loc6_.createChapter(param1,param3,param4,param5);
-         _loc6_.editableElement_mc.ownerScrollList = this.content_mc.categories;
-         _loc7_.onSelect = this.onChapterSelect;
-         this.entriesMap[param1] = _loc7_;
-         _loc7_.onDestroy = this.onChapterDestroy;
-         return _loc7_;
+         var newCatElement:MovieClip = catElement.createChapter(entriesMapIndex, positionIndex, strContent, isShared);
+         catElement.editableElement_mc.ownerScrollList = this.content_mc.categories;
+         newCatElement.onSelect = this.onChapterSelect;
+         this.entriesMap[entriesMapIndex] = newCatElement;
+         newCatElement.onDestroy = this.onChapterDestroy;
+         return newCatElement;
       }
       
-      public function updateChapter(param1:MovieClip, param2:Number, param3:int, param4:String, param5:Boolean) : *
+      public function updateChapter(entriesMapIndex:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
-         if(param1.parentId != param2)
+
+         if(entriesMapIndex.parentId != categoryIndex)
          {
-            _loc6_ = this.entriesMap[param1.parentId];
+            _loc6_ = this.entriesMap[entriesMapIndex.parentId];
             if(_loc6_ != null)
             {
-               _loc6_.removeChapter(param1);
+               _loc6_.removeChapter(entriesMapIndex);
             }
-            _loc7_ = this.entriesMap[param2];
+            _loc7_ = this.entriesMap[categoryIndex];
             if(_loc7_ != null)
             {
-               _loc7_.addChapter(param1,param3);
+               _loc7_.addChapter(entriesMapIndex, positionIndex);
             }
          }
-         else if(param3 != param1.list_pos)
+         else if(positionIndex != entriesMapIndex.list_pos)
          {
-            _loc8_ = this.entriesMap[param2];
+            _loc8_ = this.entriesMap[categoryIndex];
             if(_loc8_ != null)
             {
-               _loc8_.addChapter(param1,param3);
+               _loc8_.addChapter(entriesMapIndex, positionIndex);
             }
          }
-         param1.editableElement_mc.updateText(param4);
-         param1.editableElement_mc.setShared(param5);
+         entriesMapIndex.editableElement_mc.updateText(strContent);
+         entriesMapIndex.editableElement_mc.setShared(isShared);
       }
       
-      public function createParagraph(param1:Number, param2:Number, param3:int, param4:String, param5:Boolean) : *
+      public function createParagraph(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         var _loc6_:MovieClip = this.entriesMap[param2] as MovieClip;
-         if(_loc6_ == null)
+         var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
+         if(catElement == null)
          {
-            _loc6_ = this.createChapter(param2,-1,0,"",false);
+            catElement = this.createChapter(categoryIndex,-1,0,"",false);
          }
-         var _loc7_:* = _loc6_.createParagraph(param1,param3,param4,param5);
-         _loc7_.editableElement_mc.ownerScrollList = this.paragraphs_mc._paragraphsList;
-         this.entriesMap[param1] = _loc7_;
-         if(_loc6_ == this.paragraphs_mc._currentChapter)
+         var paragraphElement:* = catElement.createParagraph(entriesMapIndex, positionIndex, strContent, isShared);
+         paragraphElement.editableElement_mc.ownerScrollList = this.paragraphs_mc._paragraphsList;
+         this.entriesMap[entriesMapIndex] = paragraphElement;
+         if(catElement == this.paragraphs_mc._currentChapter)
          {
-            this.paragraphs_mc.addParagraph(_loc7_,param3);
+            this.paragraphs_mc.addParagraph(paragraphElement,positionIndex);
          }
-         _loc7_.onDestroy = this.onParagraphDestroy;
+         paragraphElement.onDestroy = this.onParagraphDestroy;
       }
       
-      public function updateParagraph(param1:MovieClip, param2:Number, param3:int, param4:String, param5:Boolean) : *
+      public function updateParagraph(entriesMapIndex:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
-         if(param1.parentId != param2)
+         if(entriesMapIndex.parentId != categoryIndex)
          {
-            _loc6_ = this.entriesMap[param1.parentId];
+            _loc6_ = this.entriesMap[entriesMapIndex.parentId];
             if(_loc6_ != null)
             {
-               _loc6_.removeParagraph(param1);
+               _loc6_.removeParagraph(entriesMapIndex);
                if(_loc6_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.removeParagraph(param1);
+                  this.paragraphs_mc.removeParagraph(entriesMapIndex);
                }
             }
-            _loc7_ = this.entriesMap[param2];
+            _loc7_ = this.entriesMap[categoryIndex];
             if(_loc7_ != null)
             {
-               _loc7_.addParagraph(param1,param3);
+               _loc7_.addParagraph(entriesMapIndex,positionIndex);
                if(_loc7_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.addParagraph(param1,param3);
+                  this.paragraphs_mc.addParagraph(entriesMapIndex, positionIndex);
                }
             }
          }
-         else if(param3 != param1.list_pos)
+         else if(positionIndex != entriesMapIndex.list_pos)
          {
-            _loc8_ = this.entriesMap[param2];
+            _loc8_ = this.entriesMap[categoryIndex];
             if(_loc8_ != null)
             {
-               _loc8_.addParagraph(param1,param3);
+               _loc8_.addParagraph(entriesMapIndex,positionIndex);
                if(_loc8_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.addParagraph(param1,param3);
+                  this.paragraphs_mc.addParagraph(entriesMapIndex, positionIndex);
                }
             }
          }
-         param1.editableElement_mc.updateText(param4);
-         param1.editableElement_mc.setShared(param5);
+         entriesMapIndex.editableElement_mc.updateText(strContent);
+         entriesMapIndex.editableElement_mc.setShared(isShared);
       }
       
       public function removeEntry(param1:Number) : *
       {
       }
       
-      public function onChapterSelect(param1:MovieClip) : *
+      public function onChapterSelect(chapterMC:MovieClip) : *
       {
-         this.paragraphs_mc.selectChapter(param1);
+         this.paragraphs_mc.selectChapter(chapterMC);
       }
       
-      public function onCategoryDestroy(param1:MovieClip) : *
+      public function onCategoryDestroy(categoryMC:MovieClip) : *
       {
-         this.entriesMap[param1.id] = undefined;
-         var _loc2_:int = 0;
-         while(_loc2_ < param1._chapters.content_array.length - 1)
+         this.entriesMap[categoryMC.id] = undefined;
+
+         var i:int = 0;
+         while(i < categoryMC._chapters.content_array.length - 1)
          {
-            this.onChapterDestroy(param1._chapters.getAt(_loc2_));
-            _loc2_++;
+            this.onChapterDestroy(categoryMC._chapters.getAt(i));
+            i++;
          }
       }
       
-      public function onChapterDestroy(param1:MovieClip) : *
+      public function onChapterDestroy(chapterMC:MovieClip) : *
       {
-         this.entriesMap[param1.id] = undefined;
-         var _loc2_:int = param1.paragraphs.length;
-         var _loc3_:int = 0;
-         while(_loc3_ < _loc2_)
+         this.entriesMap[chapterMC.id] = undefined;
+
+         var i:int = 0;
+         var noOfParagraphs:int = chapterMC.paragraphs.length;
+         while(i < noOfParagraphs)
          {
-            this.onParagraphDestroy(param1.paragraphs[_loc3_]);
-            _loc3_++;
+            this.onParagraphDestroy(chapterMC.paragraphs[i]);
+            i++;
          }
-         if(this.paragraphs_mc._currentChapter == param1)
+         if(this.paragraphs_mc._currentChapter == chapterMC)
          {
             this.paragraphs_mc.selectChapter(null);
          }
       }
       
-      public function onParagraphDestroy(param1:MovieClip) : *
+      public function onParagraphDestroy(paragraphMC:MovieClip) : *
       {
-         this.entriesMap[param1.id] = undefined;
+         this.entriesMap[paragraphMC.id] = undefined;
       }
       
       public function onShareWithParty() : *
       {
-         ExternalInterface.call("updateShared",4294967295);
+         ExternalInterface.call("updateShared", 4294967295);
       }
       
-      public function onEventUp(param1:Number, param2:Number) : *
+      public function onEventUp(eventIndex:Number, param2:Number) : *
       {
          var _loc3_:Array = null;
          var _loc4_:int = 0;
          var _loc5_:DisplayObject = null;
-         switch(this.events[param1])
+         switch(this.events[eventIndex])
          {
             case this.CONTEXT_MENU_EVENT:
                if(this.editable)
@@ -376,30 +385,30 @@ package GMJournal_fla
          return false;
       }
       
-      public function onEventDown(param1:Number, param2:Number) : *
+      public function onEventDown(eventIndex:Number, param2:Number) : *
       {
-         var _loc3_:TextField = null;
-         switch(this.events[param1])
+         var text:TextField = null;
+         switch(this.events[eventIndex])
          {
             case "IE UICopy":
                if(stage.focus && stage.focus is TextField)
                {
-                  _loc3_ = stage.focus as TextField;
-                  ExternalInterface.call("copy",Math.abs(_loc3_.selectionEndIndex - _loc3_.selectionBeginIndex));
+                  text = stage.focus as TextField;
+                  ExternalInterface.call("copy", Math.abs(text.selectionEndIndex - text.selectionBeginIndex));
                }
                return true;
             case "IE UICut":
                if(stage.focus && stage.focus is TextField)
                {
-                  _loc3_ = stage.focus as TextField;
-                  ExternalInterface.call("cut",Math.abs(_loc3_.selectionEndIndex - _loc3_.selectionBeginIndex));
+                  text = stage.focus as TextField;
+                  ExternalInterface.call("cut", Math.abs(text.selectionEndIndex - text.selectionBeginIndex));
                }
                return true;
             case "IE UIPaste":
                if(stage.focus && stage.focus is TextField)
                {
-                  _loc3_ = stage.focus as TextField;
-                  if(_loc3_.selectable)
+                  text = stage.focus as TextField;
+                  if(text.selectable)
                   {
                      ExternalInterface.call("paste");
                   }
@@ -413,12 +422,21 @@ package GMJournal_fla
          }
       }
       
+      // ======================
+      // FRAME 1 INTIIALIZATION
+      // ======================
+
       function frame1() : *
       {
-         addEventListener(MouseEvent.MOUSE_DOWN,this._mouse_press_hack_);
-         this.layout = "fixed";
-         this.isDragging = false;
-         this.events = new Array("IE UICopy","IE UICut","IE UIPaste",this.CONTEXT_MENU_EVENT,"IE UICancel");
+         addEventListener(MouseEvent.MOUSE_DOWN, this._mouse_press_hack_); // Dunno what this does.
+
+         this.layout = "fixed";  // Experiment with later.
+         this.isDragging = false;   // Used in scrollList.as
+
+         // EVENTS ARRAY
+         this.events = new Array("IE UICopy", "IE UICut", "IE UIPaste", this.CONTEXT_MENU_EVENT, "IE UICancel");
+         
+         // DYNAMIC-TEXT STRINGS OBJECT
          this.strings = {
             "caption":"",
             "editButtonCaption":"",
@@ -427,8 +445,12 @@ package GMJournal_fla
             "addParagraph":"",
             "shareWithParty":""
          };
-         this.editable = false;
-         this.entries = new Array();
+         
+         this.editable = false;  // isEditable toggle
+
+         this.entries = new Array();   // entries[1 - 6]: JournalNodeType, PositionIndex, EntriesMapIndex, CategoryIndex, StringContent, isSharedBoolean
+         
+         // JOURNAL NODE TYPES
          this.EGMJournalNodeType = {
             "EGMJournalNodeType_Unassigned":0,
             "EGMJournalNodeType_Category":1,
@@ -436,7 +458,8 @@ package GMJournal_fla
             "EGMJournalNodeType_Paragraph":3,
             "EGMJournalNodeType_Journal":4
          };
-         this.entriesMap = new Object();
+         
+         this.entriesMap = new Object();  // Stores IDs and FlashObjects
       }
    }
 }

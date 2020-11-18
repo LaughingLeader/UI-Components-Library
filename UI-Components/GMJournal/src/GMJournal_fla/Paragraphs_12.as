@@ -54,21 +54,24 @@ package GMJournal_fla
          this._paragraphsList.m_scrollbar_mc.m_hideWhenDisabled = false;
          this._paragraphsList.canPositionInvisibleElements = false;
          this._paragraphsList.m_scrollbar_mc.visible = true;
+         
          this.addParagraphButton_mc.initialize((root as MovieClip).strings.addParagraph,this.onAddParagraph);
          this.addParagraphButton_mc.visible = this._editable;
          this.addParagraphButton_mc.heightOverride = 27;
+         
          this._paragraphsList.addElement(this.addParagraphButton_mc,false);
          this._paragraphsList.positionElements();
          this._paragraphsList.mouseWheelEnabled = true;
          this.caption_txt.text = "";
-         var _loc1_:Sprite = new Sprite();
-         _loc1_.graphics.beginFill(16711680);
-         _loc1_.graphics.drawRect(0,0,620,700);
-         _loc1_.graphics.endFill();
-         _loc1_.width = 620;
-         _loc1_.height = 700;
-         _loc1_.alpha = 0;
-         this.mouseHook_mc.addChild(_loc1_);
+         
+         var spriteGr:Sprite = new Sprite();
+         spriteGr.graphics.beginFill(16711680);
+         spriteGr.graphics.drawRect(0,0,620,700);
+         spriteGr.graphics.endFill();
+         spriteGr.width = 620;
+         spriteGr.height = 700;
+         spriteGr.alpha = 0;
+         this.mouseHook_mc.addChild(spriteGr);
          this.mouseHook_mc.alpha = 0;
       }
       

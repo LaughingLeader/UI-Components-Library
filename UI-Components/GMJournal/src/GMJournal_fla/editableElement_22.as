@@ -54,21 +54,23 @@ package GMJournal_fla
          addFrameScript(0,this.frame1);
       }
       
-      public function Init(param1:MovieClip, param2:String, param3:Number, param4:Number) : *
+      public function Init(categoryMC:MovieClip, strContent:String, width:Number, height:Number) : *
       {
          this.ident = "";
-         this._w = param3;
-         width = param3;
-         this.heightOverride = param4;
-         this.border_mc.Init(param3,param4);
-         this._content = param1;
+         this._w = width;
+         width = width;
+         this.heightOverride = height;
+         this.border_mc.Init(width,height);
+         
+         this._content = categoryMC;
          this._text = this._content.text_txt;
          this._textY = this._text.y;
          textHelpers.makeInputFieldModal(this._text);
-         addChild(param1);
+         
+         addChild(categoryMC);
          this._text.autoSize = TextFieldAutoSize.LEFT;
          this._text.addEventListener(Event.CHANGE,this.onTextChanged);
-         this._text.text = param2;
+         this._text.text = strContent;
          this._text.addEventListener(FocusEvent.FOCUS_OUT,this.onFocusOut);
          this._text.addEventListener("IE ContextMenu",this.onContext);
          this._linesCount = this._text.numLines;

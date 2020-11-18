@@ -2,13 +2,19 @@
 
 ----------
 
+## [0.2.4.0] --- 18th November 2020 --- **_Reverse-Engineer GMJournal.swf_**
+
+### NEW
+
+* _Deciphered_ GMJournal.swf. - partly. 🤯
+
 ## [0.2.3.0] --- 13th November 2020 --- **⭐ OpenMessageBox Reborn ⭐**
 
 ### NEW
 
 * _Created_ a `lua` implementation of OpenMessageBox with superior UI elements and no 256 characters crash!!!
 
-## [0.2.2.0] --- 11th November 2020 --- **Building msgBox using BuildSpecifications**
+## [0.2.2.0] --- 11th November 2020 --- **_Building msgBox using BuildSpecifications_**
 
 ### NEW
 

@@ -25,7 +25,10 @@ function ReinitializeJournal()
                 ["addCategory"] = "Add New Category",
                 ["addParagraph"] = "Add New Entry...",
                 ["shareWithParty"] = "Share with Party"
-            }
+            },
+            ["SortedPositionsMap"] = {},
+            ["SortedChapterPositionsMap"] = {},
+            ["SortedParagraphPositionsMap"] = {}
         }
     }
     return defaultJournal
@@ -64,6 +67,111 @@ function renderJournal(Specs)
             end
         end
     end
+
+    Ext.RegisterUICall(Journal.Element.UI, 'addCategory', function (ui, call, ...)
+        Journal.Element.Root.entries[0] = 1 --  Journal Node Type 1
+
+        local newCatPos = #Journal.Component.SortedPositionsMap 
+
+        Journal.Element.Root.entries[1] = newCatPos
+        
+        Journal.Component.SortedPositionsMap[newCatPos + 1] = math.floor(newCatPos + 1) * 10000
+        Journal.Component.SortedChapterPositionsMap[Journal.Component.SortedPositionsMap[newCatPos + 1]] = {}
+        
+        Journal.Element.Root.entries[2] = Journal.Component.SortedPositionsMap[newCatPos + 1]
+        Journal.Element.Root.entries[3] = Journal.Component.SortedPositionsMap[newCatPos + 1]
+        Journal.Element.Root.entries[4] = "New Category"
+        Journal.Element.Root.entries[5] = false
+
+        Journal.Element.Root.updateEntries()
+    end)
+    Ext.RegisterUICall(Journal.Element.UI, 'removeNode', function(ui, call, id)
+        local targetPos = 1000000
+        for pos, target in ipairs(Journal.Component.SortedPositionsMap) do
+            if target == id then
+                Journal.Component.SortedPositionsMap[pos] = nil
+                targetPos = pos
+            end
+            if pos > targetPos then
+                Journal.Component.SortedPositionsMap[pos - 1] = target
+            end
+            Journal.Component.SortedPositionsMap[#Journal.Component.SortedPositionsMap] = nil
+            Journal.Component.SortedChapterPositionsMap[id] = nil
+        end
+    end)
+    Ext.RegisterUICall(Journal.Element.UI, 'addChapter', function (ui, call, objid)
+        local id = objid
+
+        Journal.Element.Root.entries[0] = 2
+
+        local newCatPos = #Journal.Component.SortedChapterPositionsMap[id] or 0 
+
+        Journal.Element.Root.entries[1] = newCatPos
+        Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1] = id + newCatPos * 100
+        Journal.Component.SortedParagraphPositionsMap[Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1]] = {}
+        Journal.Element.Root.entries[2] = Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1]
+        Journal.Element.Root.entries[3] = id
+        Journal.Element.Root.entries[4] = "New Chapter"
+        Journal.Element.Root.entries[5] = false
+        Journal.Element.Root.updateEntries()
+    end)
+    Ext.RegisterUIInvokeListener(Journal.Element.UI, "onChapterDestroy", function(ui, call, obj) 
+        local id = obj.id
+        local targetPos = 1000000
+        for pos, target in ipairs(Journal.Component.SortedChapterPositionsMap[id]) do
+            if target == id then
+                Journal.Component.SortedChapterPositionsMap[id][pos] = nil
+                targetPos = pos
+            end
+            if pos > targetPos then
+                Journal.Component.SortedChapterPositionsMap[id][pos - 1] = target
+            end
+            Journal.Component.SortedChapterPositionsMap[id][#Journal.Component.SortedChapterPositionsMap[id]] = nil
+            Journal.Component.SortedParagraphPositionsMap[id] = nil
+        end
+    end)
+    Ext.RegisterUICall(Journal.Element.UI, 'addParagraph', function (ui, call, ...)
+        local args = {...}
+        local id = args[1]
+
+        Ext.Print(id)
+
+        Journal.Element.Root.entries[0] = 3
+
+        local newCatPos = #Journal.Component.SortedParagraphPositionsMap[id] or 0
+
+        Journal.Element.Root.entries[1] = newCatPos
+        Journal.Component.SortedParagraphPositionsMap[id][newCatPos + 1] = id + newCatPos
+
+        Journal.Element.Root.entries[2] = Journal.Component.SortedParagraphPositionsMap[id][newCatPos + 1]
+        Journal.Element.Root.entries[3] = id
+        Journal.Element.Root.entries[4] = "New Paragraph"
+        Journal.Element.Root.entries[5] = false
+    Ext.Print(Ext.JsonStringify({
+        Journal.Element.Root.entries[0],
+        Journal.Element.Root.entries[1],
+        Journal.Element.Root.entries[2],
+        Journal.Element.Root.entries[3],
+        Journal.Element.Root.entries[4],
+        Journal.Element.Root.entries[5],
+        Journal.Element.Root.entries[6],
+    }))
+        Journal.Element.Root.updateEntries()
+    end)
+    Ext.RegisterUIInvokeListener(Journal.Element.UI, "onParagraphDestroy", function(ui, call, obj) 
+        local id = obj.id
+        local targetPos = 1000000
+        for pos, target in ipairs(Journal.Component.SortedParagraphPositionsMap[id]) do
+            if target == id then
+                Journal.Component.SortedParagraphPositionsMap[id][pos] = nil
+                targetPos = pos
+            end
+            if pos > targetPos then
+                Journal.Component.SortedParagraphPositionsMap[id][pos - 1] = target
+            end
+            Journal.Component.SortedParagraphPositionsMap[id][#Journal.Component.SortedParagraphPositionsMap[id]] = nil
+        end
+    end)
 
     --  ------------------
     --  Render Immediately

@@ -1,5 +1,9 @@
 package
 {
+   // =======
+   // IMPORTS
+   // =======
+
    import LS_Classes.listDisplay;
    import flash.display.DisplayObjectContainer;
    import flash.display.MovieClip;
@@ -9,25 +13,19 @@ package
    public dynamic class categoryListElement extends MovieClip
    {
        
+      // =====================
+      // VARIABLE DECLARATIONS
+      // =====================
       
       public var addChapterButton_mc:addChapterButton;
-      
       public var category_mc:MovieClip;
-      
       public var chaptersHolder_mc:MovieClip;
-      
       public var editableElement_mc:MovieClip;
-      
       public var _id:Number;
-      
       public var _chapters:listDisplay;
-      
       public var heightOverride:Number;
-      
       public var _editable:Boolean;
-      
       public const captionBottomMargin:Number = 3;
-      
       public var onDestroy:Function;
       
       public function categoryListElement()
@@ -36,17 +34,21 @@ package
          addFrameScript(0,this.frame1);
       }
       
-      public function Init(param1:Number, param2:String) : *
+      public function Init(entriesMapIndex:Number, strContent:String) : *
       {
-         this._id = param1;
-         this.addChapterButton_mc.initialize((root as MovieClip).strings.addChapter,this.onAddChapter);
+         this._id = entriesMapIndex;   // Maps to FlashObject
+         
+         this.addChapterButton_mc.initialize((root as MovieClip).strings.addChapter, this.onAddChapter);
          this.addChapterButton_mc.heightOverride = 27;
+         
          this.category_mc.Init();
          this.category_mc.addEventListener("HeightChanged",this.onHeightChanged);
-         this.editableElement_mc.Init(this.category_mc,param2,523,27);
+         
+         this.editableElement_mc.Init(this.category_mc,strContent,523,27);
          this.editableElement_mc.onRemove = this.onRemove;
          this.editableElement_mc.addEventListener("HeightChanged",this.onHeightChanged);
          this.editableElement_mc.id = this._id;
+         
          this._chapters = new listDisplay();
          this.chaptersHolder_mc.addChild(this._chapters);
          this.category_mc.attachList(this._chapters);
@@ -96,17 +98,17 @@ package
       
       public function updateHeight() : *
       {
-         var _loc1_:* = !!this._chapters.visible?this._chapters.visibleHeight:0;
-         if(_loc1_ > 0)
+         var heightChange:* = !!this._chapters.visible?this._chapters.visibleHeight:0;
+         if(heightChange > 0)
          {
-            _loc1_ = _loc1_ + this.captionBottomMargin;
+            heightChange = heightChange + this.captionBottomMargin;
          }
-         this.heightOverride = this.editableElement_mc.heightOverride + _loc1_;
+         this.heightOverride = this.editableElement_mc.heightOverride + heightChange;
       }
       
       public function onAddChapter() : *
       {
-         ExternalInterface.call("addChapter",this._id);
+         ExternalInterface.call("addChapter", this._id);
       }
       
       public function createChapter(param1:Number, param2:int, param3:String, param4:Boolean) : MovieClip

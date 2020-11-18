@@ -27,10 +27,12 @@ package GMJournal_fla
       
       public function Init() : *
       {
-         var _loc1_:MovieClip = root as MovieClip;
+         var rootMC:MovieClip = root as MovieClip;
+
          this.categories = new scrollList();
          this.categories.setTileableBG = "leftPageBG";
          this.categories.mouseWheelWhenOverEnabled = true;
+
          addChild(this.categories);
          this.categories.container_mc.x = 111;
          this.categories.container_mc.y = 165;
@@ -41,35 +43,38 @@ package GMJournal_fla
          this.categories.m_scrollbar_mc.m_hideWhenDisabled = false;
          this.categories.canPositionInvisibleElements = false;
          this.categories.elementSpacing = 3;
-         this.addCategoryButton_mc.initialize(_loc1_.strings.addCategory,this.onAddCategory);
+
+         this.addCategoryButton_mc.initialize(rootMC.strings.addCategory,this.onAddCategory);
          this.addCategoryButton_mc.visible = this._editControlsVisible;
          this.addCategoryButton_mc.heightOverride = 27;
-         this.categories.addElement(this.addCategoryButton_mc,false);
-         this.categories.positionElements();
-         var _loc2_:Sprite = new Sprite();
-         _loc2_.graphics.beginFill(16711680);
-         _loc2_.graphics.drawRect(0,0,620,700);
-         _loc2_.graphics.endFill();
-         _loc2_.width = 620;
-         _loc2_.height = 700;
-         this.mouseHook_mc.addChild(_loc2_);
+         this.categories.addElement(this.addCategoryButton_mc,false);   // param2 allows .setPosition(). Why is this false?
+         this.categories.positionElements(); // Maybe this is why lmao.
+         
+         var spriteGr:Sprite = new Sprite();
+         spriteGr.graphics.beginFill(16711680);
+         spriteGr.graphics.drawRect(0,0,620,700);
+         spriteGr.graphics.endFill();
+         spriteGr.width = 620;
+         spriteGr.height = 700;
+         this.mouseHook_mc.addChild(spriteGr);
          this.mouseHook_mc.alpha = 0;
       }
       
-      public function setEditControlsVisible(param1:Boolean) : *
+      public function setEditControlsVisible(editable:Boolean) : *
       {
-         var _loc3_:MovieClip = null;
-         this._editControlsVisible = param1;
-         this.addCategoryButton_mc.visible = param1;
-         var _loc2_:* = 0;
-         while(_loc2_ < this.categories.length - 1)
+         var contentMC:MovieClip = null;  // Initialize MovieClip
+         this._editControlsVisible = editable;  // Set parameters
+         this.addCategoryButton_mc.visible = editable;
+
+         var iterator:* = 0;
+         while(iterator < this.categories.length - 1)
          {
-            _loc3_ = this.categories.getAt(_loc2_);
-            if(_loc3_.setEditable != undefined)
+            contentMC = this.categories.getAt(iterator);
+            if(contentMC.setEditable != undefined)
             {
-               _loc3_.setEditable(param1);
+               contentMC.setEditable(editable);
             }
-            _loc2_++;
+            iterator++;
          }
          this.categories.positionElements();
       }
@@ -78,16 +83,18 @@ package GMJournal_fla
       {
          ExternalInterface.call("addCategory");
       }
-      
-      public function createCategory(param1:Number, param2:int, param3:String, param4:Boolean) : MovieClip
+
+      public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         var _loc5_:* = new categoryListElement();
-         this.categories.addElementOnPosition(_loc5_,param2,false);
-         _loc5_.Init(param1,param3);
-         _loc5_.setEditable(this._editControlsVisible);
-         _loc5_.addEventListener("HeightChanged",this.rebuildLayout);
-         _loc5_.editableElement_mc.setShared(param4);
-         return _loc5_;
+         var catListElement:* = new categoryListElement();  // Initialize new element
+
+         this.categories.addElementOnPosition(catListElement,positionIndex,false);  // Creates element at position positionIndex. positionElements false?
+         
+         catListElement.Init(entriesMapIndex,strContent);
+         catListElement.setEditable(this._editControlsVisible);
+         catListElement.addEventListener("HeightChanged",this.rebuildLayout);
+         catListElement.editableElement_mc.setShared(isShared);
+         return catListElement;
       }
       
       public function rebuildLayout() : *
