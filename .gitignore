@@ -122,6 +122,8 @@ Thumbs.db
 
 *.code-workspace
 
+*.xcf
+
 UI-Components/msgBox/src/RECOVER_msgBox.fla
 UI-Components/GMJournal/src/RECOVER_GMJournal.fla
 UI-Components/actionProgression/src/RECOVER_actionProgression.fla
