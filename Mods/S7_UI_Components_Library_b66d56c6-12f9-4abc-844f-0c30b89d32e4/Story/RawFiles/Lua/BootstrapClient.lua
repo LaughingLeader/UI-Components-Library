@@ -10,15 +10,15 @@ Ext.Require("Components/Journal.lua")
 --  TEMPORARY BUILD SPECIFICATIONS
 --  ==============================
 
-buildSpecifications = Ext.JsonParse(Ext.LoadFile("S7UCL.json"))
+ BuildSpecifications = Ext.JsonParse(Ext.LoadFile("S7UCL.json"))
 
 --  ===========
 --  BUILDER MAP
 --  ===========
 
 local builder = {
-    ["msgBox"] = renderMsgBox,
-    ["GMJournal"] = renderJournal
+    ["msgBox"] = RenderMsgBox,
+    ["GMJournal"] = RenderJournal
 }
 
 --  ================
@@ -26,7 +26,7 @@ local builder = {
 --  ================
 
 function S7_UCL_Build()
-    for UIName, Specs in pairs(buildSpecifications) do
-        activeUI = builder[UIName](Specs)
+    for UIName, Specs in pairs(BuildSpecifications) do
+        builder[UIName](Specs)
     end
 end
