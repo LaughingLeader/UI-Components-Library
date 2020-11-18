@@ -11,7 +11,7 @@ Ext.Require("S7_UCL_Auxiliary.lua")
 Journal = {}
 
 function ReinitializeJournal()
-    defaultJournal = {
+    local defaultJournal = {
         ["Exists"] = false, --  Journal element exists
         ["Element"] = {
             ["UI"] = {}, -- The actual element
@@ -26,9 +26,20 @@ function ReinitializeJournal()
                 ["addParagraph"] = "Add New Entry...",
                 ["shareWithParty"] = "Share with Party"
             },
-            ["SortedPositionsMap"] = {},
-            ["SortedChapterPositionsMap"] = {},
-            ["SortedParagraphPositionsMap"] = {}
+            ["SortedPositionsMap"] = {
+                -- [1] = 10000,
+                -- [2] = 20000,
+            },
+            ["SortedChapterPositionsMap"] = {
+                -- [10000] = { [1] = 10100, [2] = 10200 }
+                -- [20000] = { [1] = 20100, [2] = 20200 }
+            },
+            ["SortedParagraphPositionsMap"] = {
+                -- [10100] = { [1] = 10101, [2] = 10102 }
+                -- [10200] = { [1] = 10201, [2] = 10202 }
+                -- [20100] = { [1] = 20101, [2] = 20102 }
+                -- [20200] = { [1] = 20201, [2] = 20202 }
+            }
         }
     }
     return defaultJournal
@@ -38,7 +49,7 @@ Journal = Rematerialize(ReinitializeJournal())
 
 --  ##########################################################################################################
 
-function renderJournal(Specs)
+function RenderJournal(Specs)
     if Journal.Exists ~= true then
         --  --------------
         --  Create Journal
@@ -74,10 +85,10 @@ function renderJournal(Specs)
         local newCatPos = #Journal.Component.SortedPositionsMap 
 
         Journal.Element.Root.entries[1] = newCatPos
-        
+
         Journal.Component.SortedPositionsMap[newCatPos + 1] = math.floor(newCatPos + 1) * 10000
         Journal.Component.SortedChapterPositionsMap[Journal.Component.SortedPositionsMap[newCatPos + 1]] = {}
-        
+
         Journal.Element.Root.entries[2] = Journal.Component.SortedPositionsMap[newCatPos + 1]
         Journal.Element.Root.entries[3] = Journal.Component.SortedPositionsMap[newCatPos + 1]
         Journal.Element.Root.entries[4] = "New Category"
@@ -99,12 +110,10 @@ function renderJournal(Specs)
             Journal.Component.SortedChapterPositionsMap[id] = nil
         end
     end)
-    Ext.RegisterUICall(Journal.Element.UI, 'addChapter', function (ui, call, objid)
-        local id = objid
-
+    Ext.RegisterUICall(Journal.Element.UI, 'addChapter', function (ui, call, id)
         Journal.Element.Root.entries[0] = 2
 
-        local newCatPos = #Journal.Component.SortedChapterPositionsMap[id] or 0 
+        local newCatPos = #Journal.Component.SortedChapterPositionsMap[id] or 0
 
         Journal.Element.Root.entries[1] = newCatPos
         Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1] = id + newCatPos * 100
@@ -197,15 +206,11 @@ functionMapper["Journal"] = {
 
     ["Component"] = function(Component)
         Journal.Element.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
-        Journal.Element.Root.strings.editButtonCaption =
-            Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
+        Journal.Element.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
         Journal.Element.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
-        Journal.Element.Root.strings.addCategory =
-            Component.Strings.addCategory or Journal.Component.Strings.addCategory
-        Journal.Element.Root.strings.addParagraph =
-            Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
-        Journal.Element.Root.strings.shareWithParty =
-            Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
+        Journal.Element.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
+        Journal.Element.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
+        Journal.Element.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
     end,
     --  =============
     --  SUBCOMPONENTS
