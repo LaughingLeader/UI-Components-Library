@@ -7,6 +7,7 @@
 ### NEW
 
 * _Deciphered_ GMJournal.swf. - partly. 🤯
+* _Adding/Removing_ elements now actually works. 🎉🎉
 
 ### CHANGED
 

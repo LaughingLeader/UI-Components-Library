@@ -94,7 +94,7 @@
       //    ==============
 
       public function updateEntries() : *
-      {
+      {  
          var i:int = 0;
          var journalNodeTypeIndex:int = 0;
          var positionIndex:int = 0;
@@ -106,12 +106,12 @@
          
          while(i < this.entries.length)
          {
-            journalNodeTypeIndex = this.entries[i++]; // this.entries[1]
-            positionIndex = this.entries[i++];        // this.entries[2]
-            entriesMapIndex = this.entries[i++];      // this.entries[3]
-            categoryIndex = this.entries[i++];        // this.entries[4]
-            strContent = this.entries[i++];           // this.entries[5]
-            isShared = this.entries[i++];             // this.entries[6]
+            journalNodeTypeIndex = this.entries[i++]; // this.entries[0] 1
+            positionIndex = this.entries[i++];        // this.entries[1] 2
+            entriesMapIndex = this.entries[i++];      // this.entries[2] 3
+            categoryIndex = this.entries[i++];        // this.entries[3] 4
+            strContent = this.entries[i++];           // this.entries[4] 5
+            isShared = this.entries[i++];             // this.entries[5] 6
 
             entryMovieClip = this.entriesMap[entriesMapIndex];
             
@@ -170,7 +170,7 @@
       {
          if(entryMovieClip.list_pos != positionIndex)
          {
-            this.content_mc.categories.addElementOnPos(entryMovieClip, positionIndex, false);
+            this.content_mc.categories.addElementOnPosition(entryMovieClip, positionIndex, false);
             this.content_mc.rebuildLayout();
          }
          entryMovieClip.editableElement_mc.updateText(strContent);

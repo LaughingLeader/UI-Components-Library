@@ -40,6 +40,72 @@ function ReinitializeJournal()
                 -- [20100] = { [1] = 20101, [2] = 20102 }
                 -- [20200] = { [1] = 20201, [2] = 20202 }
             }
+        },
+        ["JournalData"] = {
+            {
+                ["entriesMapId"] = 10000,
+                ["parentMapId"] = 10000,
+                ["StringContent"] = "Category One",
+                ["isShared"] = false,
+                ["Chapters"] = {
+                    {
+                        ["entriesMapId"] = 10100,
+                        ["parentMapId"] = 10000,
+                        ["StringContent"] = "Chapter 1",
+                        ["isShared"] = false,
+                        ["Paragraphs"] = {
+                            {
+                                ["entriesMapId"] = 10101,
+                                ["parentMapId"] = 10100,
+                                ["StringContent"] = "Paragraph One",
+                                ["isShared"] = false
+                            },
+                            {
+                                ["entriesMapId"] = 10102,
+                                ["parentMapId"] = 10100,
+                                ["StringContent"] = "Paragraph Two",
+                                ["isShared"] = false,
+                            }
+                        }
+                    },
+                    {
+                        ["entriesMapId"] = 10200,
+                        ["parentMapId"] = 10000,
+                        ["StringContent"] = "Chapter 2",
+                        ["isShared"] = false,
+                        ["Paragraphs"] = {
+                            [1] = {
+                                ["entriesMapId"] = 10201,
+                                ["parentMapId"] = 10200,
+                                ["StringContent"] = "Paragraph Three",
+                                ["isShared"] = false
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                ["entriesMapId"] = 20000,
+                ["parentMapId"] = 20000,
+                ["StringContent"] = "Category Two",
+                ["isShared"] = false,
+                ["Chapters"] = {
+                    {
+                        ["entriesMapId"] = 20100,
+                        ["parentMapId"] = 20000,
+                        ["StringContent"] = "Chapter 3",
+                        ["isShared"] = false,
+                        ["Paragraphs"] = {
+                            {
+                                ["entriesMapId"] = 20101,
+                                ["parentMapId"] = 20100,
+                                ["StringContent"] = "Paragraph Four",
+                                ["isShared"] = false
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     return defaultJournal
@@ -49,6 +115,24 @@ Journal = Rematerialize(ReinitializeJournal())
 
 --  ##########################################################################################################
 
+local function printMaps()
+    Ext.Print(Ext.JsonStringify({
+        Journal.Component.SortedPositionsMap,
+        Journal.Component.SortedChapterPositionsMap,
+        Journal.Component.SortedParagraphPositionsMap,
+    }))
+end
+
+local function getTrailingZeroes(n)
+    local count = 0
+    local i = 10
+    while n % i == 0 do
+        count = count + 1
+        i = i * 10
+    end
+    return count
+end
+
 --  ==========================
 --  REGISTER JOURNAL LISTENERS
 --  ==========================
@@ -57,104 +141,107 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.Element.UI, 'addCategory', function (ui, call, ...)
         Journal.Element.Root.entries[0] = 1 --  Journal Node Type 1
 
-        local newCatPos = #Journal.Component.SortedPositionsMap 
+        local Pos = #Journal.Component.SortedPositionsMap
 
-        Journal.Element.Root.entries[1] = newCatPos
+        Journal.Element.Root.entries[1] = Pos
 
-        Journal.Component.SortedPositionsMap[newCatPos + 1] = math.floor(newCatPos + 1) * 10000
-        Journal.Component.SortedChapterPositionsMap[Journal.Component.SortedPositionsMap[newCatPos + 1]] = {}
+        Journal.Component.SortedPositionsMap[Pos + 1] = Ext.Random(1, 999) * 1000000
+        Journal.Component.SortedChapterPositionsMap[Journal.Component.SortedPositionsMap[Pos + 1]] = {}
 
-        Journal.Element.Root.entries[2] = Journal.Component.SortedPositionsMap[newCatPos + 1]
-        Journal.Element.Root.entries[3] = Journal.Component.SortedPositionsMap[newCatPos + 1]
+        Journal.Element.Root.entries[2] = Journal.Component.SortedPositionsMap[Pos + 1]
+        Journal.Element.Root.entries[3] = Journal.Component.SortedPositionsMap[Pos + 1]
         Journal.Element.Root.entries[4] = "New Category"
         Journal.Element.Root.entries[5] = false
 
         Journal.Element.Root.updateEntries()
+        printMaps()
     end)
-    Ext.RegisterUICall(Journal.Element.UI, 'removeNode', function(ui, call, id)
-        local targetPos = 1000000
-        for pos, target in ipairs(Journal.Component.SortedPositionsMap) do
-            if target == id then
-                Journal.Component.SortedPositionsMap[pos] = nil
-                targetPos = pos
-            end
-            if pos > targetPos then
-                Journal.Component.SortedPositionsMap[pos - 1] = target
-            end
-            Journal.Component.SortedPositionsMap[#Journal.Component.SortedPositionsMap] = nil
-            Journal.Component.SortedChapterPositionsMap[id] = nil
-        end
-    end)
+
     Ext.RegisterUICall(Journal.Element.UI, 'addChapter', function (ui, call, id)
         Journal.Element.Root.entries[0] = 2
 
-        local newCatPos = #Journal.Component.SortedChapterPositionsMap[id] or 0
+        local Pos = #Journal.Component.SortedChapterPositionsMap[id]
 
-        Journal.Element.Root.entries[1] = newCatPos
-        Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1] = id + newCatPos * 100
-        Journal.Component.SortedParagraphPositionsMap[Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1]] = {}
-        Journal.Element.Root.entries[2] = Journal.Component.SortedChapterPositionsMap[id][newCatPos + 1]
+        Journal.Element.Root.entries[1] = Pos
+        Journal.Component.SortedChapterPositionsMap[id][Pos + 1] = id + Ext.Random(1, 999) * 1000
+        Journal.Component.SortedParagraphPositionsMap[Journal.Component.SortedChapterPositionsMap[id][Pos + 1]] = {}
+        Journal.Element.Root.entries[2] = Journal.Component.SortedChapterPositionsMap[id][Pos + 1]
         Journal.Element.Root.entries[3] = id
         Journal.Element.Root.entries[4] = "New Chapter"
         Journal.Element.Root.entries[5] = false
+        
         Journal.Element.Root.updateEntries()
+        printMaps()
     end)
-    Ext.RegisterUIInvokeListener(Journal.Element.UI, "onChapterDestroy", function(ui, call, obj) 
-        local id = obj.id
-        local targetPos = 1000000
-        for pos, target in ipairs(Journal.Component.SortedChapterPositionsMap[id]) do
-            if target == id then
-                Journal.Component.SortedChapterPositionsMap[id][pos] = nil
-                targetPos = pos
-            end
-            if pos > targetPos then
-                Journal.Component.SortedChapterPositionsMap[id][pos - 1] = target
-            end
-            Journal.Component.SortedChapterPositionsMap[id][#Journal.Component.SortedChapterPositionsMap[id]] = nil
-            Journal.Component.SortedParagraphPositionsMap[id] = nil
-        end
-    end)
-    Ext.RegisterUICall(Journal.Element.UI, 'addParagraph', function (ui, call, ...)
-        local args = {...}
-        local id = args[1]
 
-        Ext.Print(id)
-
+    Ext.RegisterUICall(Journal.Element.UI, 'addParagraph', function (ui, call, id)
         Journal.Element.Root.entries[0] = 3
 
-        local newCatPos = #Journal.Component.SortedParagraphPositionsMap[id] or 0
+        local Pos = #Journal.Component.SortedParagraphPositionsMap[id]
 
-        Journal.Element.Root.entries[1] = newCatPos
-        Journal.Component.SortedParagraphPositionsMap[id][newCatPos + 1] = id + newCatPos
+        Journal.Element.Root.entries[1] = Pos
+        Journal.Component.SortedParagraphPositionsMap[id][Pos + 1] = id + Ext.Random(1, 999)
 
-        Journal.Element.Root.entries[2] = Journal.Component.SortedParagraphPositionsMap[id][newCatPos + 1]
+        Journal.Element.Root.entries[2] = Journal.Component.SortedParagraphPositionsMap[id][Pos + 1]
         Journal.Element.Root.entries[3] = id
         Journal.Element.Root.entries[4] = "New Paragraph"
         Journal.Element.Root.entries[5] = false
-    Ext.Print(Ext.JsonStringify({
-        Journal.Element.Root.entries[0],
-        Journal.Element.Root.entries[1],
-        Journal.Element.Root.entries[2],
-        Journal.Element.Root.entries[3],
-        Journal.Element.Root.entries[4],
-        Journal.Element.Root.entries[5],
-        Journal.Element.Root.entries[6],
-    }))
+
         Journal.Element.Root.updateEntries()
+        printMaps()
     end)
-    Ext.RegisterUIInvokeListener(Journal.Element.UI, "onParagraphDestroy", function(ui, call, obj) 
-        local id = obj.id
-        local targetPos = 1000000
-        for pos, target in ipairs(Journal.Component.SortedParagraphPositionsMap[id]) do
-            if target == id then
-                Journal.Component.SortedParagraphPositionsMap[id][pos] = nil
-                targetPos = pos
+
+    Ext.RegisterUICall(Journal.Element.UI, 'removeNode', function(ui, call, id)
+        
+        local zeroes = getTrailingZeroes(id)
+
+        Ext.Print(zeroes)
+
+        if zeroes >= 6 then
+            for pos, target in ipairs(Journal.Component.SortedPositionsMap) do
+                if target == id then
+                    if Journal.Component.SortedPositionsMap[pos+1] ~= nil then
+                        local swap = Journal.Component.SortedPositionsMap[pos]
+                        Journal.Component.SortedPositionsMap[pos] = Journal.Component.SortedPositionsMap[pos+1]
+                        Journal.Component.SortedPositionsMap[pos+1] = swap
+                    else
+                        Journal.Component.SortedPositionsMap[pos] = nil
+                    end
+                end
             end
-            if pos > targetPos then
-                Journal.Component.SortedParagraphPositionsMap[id][pos - 1] = target
+            Journal.Component.SortedChapterPositionsMap[id] = nil
+        
+        elseif zeroes < 6 and zeroes >= 3 then
+            local parentId = math.floor(id / 1000000) * 1000000
+            Ext.Print(parentId)
+            for pos, target in ipairs(Journal.Component.SortedChapterPositionsMap[parentId]) do
+                if target == id then
+                    if Journal.Component.SortedChapterPositionsMap[parentId][pos+1] ~= nil then
+                        local swap = Journal.Component.SortedChapterPositionsMap[parentId][pos]
+                        Journal.Component.SortedChapterPositionsMap[parentId][pos] = Journal.Component.SortedChapterPositionsMap[parentId][pos+1]
+                        Journal.Component.SortedChapterPositionsMap[parentId][pos+1] = swap
+                    else
+                        Journal.Component.SortedChapterPositionsMap[parentId][pos] = nil
+                    end
+                end
             end
-            Journal.Component.SortedParagraphPositionsMap[id][#Journal.Component.SortedParagraphPositionsMap[id]] = nil
+            Journal.Component.SortedParagraphPositionsMap[id] = nil
+        
+        elseif zeroes < 3 then
+            local parentId = math.floor(id / 1000) * 1000
+                    Ext.Print(parentId)
+            for pos, target in ipairs(Journal.Component.SortedParagraphPositionsMap[parentId]) do
+                if target == id then
+                    if Journal.Component.SortedParagraphPositionsMap[parentId][pos+1] ~= nil then
+                        Journal.Component.SortedParagraphPositionsMap[parentId][pos] = Journal.Component.SortedParagraphPositionsMap[parentId][pos+1]
+                        Journal.Component.SortedParagraphPositionsMap[parentId][pos+1] = target
+                    else
+                        Journal.Component.SortedParagraphPositionsMap[parentId][pos] = nil
+                    end
+                end
+            end
         end
+        printMaps()
     end)
 end
 
@@ -212,16 +299,18 @@ FunctionMapper["Journal"] = {
     --  ==============
 
     ["Component"] = function(Component)
-        Journal.Element.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
-        Journal.Element.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
-        Journal.Element.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
-        Journal.Element.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
-        Journal.Element.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
-        Journal.Element.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
+        if Journal.Element.Root.strings ~= nil then
+            Journal.Element.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
+            Journal.Element.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
+            Journal.Element.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
+            Journal.Element.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
+            Journal.Element.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
+            Journal.Element.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
+        end
     end,
     --  =============
     --  SUBCOMPONENTS
     --  =============
 
-    ["SubComponent"] = {}
-}
+    ["SubComponent"] = {},
+    }
