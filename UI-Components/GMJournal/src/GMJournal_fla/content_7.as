@@ -88,7 +88,7 @@ package GMJournal_fla
       {
          var catListElement:* = new categoryListElement();  // Initialize new element
 
-         this.categories.addElementOnPosition(catListElement,positionIndex,false);  // Creates element at position positionIndex. positionElements false?
+         this.categories.addElementOnPosition(catListElement, positionIndex, false);  // Creates element at position positionIndex. positionElements false?
          
          catListElement.Init(entriesMapIndex,strContent);
          catListElement.setEditable(this._editControlsVisible);

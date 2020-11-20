@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.5.0] --- 20th November 2020 --- **_🎉🎉 Working Journal API 🎉🎉_**
+
+### NEW
+
+* Dynamically generate Journal and entries.
+
 ## [0.2.4.0] --- 18th November 2020 --- **_Reverse-Engineer GMJournal.swf_**
 
 ### NEW

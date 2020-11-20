@@ -40,6 +40,21 @@ function Rematerialize(element)
     return Ext.JsonParse(Ext.JsonStringify(element))
 end
 
+--  =======================
+--  TRAILING ZEROES COUNTER
+--  =======================
+
+function GetTrailingZeroes(n)
+    local count = 0
+    local i = 10
+    while n % i == 0 do
+        count = count + 1
+        i = i * 10
+    end
+    return count
+end
+
+
 --  ============================
 --  DECLARATION OF GLOBAL TABLES
 --  ============================

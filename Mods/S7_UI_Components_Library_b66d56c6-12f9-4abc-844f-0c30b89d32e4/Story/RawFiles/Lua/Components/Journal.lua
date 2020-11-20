@@ -12,12 +12,15 @@ Journal = {}
 
 function ReinitializeJournal()
     local defaultJournal = {
-        ["Exists"] = false, --  Journal element exists
+        ["Exists"] = false, --  Whether journal element exists
         ["Element"] = {
             ["UI"] = {}, -- The actual element
             ["Root"] = {} --  Root Object
         },
         ["Component"] = {
+            --  Captions
+            --  ========
+
             ["Strings"] = {
                 ["caption"] = "Your Journal",
                 ["editButtonCaption"] = "TOGGLE EDIT MODE",
@@ -26,224 +29,167 @@ function ReinitializeJournal()
                 ["addParagraph"] = "Add New Entry...",
                 ["shareWithParty"] = "Share with Party"
             },
-            ["SortedPositionsMap"] = {
-                -- [1] = 10000,
-                -- [2] = 20000,
+            
+            --  Journal MetaData
+            --  ================
+
+            ["CategoryEntryMap"] = {
+                -- [1] = 1000000,
+                -- [2] = 2000000,
             },
-            ["SortedChapterPositionsMap"] = {
-                -- [10000] = { [1] = 10100, [2] = 10200 }
-                -- [20000] = { [1] = 20100, [2] = 20200 }
+            ["ChapterEntryMap"] = {
+                -- [1000000] = { 1010000, 1020000 }
+                -- [2000000] = { 2010000, 2020000 }
             },
-            ["SortedParagraphPositionsMap"] = {
-                -- [10100] = { [1] = 10101, [2] = 10102 }
-                -- [10200] = { [1] = 10201, [2] = 10202 }
-                -- [20100] = { [1] = 20101, [2] = 20102 }
-                -- [20200] = { [1] = 20201, [2] = 20202 }
+            ["ParagraphEntryMap"] = {
+                -- [1001000] = { 1001001, 1001002 }
+                -- [1002000] = { 1002001, 1002002 }
+                -- [2001000] = { 2001001, 2001002 }
+                -- [2002000] = { 2002001, 2002002 }
             }
         },
-        ["JournalData"] = {
-            {
-                ["entriesMapId"] = 10000,
-                ["parentMapId"] = 10000,
-                ["StringContent"] = "Category One",
-                ["isShared"] = false,
-                ["Chapters"] = {
-                    {
-                        ["entriesMapId"] = 10100,
-                        ["parentMapId"] = 10000,
-                        ["StringContent"] = "Chapter 1",
-                        ["isShared"] = false,
-                        ["Paragraphs"] = {
-                            {
-                                ["entriesMapId"] = 10101,
-                                ["parentMapId"] = 10100,
-                                ["StringContent"] = "Paragraph One",
-                                ["isShared"] = false
-                            },
-                            {
-                                ["entriesMapId"] = 10102,
-                                ["parentMapId"] = 10100,
-                                ["StringContent"] = "Paragraph Two",
-                                ["isShared"] = false,
-                            }
-                        }
-                    },
-                    {
-                        ["entriesMapId"] = 10200,
-                        ["parentMapId"] = 10000,
-                        ["StringContent"] = "Chapter 2",
-                        ["isShared"] = false,
-                        ["Paragraphs"] = {
-                            [1] = {
-                                ["entriesMapId"] = 10201,
-                                ["parentMapId"] = 10200,
-                                ["StringContent"] = "Paragraph Three",
-                                ["isShared"] = false
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                ["entriesMapId"] = 20000,
-                ["parentMapId"] = 20000,
-                ["StringContent"] = "Category Two",
-                ["isShared"] = false,
-                ["Chapters"] = {
-                    {
-                        ["entriesMapId"] = 20100,
-                        ["parentMapId"] = 20000,
-                        ["StringContent"] = "Chapter 3",
-                        ["isShared"] = false,
-                        ["Paragraphs"] = {
-                            {
-                                ["entriesMapId"] = 20101,
-                                ["parentMapId"] = 20100,
-                                ["StringContent"] = "Paragraph Four",
-                                ["isShared"] = false
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ["JournalData"] = {}
     }
     return defaultJournal
 end
 
-Journal = Rematerialize(ReinitializeJournal())
+Journal = Rematerialize(ReinitializeJournal())  --  Reinitialize Journal
 
 --  ##########################################################################################################
-
-local function printMaps()
-    Ext.Print(Ext.JsonStringify({
-        Journal.Component.SortedPositionsMap,
-        Journal.Component.SortedChapterPositionsMap,
-        Journal.Component.SortedParagraphPositionsMap,
-    }))
-end
-
-local function getTrailingZeroes(n)
-    local count = 0
-    local i = 10
-    while n % i == 0 do
-        count = count + 1
-        i = i * 10
-    end
-    return count
-end
 
 --  ==========================
 --  REGISTER JOURNAL LISTENERS
 --  ==========================
 
 local function RegisterJournalListeners()
+
+    --  ADD CATEGORY
+    --  ============
+
     Ext.RegisterUICall(Journal.Element.UI, 'addCategory', function (ui, call, ...)
-        Journal.Element.Root.entries[0] = 1 --  Journal Node Type 1
+        Journal.Element.Root.entries[0] = 1 --  Journal Node Type 1: Category
 
-        local Pos = #Journal.Component.SortedPositionsMap
+        local Pos = #Journal.Component.CategoryEntryMap --  Get Position Index
+        Journal.Element.Root.entries[1] = Pos   --  Set Position Index
 
-        Journal.Element.Root.entries[1] = Pos
+        Journal.Component.CategoryEntryMap[Pos + 1] = Ext.Random(1, 999) * 1000000  --  Generate EntriesMapID
+        Journal.Component.ChapterEntryMap[Journal.Component.CategoryEntryMap[Pos + 1]] = {} --  Initialize Chapter-Table for generated entry
 
-        Journal.Component.SortedPositionsMap[Pos + 1] = Ext.Random(1, 999) * 1000000
-        Journal.Component.SortedChapterPositionsMap[Journal.Component.SortedPositionsMap[Pos + 1]] = {}
+        Journal.Element.Root.entries[2] = Journal.Component.CategoryEntryMap[Pos + 1]   --  Set EntriesMapID
+        Journal.Element.Root.entries[3] = Journal.Component.CategoryEntryMap[Pos + 1]   --  Set ParentMapID
+        Journal.Element.Root.entries[4] = "New Category"    --  Set Entry String Content
+        Journal.Element.Root.entries[5] = false --  Set Entry isShared Boolean
 
-        Journal.Element.Root.entries[2] = Journal.Component.SortedPositionsMap[Pos + 1]
-        Journal.Element.Root.entries[3] = Journal.Component.SortedPositionsMap[Pos + 1]
-        Journal.Element.Root.entries[4] = "New Category"
-        Journal.Element.Root.entries[5] = false
-
-        Journal.Element.Root.updateEntries()
-        printMaps()
+        Journal.Element.Root.updateEntries()    --   Update Entries: MainTimeline Event.
     end)
+
+    --  ADD CHAPTER
+    --  ===========
 
     Ext.RegisterUICall(Journal.Element.UI, 'addChapter', function (ui, call, id)
-        Journal.Element.Root.entries[0] = 2
+        Journal.Element.Root.entries[0] = 2 --  Journal Node Type 2: Chapter
 
-        local Pos = #Journal.Component.SortedChapterPositionsMap[id]
+        local Pos = #Journal.Component.ChapterEntryMap[id]  --  Get Position Index
+        Journal.Element.Root.entries[1] = Pos   --  Set Position
 
-        Journal.Element.Root.entries[1] = Pos
-        Journal.Component.SortedChapterPositionsMap[id][Pos + 1] = id + Ext.Random(1, 999) * 1000
-        Journal.Component.SortedParagraphPositionsMap[Journal.Component.SortedChapterPositionsMap[id][Pos + 1]] = {}
-        Journal.Element.Root.entries[2] = Journal.Component.SortedChapterPositionsMap[id][Pos + 1]
-        Journal.Element.Root.entries[3] = id
-        Journal.Element.Root.entries[4] = "New Chapter"
-        Journal.Element.Root.entries[5] = false
+        Journal.Component.ChapterEntryMap[id][Pos + 1] = id + Ext.Random(1, 999) * 1000 --  Generate EntriesMapID
+        Journal.Component.ParagraphEntryMap[Journal.Component.ChapterEntryMap[id][Pos + 1]] = {}    -- Initialize Paragraph-Table for generated entry
+
+        Journal.Element.Root.entries[2] = Journal.Component.ChapterEntryMap[id][Pos + 1]    --  Set EntriesMapID
+        Journal.Element.Root.entries[3] = id    --  Set ParentMapID
+        Journal.Element.Root.entries[4] = "New Chapter" --  Set Entry String Content
+        Journal.Element.Root.entries[5] = false -- Set Entry isShared Boolean
         
-        Journal.Element.Root.updateEntries()
-        printMaps()
+        Journal.Element.Root.updateEntries()    --  Update Entries: MainTimeline Event.
     end)
+
+    --  ADD PARAGRAPH
+    --  =============
 
     Ext.RegisterUICall(Journal.Element.UI, 'addParagraph', function (ui, call, id)
-        Journal.Element.Root.entries[0] = 3
+        Journal.Element.Root.entries[0] = 3 --  Journal Node Type 3: Paragraph
 
-        local Pos = #Journal.Component.SortedParagraphPositionsMap[id]
+        local Pos = #Journal.Component.ParagraphEntryMap[id]    -- Get Position Index
+        Journal.Element.Root.entries[1] = Pos   --  Set Position Index
 
-        Journal.Element.Root.entries[1] = Pos
-        Journal.Component.SortedParagraphPositionsMap[id][Pos + 1] = id + Ext.Random(1, 999)
+        Journal.Component.ParagraphEntryMap[id][Pos + 1] = id + Ext.Random(1, 999)  --  Generate EntriesMapID
 
-        Journal.Element.Root.entries[2] = Journal.Component.SortedParagraphPositionsMap[id][Pos + 1]
-        Journal.Element.Root.entries[3] = id
-        Journal.Element.Root.entries[4] = "New Paragraph"
-        Journal.Element.Root.entries[5] = false
+        Journal.Element.Root.entries[2] = Journal.Component.ParagraphEntryMap[id][Pos + 1]  --  Set EntriesMapID
+        Journal.Element.Root.entries[3] = id    --  Set ParentMapID
+        Journal.Element.Root.entries[4] = "New Paragraph"   -- Set Entry String Content
+        Journal.Element.Root.entries[5] = false -- Set Entry isShared Boolean
 
-        Journal.Element.Root.updateEntries()
-        printMaps()
+        Journal.Element.Root.updateEntries()    -- Update Entries: MainTimeline Event.
     end)
 
+    --  REMOVE NODES
+    --  ============
+
     Ext.RegisterUICall(Journal.Element.UI, 'removeNode', function(ui, call, id)
-        
-        local zeroes = getTrailingZeroes(id)
+        local zeroes = GetTrailingZeroes(id)    --  Calculates the number of trailing zeroes. Used to determine JournalNodeType.
 
-        Ext.Print(zeroes)
+        if zeroes >= 6 then --  Journal Entry Type: Category
+            
+            --  CATEGORY
+            --  --------
 
-        if zeroes >= 6 then
-            for pos, target in ipairs(Journal.Component.SortedPositionsMap) do
+            for pos, target in ipairs(Journal.Component.CategoryEntryMap) do
                 if target == id then
-                    if Journal.Component.SortedPositionsMap[pos+1] ~= nil then
-                        local swap = Journal.Component.SortedPositionsMap[pos]
-                        Journal.Component.SortedPositionsMap[pos] = Journal.Component.SortedPositionsMap[pos+1]
-                        Journal.Component.SortedPositionsMap[pos+1] = swap
+                    if Journal.Component.CategoryEntryMap[pos+1] ~= nil then
+                        local swap = Journal.Component.CategoryEntryMap[pos]
+                        Journal.Component.CategoryEntryMap[pos] = Journal.Component.CategoryEntryMap[pos+1]
+                        Journal.Component.CategoryEntryMap[pos+1] = swap
                     else
-                        Journal.Component.SortedPositionsMap[pos] = nil
+                        Journal.Component.CategoryEntryMap[pos] = nil
                     end
                 end
             end
-            Journal.Component.SortedChapterPositionsMap[id] = nil
+            Journal.Component.ChapterEntryMap[id] = nil
         
-        elseif zeroes < 6 and zeroes >= 3 then
+            --  CHAPTER
+            --  -------
+
+        elseif zeroes < 6 and zeroes >= 3 then  --  Journal Entry Type: Chapter
             local parentId = math.floor(id / 1000000) * 1000000
             Ext.Print(parentId)
-            for pos, target in ipairs(Journal.Component.SortedChapterPositionsMap[parentId]) do
+            for pos, target in ipairs(Journal.Component.ChapterEntryMap[parentId]) do
                 if target == id then
-                    if Journal.Component.SortedChapterPositionsMap[parentId][pos+1] ~= nil then
-                        local swap = Journal.Component.SortedChapterPositionsMap[parentId][pos]
-                        Journal.Component.SortedChapterPositionsMap[parentId][pos] = Journal.Component.SortedChapterPositionsMap[parentId][pos+1]
-                        Journal.Component.SortedChapterPositionsMap[parentId][pos+1] = swap
+                    if Journal.Component.ChapterEntryMap[parentId][pos+1] ~= nil then
+                        local swap = Journal.Component.ChapterEntryMap[parentId][pos]
+                        Journal.Component.ChapterEntryMap[parentId][pos] = Journal.Component.ChapterEntryMap[parentId][pos+1]
+                        Journal.Component.ChapterEntryMap[parentId][pos+1] = swap
                     else
-                        Journal.Component.SortedChapterPositionsMap[parentId][pos] = nil
+                        Journal.Component.ChapterEntryMap[parentId][pos] = nil
                     end
                 end
             end
-            Journal.Component.SortedParagraphPositionsMap[id] = nil
+            Journal.Component.ParagraphEntryMap[id] = nil
         
-        elseif zeroes < 3 then
+            --  PARAGRAPH
+            --  ---------
+
+        elseif zeroes < 3 then  --  Journal Entry Type: Paragraph
             local parentId = math.floor(id / 1000) * 1000
                     Ext.Print(parentId)
-            for pos, target in ipairs(Journal.Component.SortedParagraphPositionsMap[parentId]) do
+            for pos, target in ipairs(Journal.Component.ParagraphEntryMap[parentId]) do
                 if target == id then
-                    if Journal.Component.SortedParagraphPositionsMap[parentId][pos+1] ~= nil then
-                        Journal.Component.SortedParagraphPositionsMap[parentId][pos] = Journal.Component.SortedParagraphPositionsMap[parentId][pos+1]
-                        Journal.Component.SortedParagraphPositionsMap[parentId][pos+1] = target
+                    if Journal.Component.ParagraphEntryMap[parentId][pos+1] ~= nil then
+                        Journal.Component.ParagraphEntryMap[parentId][pos] = Journal.Component.ParagraphEntryMap[parentId][pos+1]
+                        Journal.Component.ParagraphEntryMap[parentId][pos+1] = target
                     else
-                        Journal.Component.SortedParagraphPositionsMap[parentId][pos] = nil
+                        Journal.Component.ParagraphEntryMap[parentId][pos] = nil
                     end
                 end
             end
         end
-        printMaps()
     end)
 end
+
+--  ########################################################################################################################################
+
+--  ==============
+--  RENDER JOURNAL
+--  ==============
 
 function RenderJournal(Specs)
     if Journal.Exists ~= true then
@@ -272,6 +218,8 @@ function RenderJournal(Specs)
                         FunctionMapper["Journal"][key][k](v)
                     end
                 end
+            elseif key == "JournalData" then
+                Journal.JournalData = Rematerialize(value)
             end
         end
     end
@@ -287,6 +235,69 @@ function RenderJournal(Specs)
     Journal.Element.UI:Show()
 
     return Journal
+end
+
+--  ==============
+--  UPDATE JOURNAL
+--  ==============
+
+function UpdateJournal(JournalData)
+    Journal.JournalData = Ext.JsonParse(JournalData)
+
+    --  BUILD JOURNAL
+    --  =============
+
+    local function buildJournal(journalEntry)
+        for i = 1, #journalEntry do
+            local object = Journal.Element.Root.entriesMap[journalEntry[i].entriesMapId] -- Get MovieClip Object
+
+            if object == nil then   --  if MovieClip Object does not exist
+
+                local posTable = {
+                    [1] = #Journal.Component.CategoryEntryMap,
+                    [2] = #Journal.Component.ChapterEntryMap,
+                    [3] = #Journal.Component.ParagraphEntryMap,
+                }
+
+                --  Update Entries
+                --  ==============
+
+                Journal.Element.Root.entries[0] = journalEntry[i].JournalNodeType
+                Journal.Element.Root.entries[1] = posTable[journalEntry[i].JournalNodeType]
+                Journal.Element.Root.entries[2] = journalEntry[i].entriesMapId
+                Journal.Element.Root.entries[3] = journalEntry[i].parentMapId
+                Journal.Element.Root.entries[4] = journalEntry[i].StringContent
+                Journal.Element.Root.entries[5] = journalEntry[i].isShared
+                Journal.Element.Root.updateEntries()
+
+                --  Update MetaData
+                --  ===============
+
+                if journalEntry[i].JournalNodeType == 1 then
+                    Journal.Component.CategoryEntryMap[posTable[journalEntry[i].JournalNodeType] + 1] = journalEntry[i].entriesMapId
+                    Journal.Component.ChapterEntryMap[Journal.Component.CategoryEntryMap[posTable[journalEntry[i].JournalNodeType] + 1]] = {}
+                elseif journalEntry[i].JournalNodeType == 2 then
+                    Journal.Component.ChapterEntryMap[journalEntry[i].parentMapId][posTable[journalEntry[i].JournalNodeType] + 1] = journalEntry[i].entriesMapId
+                    Journal.Component.ParagraphEntryMap[Journal.Component.ChapterEntryMap[journalEntry[i].parentMapId][posTable[journalEntry[i].JournalNodeType] + 1]] = {}
+                elseif journalEntry[i].JournalNodeType == 3 then
+                    Journal.Component.ParagraphEntryMap[journalEntry[i].parentMapId][posTable[journalEntry[i].JournalNodeType] + 1] = journalEntry[i].entriesMapId
+                end
+            else
+                object.editableElement_mc.updateText(journalEntry[i].StringContent);
+                object.editableElement_mc.setShared(journalEntry[i].isShared);
+            end
+
+            --  Recursions
+            --  ==========
+
+            if journalEntry[i].Chapters ~= nil or journalEntry[i].Paragraphs ~= nil then
+                buildJournal(Rematerialize(journalEntry[i].Chapters or journalEntry[i].Paragraphs))
+            end
+        end
+    end
+
+    --  Function Call
+    buildJournal(Journal.JournalData)
 end
 
 --  ===============
