@@ -13,6 +13,8 @@ Journal = {}
 function ReinitializeJournal()
     local defaultJournal = {
         ["Exists"] = false, --  Whether journal element exists
+        ["Created"] = false,
+        ["RegisteredListeners"] = false,
         ["Element"] = {
             ["UI"] = {}, -- The actual element
             ["Root"] = {} --  Root Object
@@ -183,6 +185,13 @@ local function RegisterJournalListeners()
             end
         end
     end)
+
+    Ext.RegisterUICall(Journal.Element.UI, "S7HideUI", function(ui, call, ...)
+        Journal.Exists = false
+        Journal.Element.UI:Hide()
+    end)
+
+    Journal.RegisteredListeners = true
 end
 
 --  ########################################################################################################################################
@@ -198,10 +207,17 @@ function RenderJournal(Specs)
         --  --------------
 
         ReinitializeJournal()
-        Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
-        Journal.Element.UI = Ext.GetUI("S7Journal")
-        Journal.Element.Root = Journal.Element.UI:GetRoot()
-        RegisterJournalListeners()
+        
+        if Journal.Created == false then 
+            Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
+            Journal.Element.UI = Ext.GetUI("S7Journal")
+            Journal.Element.Root = Journal.Element.UI:GetRoot()
+            Journal.Created = true
+        end
+        
+        FunctionMapper["Journal"]["Component"](Specs["Component"])
+        
+        if Journal.RegisteredListeners == false then RegisterJournalListeners() end
     end
 
     Journal.Exists = true
@@ -310,14 +326,27 @@ FunctionMapper["Journal"] = {
     --  ==============
 
     ["Component"] = function(Component)
-        if Journal.Element.Root.strings ~= nil then
-            Journal.Element.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
-            Journal.Element.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
-            Journal.Element.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
-            Journal.Element.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
-            Journal.Element.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
-            Journal.Element.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
+        
+        local function determineString(Component, str)
+            local val = ""
+            if Component[str] == "" or Component[str] == nil then
+                val = Journal.Component.Strings[str]
+            else
+                val = Component.Strings[str]
+            end
+            return val
         end
+        
+        if Journal.Element.Root.strings ~= nil then
+            Journal.Element.Root.strings.caption = determineString(Component, "caption")
+            Journal.Element.Root.strings.editButtonCaption = determineString(Component, "editButtonCaption")
+            Journal.Element.Root.strings.addChapter = determineString(Component, "addChapter")
+            Journal.Element.Root.strings.addCategory = determineString(Component, "addCategory")
+            Journal.Element.Root.strings.addParagraph = determineString(Component, "addParagraph")
+            Journal.Element.Root.strings.shareWithParty = determineString(Component, "shareWithParty")
+        end
+
+        Journal.Element.Root.updateCaptions()
     end,
     --  =============
     --  SUBCOMPONENTS

@@ -56,7 +56,8 @@
       public function onClose() : *
       {
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
-         ExternalInterface.call("closeUI");
+         // ExternalInterface.call("closeUI");
+         ExternalInterface.call("S7HideUI");
       }
 
       public function onToggleEdit() : *
@@ -81,8 +82,8 @@
          ExternalInterface.call("setPosition","center","screen","center");
          
          this.HideSharedThings();
-         this.caption_mc.text = textHelpers.toUpperCase(this.strings.caption);
-         this.toggleEditButton_mc.initialize(textHelpers.toUpperCase(this.strings.editButtonCaption), this.onToggleEdit);
+         this.caption_mc.htmlText = this.strings.caption;
+         this.toggleEditButton_mc.initialize(this.strings.editButtonCaption, this.onToggleEdit);
          
          this.closeButton_mc.init(this.onClose);
          this.content_mc.Init();
@@ -90,6 +91,14 @@
          this.shareWithParty_mc.init(this.onShareWithParty);
       }
       
+      public function updateCaptions(): * {
+         this.caption_mc.htmlText = this.strings.caption;
+         this.toggleEditButton_mc.text_txt.htmlText = this.strings.editButtonCaption;
+         this.content_mc.addCategoryButton_mc.text_txt.htmlText = this.strings.addCategory;
+         this.paragraphs_mc.addParagraphButton_mc.text_txt.htmlText = this.strings.addParagraph;
+         this.shareWithParty_mc.setText(this.strings.shareWithParty, -1)
+      }
+
       //    UPDATE ENTRIES
       //    ==============
 
