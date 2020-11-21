@@ -8,6 +8,8 @@
 
 * Dynamically generate Journal and entries.
 * _Created_ Flash Method to `updateCaptions()`
+* _Fixed_ Close Button.
+* _Improved_ Font Selection.
 
 ## [0.2.4.0] --- 18th November 2020 --- **_Reverse-Engineer GMJournal.swf_**
 

@@ -130,8 +130,7 @@
       
       public function onClose() : *
       {
-         ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
-         ExternalInterface.call("closeUI");
+         ExternalInterface.call("ButtonPressed",!!this.isOkCancel?4:2,this.currentDevice);
       }
 
       public function setWaiting(param1:Boolean) : *
