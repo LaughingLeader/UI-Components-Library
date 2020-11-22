@@ -30,6 +30,7 @@ package
          removeEventListener(MouseEvent.MOUSE_UP,this.onUp);
          ExternalInterface.call("PlaySound",this.snd_OnUp);
          ExternalInterface.call("ButtonPressed",this.id,_loc2_.currentDevice);
+         ExternalInterface.call("S7_msgBoxBtnClick", this.id, _loc2_.currentDevice);
          this.label_mc.y = this.texttY;
          this.bg_mc.gotoAndStop(2);
       }

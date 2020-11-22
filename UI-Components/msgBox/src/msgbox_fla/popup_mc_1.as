@@ -57,10 +57,10 @@
          this.INT_SetTextPosition();
       }
       
-      public function setInputEnabled(param1:Boolean, param2:Number, param3:Number) : *
+      public function setInputEnabled(visibleBool:Boolean, minChar:Number, maxChar:Number) : *
       {
-         this.input_mc.input_txt.maxChars = param3;
-         this.input_mc.visible = param1;
+         this.input_mc.input_txt.maxChars = maxChar;
+         this.input_mc.visible = visibleBool;
 
          // Commenting out the separate layouts. Will figure out new positions later.
 
@@ -153,7 +153,7 @@
          //    }
          // }
 
-         // MANUALLY POSITIONING ELEMENTS -- Redo This in LUA if possible
+         // MANUALLY POSITIONING ELEMENTS -- Redone in LUA.
 
       }
       
@@ -186,60 +186,60 @@
          this.INT_SetTextPosition();
       }
 
-      public function addButton(param1:Number, param2:String, param3:String, param4:String) : *
+      public function addButton(movieClipID:Number, labelStr:String, soundOnOver:String, soundOnUp:String) : *
       {
-         var _loc5_:MovieClip = null;
+         var buttonMC:MovieClip = null;
          if(this.btnList.length > 0)
          {
-            _loc5_ = new btnB_id();
+            buttonMC = new btnB_id();
          }
          else
          {
-            _loc5_ = new btnA_id();
+            buttonMC = new btnA_id();
          }
-         _loc5_.label_mc.filters = textEffect.createStrokeFilter(0,1.2,0.75,1,3);
-         _loc5_.label_mc.label_txt.htmlText = param2.toUpperCase();
-         this.INTaddButton(_loc5_,param1);
-         if(param3 != "")
+         buttonMC.label_mc.filters = textEffect.createStrokeFilter(0,1.2,0.75,1,3);
+         buttonMC.label_mc.label_txt.htmlText = labelStr.toUpperCase();
+         this.INTaddButton(buttonMC,movieClipID);
+         if(soundOnOver != "")
          {
-            _loc5_.snd_OnOver = param3;
+            buttonMC.snd_OnOver = soundOnOver;
          }
-         if(param4 != "")
+         if(soundOnUp != "")
          {
-            _loc5_.snd_OnUp = param4;
+            buttonMC.snd_OnUp = soundOnUp;
          }
          else
          {
-            _loc5_.snd_OnUp = "UI_Gen_BigButton_Click";
+            buttonMC.snd_OnUp = "UI_Gen_BigButton_Click";
          }
       }
       
-      public function addBlueButton(param1:Number, param2:String) : *
+      public function addBlueButton(movieClipID:Number, labelStr:String) : *
       {
-         var _loc3_:MovieClip = new btnB_id();
-         _loc3_.label_mc.filters = textEffect.createStrokeFilter(0,1.2,0.75,1,3);
-         _loc3_.label_mc.label_txt.htmlText = param2.toUpperCase();
-         this.INTaddButton(_loc3_,param1);
+         var blueButtonMC:MovieClip = new btnB_id();
+         blueButtonMC.label_mc.filters = textEffect.createStrokeFilter(0,1.2,0.75,1,3);
+         blueButtonMC.label_mc.label_txt.htmlText = labelStr.toUpperCase();
+         this.INTaddButton(blueButtonMC,movieClipID);
       }
       
-      public function addYesButton(param1:Number) : *
+      public function addYesButton(movieClipID:Number) : *
       {
-         var _loc2_:MovieClip = new btnYes_id();
-         this.INTaddButton(_loc2_,param1);
+         var yesButtonMC:MovieClip = new btnYes_id();
+         this.INTaddButton(yesButtonMC,movieClipID);
       }
       
-      public function addNoButton(param1:Number) : *
+      public function addNoButton(movieClipID:Number) : *
       {
-         var _loc2_:MovieClip = new btnNo_id();
-         this.INTaddButton(_loc2_,param1);
+         var noButtonMC:MovieClip = new btnNo_id();
+         this.INTaddButton(noButtonMC,movieClipID);
       }
       
-      public function INTaddButton(param1:MovieClip, param2:Number) : *
+      public function INTaddButton(ButtonMC:MovieClip, movieClipID:Number) : *
       {
-         param1.id = param2;
-         param1.bg_mc.gotoAndStop(1);
-         param1.x = -param1.width * 0.5;
-         this.btnList.addElement(param1);
+         ButtonMC.id = movieClipID;
+         ButtonMC.bg_mc.gotoAndStop(1);
+         ButtonMC.x = -ButtonMC.width * 0.5;
+         this.btnList.addElement(ButtonMC);
          this.cButtons_mc.y = 347 - this.btnList.height;
 
          // There is functionally no difference between 1 and 2 as far as I can tell.

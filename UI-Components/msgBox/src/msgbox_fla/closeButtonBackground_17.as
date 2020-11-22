@@ -9,27 +9,12 @@
       public function closeButtonBackground_17()
       {
          super();
-         addFrameScript(0,this.frame1, 1, this.frame2, 2,this.frame3, 3, this.frame4);
+         addFrameScript(0,this.frame1);
       }
       
       function frame1() : *
       {
          stop();
-      }
-      
-      function frame2() : *
-      {
-         gotoAndStop(0);
-      }
-
-      function frame3() : *
-      {
-         gotoAndStop(0);
-      }
-
-      function frame4() : *
-      {
-         gotoAndStop(0);
       }
    }
 }

@@ -234,10 +234,10 @@
          }
       }
       
-      public function addButton(param1:Number, param2:String, param3:String, param4:String) : *
+      public function addButton(movieClipID:Number, labelStr:String, sndOnOver:String, sndOnUp:String) : *
       {
-         this.popup_mc.addButton(param1,param2,param3,param4);
-         if(param1 > 2)
+         this.popup_mc.addButton(movieClipID,labelStr,sndOnOver,sndOnUp);
+         if(movieClipID > 2)
          {
             this.isOkCancel = true;
          }
@@ -245,16 +245,16 @@
          {
             this.isOkCancel = false;
          }
-         if(param1 == 4 || param1 == 2)
+         if(movieClipID == 4 || movieClipID == 2)
          {
             this.allowCancel = true;
          }
       }
       
-      public function addBlueButton(param1:Number, param2:String) : *
+      public function addBlueButton(movieClipID:Number, labelStr:String) : *
       {
-         this.popup_mc.addBlueButton(param1,param2);
-         if(param1 > 2)
+         this.popup_mc.addBlueButton(movieClipID,labelStr);
+         if(movieClipID > 2)
          {
             this.isOkCancel = true;
          }
@@ -262,21 +262,21 @@
          {
             this.isOkCancel = false;
          }
-         if(param1 == 4 || param1 == 2)
+         if(movieClipID == 4 || movieClipID == 2)
          {
             this.allowCancel = true;
          }
       }
       
-      public function addNoButton(param1:Number) : *
+      public function addNoButton(movieClipID:Number) : *
       {
-         this.popup_mc.addNoButton(param1);
+         this.popup_mc.addNoButton(movieClipID);
          this.isOkCancel = true;
       }
       
-      public function addYesButton(param1:Number) : *
+      public function addYesButton(movieClipID:Number) : *
       {
-         this.popup_mc.addYesButton(param1);
+         this.popup_mc.addYesButton(movieClipID);
          this.isOkCancel = true;
       }
       
@@ -286,22 +286,22 @@
          this.allowCancel = false;
       }
       
-      public function setCopyBtnVisible(param1:Boolean) : *
+      public function setCopyBtnVisible(visibleBool:Boolean) : *
       {
-         this.popup_mc.input_mc.copy_mc.visible = param1;
+         this.popup_mc.input_mc.copy_mc.visible = visibleBool;
       }
       
-      public function setPasteBtnVisible(param1:Boolean) : *
+      public function setPasteBtnVisible(visibleBool:Boolean) : *
       {
-         this.popup_mc.input_mc.paste_mc.visible = param1;
-         if(this.popup_mc.input_mc.paste_mc.visible)
-         {
-            // this.popup_mc.input_mc.copy_mc.x = 494;
-         }
-         else
-         {
-            // this.popup_mc.input_mc.copy_mc.x = 526;
-         }
+         this.popup_mc.input_mc.paste_mc.visible = visibleBool;
+         // if(this.popup_mc.input_mc.paste_mc.visible)
+         // {
+         //    this.popup_mc.input_mc.copy_mc.x = 494;
+         // }
+         // else
+         // {
+         //    this.popup_mc.input_mc.copy_mc.x = 526;
+         // }
       }
       
       public function fadeIn() : *
@@ -314,14 +314,14 @@
          this.CloseTimeline = new larTween(this.popup_mc.black_mc,"alpha",Quartic.easeIn,this.popup_mc.alpha,0,0.8);
       }
       
-      public function setInputEnabled(param1:Boolean, param2:Number = 0, param3:Number = 46) : *
+      public function setInputEnabled(visibleBool:Boolean, minChar:Number = 0, maxChar:Number = 46) : *
       {
-         this.popup_mc.setInputEnabled(param1,param2,param3);
+         this.popup_mc.setInputEnabled(visibleBool,minChar,maxChar);
       }
       
-      public function setPopupType(param1:Number) : *
+      public function setPopupType(popupTypeNo:Number) : *
       {
-         this.popup_mc.setPopupType(param1);
+         this.popup_mc.setPopupType(popupTypeNo);
       }
       
       public function focusInputEnabled() : *
@@ -333,9 +333,9 @@
          }
       }
       
-      public function setInputText(param1:String) : *
+      public function setInputText(inputStr:String) : *
       {
-         this.popup_mc.input_mc.input_txt.text = param1;
+         this.popup_mc.input_mc.input_txt.text = inputStr;
          this.popup_mc.input_mc.input_txt.setSelection(0,this.popup_mc.input_mc.input_txt.text.length);
          if (this.popup_mc.input_mc.input_txt == "") {
             this.popup_mc.input_mc.input_txt = "Enter your text..."
@@ -356,12 +356,12 @@
       {
       }
       
-      public function switchInputMode(param1:Number): * {
-         this.popup_mc.input_mc.gotoAndStop(param1);
+      public function switchInputMode(mode:Number): * {
+         this.popup_mc.input_mc.gotoAndStop(mode);
       }
 
-      public function switchTextMode(param1:Number): * {
-         this.popup_mc.text_mc.gotoAndStop(param1);
+      public function switchTextMode(mode:Number): * {
+         this.popup_mc.text_mc.gotoAndStop(mode);
       }
 
       function frame1() : *

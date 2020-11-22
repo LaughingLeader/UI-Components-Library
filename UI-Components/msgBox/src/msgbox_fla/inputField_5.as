@@ -23,7 +23,7 @@
       
       public function acceptSave() : *
       {
-         var _loc1_:String = this.input_txt.text;
+         var inputString:String = this.input_txt.text;
 
          // Commenting Out strReplace -- will enable newline and tabs.
          
@@ -31,7 +31,7 @@
          //_loc1_ = this.strReplace(_loc1_,"\r","");
          //_loc1_ = this.strReplace(_loc1_,"\t","");
          
-         ExternalInterface.call("acceptInput",_loc1_);
+         ExternalInterface.call("acceptInput",inputString);
       }
       
       public function onChange(param1:Event) : *
