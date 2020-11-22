@@ -215,7 +215,7 @@ function RenderJournal(Specs)
             Journal.Created = true
         end
         
-        FunctionMapper["Journal"]["Component"](Specs["Component"])
+        SpecsHandler["Journal"]["Component"](Specs["Component"])
         
         if Journal.RegisteredListeners == false then RegisterJournalListeners() end
     end
@@ -225,13 +225,13 @@ function RenderJournal(Specs)
     if Specs ~= nil then
         for key, value in pairs(Specs) do
             if key == "Component" then
-                if FunctionMapper["Journal"][key] ~= nil then
-                    FunctionMapper["Journal"][key](value)
+                if SpecsHandler["Journal"][key] ~= nil then
+                    SpecsHandler["Journal"][key](value)
                 end
             elseif key == "SubComponent" then
                 for k, v in pairs(value) do
-                    if FunctionMapper["Journal"][key][k] ~= nil then
-                        FunctionMapper["Journal"][key][k](v)
+                    if SpecsHandler["Journal"][key][k] ~= nil then
+                        SpecsHandler["Journal"][key][k](v)
                     end
                 end
             elseif key == "JournalData" then
@@ -320,7 +320,7 @@ end
 --  FUNCTION MAPPER
 --  ===============
 
-FunctionMapper["Journal"] = {
+SpecsHandler["Journal"] = {
     --  ==============
     --  MAIN COMPONENT
     --  ==============

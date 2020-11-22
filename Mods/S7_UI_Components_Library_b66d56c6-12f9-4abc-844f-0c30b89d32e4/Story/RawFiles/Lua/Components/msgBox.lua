@@ -93,8 +93,9 @@ function RenderMsgBox(Specs)
         --  -------------
 
         ReinitializeMsgBox()
-        MsgBox.Element.UI = Ext.GetBuiltinUI(Dir.GameGUI .. "MsgBox.swf")
+        MsgBox.Element.UI = Ext.GetBuiltinUI(Dir.GameGUI .. "msgBox.swf")
         MsgBox.Element.Root = MsgBox.Element.UI:GetRoot()
+        Ext.RegisterUICall(MsgBox.Element.UI, "S7_msgBoxBtnClick", function(ui, call, ...) Ext.Print("RegisterHandlers here") end)
     end
 
     MsgBox.Exists = true
@@ -102,13 +103,13 @@ function RenderMsgBox(Specs)
     if Specs ~= nil then
         for key, value in pairs(Specs) do
             if key == "Component" then
-                if FunctionMapper["MsgBox"][key] ~= nil then
-                    FunctionMapper["MsgBox"][key](value)
+                if SpecsHandler["MsgBox"][key] ~= nil then
+                    SpecsHandler["MsgBox"][key](value)
                 end
             elseif key == "SubComponent" then
                 for k, v in pairs(value) do
-                    if FunctionMapper["MsgBox"][key][k] ~= nil then
-                        FunctionMapper["MsgBox"][key][k](v)
+                    if SpecsHandler["MsgBox"][key][k] ~= nil then
+                        SpecsHandler["MsgBox"][key][k](v)
                     end
                 end
             end
@@ -162,7 +163,7 @@ end
 --  FUNCTION MAPPER
 --  ===============
 
-FunctionMapper["MsgBox"] = {
+SpecsHandler["MsgBox"] = {
     --  ==============
     --  MAIN COMPONENT
     --  ==============

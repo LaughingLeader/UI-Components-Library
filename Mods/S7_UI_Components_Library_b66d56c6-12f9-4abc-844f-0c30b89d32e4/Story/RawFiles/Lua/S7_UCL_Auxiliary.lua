@@ -32,17 +32,19 @@ for target, fileList in pairs(files2Override) do
     end
 end
 
---  =============
+--  =======
+--  HELPERS
+--  =======
+
 --  REMATERIALIZE
---  =============
+--  -------------
 
 function Rematerialize(element)
     return Ext.JsonParse(Ext.JsonStringify(element))
 end
 
---  =======================
 --  TRAILING ZEROES COUNTER
---  =======================
+--  -----------------------
 
 function GetTrailingZeroes(n)
     local count = 0
@@ -54,10 +56,9 @@ function GetTrailingZeroes(n)
     return count
 end
 
-
 --  ============================
 --  DECLARATION OF GLOBAL TABLES
 --  ============================
 
-FunctionMapper = {}
+SpecsHandler = {}
 BuildSpecifications = {}

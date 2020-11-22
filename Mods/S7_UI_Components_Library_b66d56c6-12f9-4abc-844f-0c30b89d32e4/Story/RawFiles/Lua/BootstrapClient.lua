@@ -10,7 +10,7 @@ Ext.Require("Components/Journal.lua")
 --  TEMPORARY BUILD SPECIFICATIONS
 --  ==============================
 
--- BuildSpecifications = Ext.JsonParse(Ext.LoadFile("S7UCL.json"))
+BuildSpecifications = Ext.JsonParse(Ext.LoadFile("S7UCL.json"))
 
 --  ================
 --  ACTIVE UI OBJECT
@@ -24,14 +24,14 @@ ActiveUI = {
 --  BUILDER FUNCTION
 --  ================
 
--- function S7_UCL_Build()
-function S7_UCL_Build(buildSpecs)
+function S7_UCL_Build()
+-- function S7_UCL_Build(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
         ["GMJournal"] = RenderJournal
     }
     
-    local BuildSpecifications = Ext.JsonParse(buildSpecs)
+    -- local BuildSpecifications = Ext.JsonParse(buildSpecs)
 
     for UIName, Specs in pairs(BuildSpecifications) do
         ActiveUI[UIName] = builder[UIName](Specs)

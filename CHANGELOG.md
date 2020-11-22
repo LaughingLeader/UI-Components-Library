@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.6.0] --- 22nd November 2020 --- **_Return to msgBox_**
+
+### CHANGED
+
+* _Renamed_ `FunctionMapper` to `SpecsHandler`. More appropriate imo.
+
 ## [0.2.5.0] --- 20th November 2020 --- **_🎉🎉 Working Journal API 🎉🎉_**
 
 ### NEW
