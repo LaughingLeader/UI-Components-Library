@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.2.7.0] --- 24th November 2020 --- **_Added Pyramid_**
+
+### NEW
+
+* _Added_ `pyramid.swf` and `pyramid.fla`.
+
 ## [0.2.6.0] --- 22nd November 2020 --- **_Return to msgBox_**
 
 ### CHANGED

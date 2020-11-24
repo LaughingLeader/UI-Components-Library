@@ -24,7 +24,7 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
 
 * The mod currently contains:-
     - **MessageBox**: An improved version of the *message-box*. Overrides the base version. Has support to display more than 256 characters without crashing the game. Provides the option for larger backgrounds.
-    ![msgBox4](https://i.imgur.com/sw4UCSh.png)
+    ![msgBox1](https://i.imgur.com/sw4UCSh.png)
     ![msgBox4](https://i.imgur.com/Kf0SJLZ.png)
     - **GMJournal**: A modified GMJournal intended to be used for story-mode journals, in-game manuals and in-game changelogs etc.
 
