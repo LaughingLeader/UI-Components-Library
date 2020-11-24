@@ -130,7 +130,7 @@
       
       public function onClose() : *
       {
-         ExternalInterface.call("ButtonPressed",!!this.isOkCancel?4:2,this.currentDevice);
+         ExternalInterface.call("S7HideUI");
       }
 
       public function setWaiting(param1:Boolean) : *

@@ -62,8 +62,7 @@
          this.input_mc.input_txt.maxChars = maxChar;
          this.input_mc.visible = visibleBool;
 
-         // Commenting out the separate layouts. Will figure out new positions later.
-
+         // Commenting out the separate layouts. Positioning Handled through Lua.
          // if(param1)
          // {
          //    this.posDis = 30;
@@ -89,17 +88,17 @@
          this.INT_SetTextPosition();
       }
       
-      public function showPopUp(param1:String, param2:String) : *
+      public function showPopUp(titleText:String, text:String) : *
       {
-         this.title_txt.htmlText = param1;
+         this.title_txt.htmlText = titleText;
          textHelpers.smallCaps(this.title_txt,7,true);
-         this.setText(param2);
+         this.setText(text);
          this.INT_SetTextPosition();
       }
       
-      public function setText(param1:String) : *
+      public function setText(text:String) : *
       {
-         this.text_mc.text_txt.htmlText = param1;
+         this.text_mc.text_txt.htmlText = text;
          if(this.text_mc.sb)
          {
             this.text_mc.sb.scrollbarVisible();
@@ -109,8 +108,8 @@
       }
       
       // Created setTitleText
-	  public function setTitleText(param1:String) : * {
-		  this.title_txt.htmlText = param1;
+	  public function setTitleText(titleText:String) : * {
+		  this.title_txt.htmlText = titleText;
 		  textHelpers.smallCaps(this.title_txt,7,true);
         this.INT_SetTextPosition();
 	  }
@@ -191,11 +190,11 @@
          var buttonMC:MovieClip = null;
          if(this.btnList.length > 0)
          {
-            buttonMC = new btnB_id();
+            buttonMC = new btnB_id();  // Create Normal Button
          }
          else
          {
-            buttonMC = new btnA_id();
+            buttonMC = new btnA_id();  // Create Blue Button
          }
          buttonMC.label_mc.filters = textEffect.createStrokeFilter(0,1.2,0.75,1,3);
          buttonMC.label_mc.label_txt.htmlText = labelStr.toUpperCase();
@@ -240,10 +239,10 @@
          ButtonMC.bg_mc.gotoAndStop(1);
          ButtonMC.x = -ButtonMC.width * 0.5;
          this.btnList.addElement(ButtonMC);
-         this.cButtons_mc.y = 347 - this.btnList.height;
+
+         // this.cButtons_mc.y = 347 - this.btnList.height; // <-- This little line of code cause me so much headache !!!
 
          // There is functionally no difference between 1 and 2 as far as I can tell.
-
          // if(!this.input_mc.visible)
          // {
          //    if(this.btnList.length > 1)
@@ -264,6 +263,11 @@
          this.INT_SetTextPosition();
       }
       
+      public function setBtnPos(param1:Number):void
+      {
+         this.cButtons_mc.y = param1;
+      }
+
       function frame1() : *
       {
          this.btnList = new listDisplay();

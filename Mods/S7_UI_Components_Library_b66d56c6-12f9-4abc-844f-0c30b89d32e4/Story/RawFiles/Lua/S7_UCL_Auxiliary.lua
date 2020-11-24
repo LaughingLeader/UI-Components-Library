@@ -12,25 +12,16 @@ Dir = {
 --  REGISTER PATH-OVERRIDE LISTENER
 --  ===============================
 
-local files2Override = {
-    ["GameGUI"] = {"msgBox.swf"},
-    ["GameMasterGUI"] = {"GMJournal.swf"}
-}
+-- local files2Override = {
+--     ["GameGUI"] = {"msgBox.swf"},
+--     ["GameMasterGUI"] = {"GMJournal.swf"}
+-- }
 
-for target, fileList in pairs(files2Override) do
-    for _, file in ipairs(fileList) do
-
-        --  REGISTER LISTENER
-        --  =================
-
-        Ext.RegisterListener(
-            "ModuleLoadStarted",
-            function()
-                Ext.AddPathOverride(Dir[target] .. file, Dir.ModGUI .. file)
-            end
-        )
-    end
-end
+-- for target, fileList in pairs(files2Override) do
+--     for _, file in ipairs(fileList) do
+--         Ext.RegisterListener("ModuleLoadStarted", function() Ext.AddPathOverride(Dir[target] .. file, Dir.ModGUI .. file) end)
+--     end
+-- end
 
 --  =======
 --  HELPERS
@@ -62,3 +53,7 @@ end
 
 SpecsHandler = {}
 BuildSpecifications = {}
+UILibrary = {
+    ["msgBox"] = {},
+    ["GMJournal"] = {}
+}

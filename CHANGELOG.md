@@ -7,6 +7,14 @@
 ### CHANGED
 
 * _Renamed_ `FunctionMapper` to `SpecsHandler`. More appropriate imo.
+* _Remastered_ `msgBox` positioning. <-- This took me waaayyyy longer than I'd care to admit.
+* Completely _Decoupled_ my msgBox from the Vanilla msgBox. Gives me (much needed) freedom.
+* _Renamed_ `ActiveUI` to `UILibrary` to represent that its a global table of UI data.
+* Major _Refactor_ of the `MsgBox` data table. `Journal` soon to follow.
+
+### REMOVED
+
+* _Commented_ out `PathOverrides`. Keeps UI elements standalone and preserves vanilla UI settings.
 
 ## [0.2.5.0] --- 20th November 2020 --- **_🎉🎉 Working Journal API 🎉🎉_**
 
