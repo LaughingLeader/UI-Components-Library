@@ -70,7 +70,7 @@ package GMJournal_fla
          addChild(categoryMC);
          this._text.autoSize = TextFieldAutoSize.LEFT;
          this._text.addEventListener(Event.CHANGE,this.onTextChanged);
-         this._text.text = strContent;
+         this._text.htmlText = strContent;
          this._text.addEventListener(FocusEvent.FOCUS_OUT,this.onFocusOut);
          this._text.addEventListener("IE ContextMenu",this.onContext);
          this._linesCount = this._text.numLines;

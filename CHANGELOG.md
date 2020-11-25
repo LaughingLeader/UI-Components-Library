@@ -7,7 +7,12 @@
 ### NEW
 
 * _Added_ `pyramid.swf` and `pyramid.fla`.
-* _Created_ a rudimentary `autoResize` for msgBox. Will improve as I add more popup-types. 
+* _Created_ a rudimentary `autoResize` for msgBox. Will improve as I add more popup-types.
+
+### CHANGED
+
+* `editableElement` supports `htmlText` now.
+* _Refactored_ `Journal.lua`.
 
 ### FIXED
 
