@@ -87,7 +87,6 @@ function ReinitializeMsgBox()
                     [BtnID] = {
                         ["Label"] = "Button Label/Text",
                         ["Type"] = "Regular", :: Determines the type of button. Options: "Blue", "Yes", "No", "Regular"
-                        ["ListenFor"] = "ExternalInterfaceCall to ListenFor",
                     },
                     --]]
                 }
@@ -112,17 +111,6 @@ function CreateMsgBox(Specs)
         MsgBox.UI = Ext.GetUI("S7_msgBox")
         MsgBox.Root = MsgBox.UI:GetRoot()   --  Get UI Root
 
-        --  REGISTER BUTTON LISTENERS
-        --  -------------------------
-
-        if Specs.SubComponent.Buttons ~= nil then
-            for id, btn in ipairs(Specs.SubComponent.Buttons.Btns) do
-                -- Ext.RegisterUICall(MsgBox.UI, btn.ListenFor, function(ui, call, ...) Ext.Print(call .. " detected from BtnID: " .. id) end)
-            end
-        end
-
-        MsgBox.Exists = true    --  Set MsgBox existance to true
-
         --  REGISTER CLOSE BUTTON LISTENER
         --  ------------------------------
 
@@ -130,6 +118,10 @@ function CreateMsgBox(Specs)
             MsgBox.Root.hideWin()    --  Hide or Destroy ??
             ReinitializeMsgBox()
         end)
+
+        MsgBox.Exists = true    --  Set MsgBox existance to true
+
+        RenderMsgBox(Specs)
     end
 end
 
@@ -395,8 +387,8 @@ function S7_OpenMessageBox(TitleText, Text)
         BuildSpecifications.MsgBox.SubComponent.Text.Text = concat
     end
 
-    S7_UCL_Build()
+    RenderMsgBox(BuildSpecifications.MsgBox)
 end
 
-Ext.RegisterConsoleCommand("YOLO", S7_OpenMessageBox)
+Ext.RegisterConsoleCommand("S7OpenMessageBox", S7_OpenMessageBox)
 -- Ext.NewCall(S7_OpenMessageBox, "S7_OpenMessageBox", "(STRING)_TitleText, (STRING)_Text") -- Create Osiris Call
