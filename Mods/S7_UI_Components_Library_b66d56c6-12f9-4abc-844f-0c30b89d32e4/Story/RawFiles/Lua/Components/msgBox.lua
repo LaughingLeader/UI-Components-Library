@@ -29,6 +29,7 @@ function ReinitializeMsgBox()
             ["flexMode"] = "Start", -- Start, Center, End. Determines vertical positioning of subcomponents
             ["flexStart"] = 50, --  Top Margin.
             ["Padding"] = 10,   --  Padding between subcomponents
+            ["AutoResize"] = true, -- AutoResizes the popup-background based if content overflows.
             ["Visible"] = false -- Visibility of popup_mc
         },
         --  --------------
@@ -218,8 +219,6 @@ function RenderMsgBox(Specs)
     end
     textHeight = determineTextHeight()
 
-    Ext.Print(textHeight)
-
     local subComponentHeights = {
         ["Popup"] = MsgBox.Root.popup_mc.height,
         ["Title"] = MsgBox.Root.popup_mc.title_txt.height,
@@ -235,6 +234,14 @@ function RenderMsgBox(Specs)
     for _, comp in ipairs(order) do
         if subComponentHeights[comp] ~= nil  and comp ~= "Popup" then
             totalHeight = totalHeight + subComponentHeights[comp]
+        end
+    end
+
+    if Specs.Component.AutoResize ~= false then
+        if totalHeight > subComponentHeights["Popup"] and Specs.Component.PopupType < 4 then
+            MsgBox.UI:Invoke("setPopupType", 4)
+        elseif totalHeight < subComponentHeights["Popup"] and Specs.Component.PopupType > 4 then
+            MsgBox.UI:Invoke("setPopupType", 1)
         end
     end
 

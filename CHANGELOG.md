@@ -7,6 +7,7 @@
 ### NEW
 
 * _Added_ `pyramid.swf` and `pyramid.fla`.
+* _Created_ a rudimentary `autoResize` for msgBox. Will improve as I add more popup-types. 
 
 ### FIXED
 
