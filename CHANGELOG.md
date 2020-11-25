@@ -13,6 +13,10 @@
 * Buttons now throw unqiue `ExternalInterfaceCalls`. `Listeners` should be registered by client mod. `S7_msgBoxBtnClick::[ID]`
 * _Fixed_ incorrect position on intial msgBox creation. Called twice now for good measure.
 
+### REMOVED
+
+* `OpenMessageBox` call removed. Redundant as the standard msgBox build does the same thing but better.
+
 ## [0.2.6.0] --- 22nd November 2020 --- **_Return to msgBox_**
 
 ### CHANGED

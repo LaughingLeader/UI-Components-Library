@@ -28,7 +28,7 @@ function ReinitializeMsgBox()
             ["flexOrder"] = "NoOrder",  --  flexOrder for positioning of subcomponents. "Order", "NoOrder", "Forced"
             ["flexMode"] = "Start", -- Start, Center, End. Determines vertical positioning of subcomponents
             ["flexStart"] = 50, --  Top Margin.
-            ["Padding"] = 5,   --  Padding between subcomponents
+            ["Padding"] = 10,   --  Padding between subcomponents
             ["Visible"] = false -- Visibility of popup_mc
         },
         --  --------------
@@ -341,6 +341,8 @@ SpecsHandler["MsgBox"] = {
             MsgBox.UI:Invoke("setCopyBtnVisible", SubComponent.CopyBtnVisible or MsgBox.SubComponent.InputText.CopyBtnVisible or false)
             MsgBox.UI:Invoke("setPasteBtnVisible", SubComponent.PasteBtnVisible or MsgBox.SubComponent.InputText.PasteBtnVisible or false)
         end,
+        --      BUTTONS
+        --      -------
 
         ["Buttons"] = function(SubComponent)
             MsgBox.UI:Invoke("removeButtons")
@@ -363,32 +365,3 @@ SpecsHandler["MsgBox"] = {
 }
 
 --  ###################################################################################################################################################
-
---  =====================
---  OPEN-MESSAGE-BOX CALL
---  =====================
-
-function S7_OpenMessageBox(TitleText, Text)
-    BuildSpecifications.MsgBox.SubComponent.Title.TitleText = TitleText
-
-    if type(Text) == "string" then
-        BuildSpecifications.MsgBox.SubComponent.Text.Text = Text
-
-    elseif type(Text) == "table" then
-        local concat = ""
-        for _, txt in ipairs(Text) do
-            local translatedString = Ext.GetTranslatedStringFromKey(txt)
-            if translatedString ~= "" then
-                concat = concat .. translatedString
-            else
-                concat = concat .. txt
-            end
-        end
-        BuildSpecifications.MsgBox.SubComponent.Text.Text = concat
-    end
-
-    RenderMsgBox(BuildSpecifications.MsgBox)
-end
-
-Ext.RegisterConsoleCommand("S7OpenMessageBox", S7_OpenMessageBox)
--- Ext.NewCall(S7_OpenMessageBox, "S7_OpenMessageBox", "(STRING)_TitleText, (STRING)_Text") -- Create Osiris Call
