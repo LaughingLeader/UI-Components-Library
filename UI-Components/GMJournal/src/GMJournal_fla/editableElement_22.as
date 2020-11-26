@@ -173,11 +173,11 @@ package GMJournal_fla
       
       public function updateText(param1:String) : *
       {
-         if(param1 == this._text.text)
+         if(param1 == this._text.htmlText)
          {
             return;
          }
-         this._text.text = param1;
+         this._text.htmlText = param1;
          this.onTextChanged(null);
       }
       
@@ -189,7 +189,7 @@ package GMJournal_fla
          {
             _loc2_ = 1;
          }
-         if(this._text.text.charAt(this._text.length - 1) == "\n")
+         if(this._text.htmlText.charAt(this._text.length - 1) == "\n")
          {
             _loc2_++;
          }
@@ -218,7 +218,7 @@ package GMJournal_fla
       
       public function flush() : *
       {
-         ExternalInterface.call("textUpdate",this.id,this._text.text);
+         ExternalInterface.call("textUpdate",this.id,this._text.htmlText);
          this._dirty = false;
       }
       

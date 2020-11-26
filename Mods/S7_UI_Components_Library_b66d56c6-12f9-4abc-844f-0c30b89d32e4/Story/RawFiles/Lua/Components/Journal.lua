@@ -183,11 +183,9 @@ local function RegisterJournalListeners()
     end)
 
     Ext.RegisterUICall(Journal.UI, "S7HideUI", function(ui, call, ...)
-        Journal.Exists = false
         Journal.UI:Hide()
     end)
 
-    Journal.RegisteredListeners = true
 end
 
 --  ########################################################################################################################################
@@ -197,13 +195,12 @@ end
 --  ==============
 
 function CreateJournal(Specs)
-    if Journal.Exists ~= true then
+    if not Journal.Exists then
         ReinitializeJournal()
         Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
         Journal.UI = Ext.GetUI("S7Journal")
         Journal.Root = Journal.UI:GetRoot()
         RegisterJournalListeners()
-        SpecsHandler["Journal"]["Component"](Specs["Component"])
         Journal.Exists = true
     end
 end
@@ -213,7 +210,7 @@ end
 --  ==============
 
 function RenderJournal(Specs)
-    if Journal.Exists ~= true then CreateJournal(Specs) end
+    if not Journal.Exists then CreateJournal(Specs) end
 
     --  -------------
     --  SPECS HANDLER
@@ -232,8 +229,9 @@ function RenderJournal(Specs)
                     end
                 end
             elseif key == "JournalData" then
-                Journal.JournalData = Rematerialize(value)
-                UpdateJournal(Ext.JsonStringify(Journal.JournalData))
+                if SpecsHandler["Journal"][key] ~= nil then
+                    SpecsHandler["Journal"][key](value)
+                end
             end
         end
     end
@@ -241,14 +239,6 @@ function RenderJournal(Specs)
     Journal.UI:Show()
 
     return Journal
-end
-
---  ============
---  SAVE JOURNAL
---  ============
-
-function SaveJournal()
-    Ext.Print("Saving Journal Data")
 end
 
 --  ==============
@@ -298,6 +288,9 @@ function UpdateJournal(JournalData)
                         Journal.Component.ChapterEntryMap[data.parentMapId][posTable[data.JournalNodeType] + 1] = data.entriesMapId
                         Journal.Component.ParagraphEntryMap[Journal.Component.ChapterEntryMap[data.parentMapId][posTable[data.JournalNodeType] + 1]] = {}
                     elseif data.JournalNodeType == 3 then
+                        if Journal.Component.ParagraphEntryMap[data.parentMapId] == nil then
+                            Journal.Component.ParagraphEntryMap[data.parentMapId] = {}
+                        end
                         Journal.Component.ParagraphEntryMap[data.parentMapId][posTable[data.JournalNodeType] + 1] = data.entriesMapId
                     end
                 else
@@ -353,10 +346,17 @@ SpecsHandler["Journal"] = {
         end
 
         Journal.Root.updateCaptions()
+
+        Journal.Component.CategoryEntryMap = Component.CategoryEntryMap or Journal.Component.CategoryEntryMap
+        Journal.Component.ChapterEntryMap = Component.ChapterEntryMap or Journal.Component.ChapterEntryMap
+        Journal.Component.ParagraphEntryMap = Component.ParagraphEntryMap or Journal.Component.ParagraphEntryMap
     end,
     --  =============
     --  SUBCOMPONENTS
     --  =============
 
-    ["SubComponent"] = {}
+    ["SubComponent"] = {},
+    ['JournalData'] = function (data)
+        UpdateJournal(Ext.JsonStringify(data))
+    end
 }

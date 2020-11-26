@@ -2,6 +2,15 @@
 
 ----------
 
+## [0.2.7.0] -- 27th November 2020 --- **_Journal Improvements_**
+
+### CHANGED
+
+* All journal text-fields now support `htmlText`. <-- haven't tested extensively.
+
+### FIXED
+
+* _Fixed_ `Listener` duplication bug.
 ## [0.2.7.0] --- 24th November 2020 --- **_Added Pyramid_**
 
 ### NEW

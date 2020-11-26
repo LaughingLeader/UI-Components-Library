@@ -3,6 +3,10 @@
 --  =======
 
 Ext.Require("S7_UCL_Auxiliary.lua")
+
+--  UI COMPONENTS
+--  -------------
+
 Ext.Require("Components/msgBox.lua")
 Ext.Require("Components/Journal.lua")
 
@@ -10,7 +14,7 @@ Ext.Require("Components/Journal.lua")
 --  BUILDER FUNCTION
 --  ================
 
-    function S7_UCL_Build(buildSpecs)
+function UCLBuild(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
         ["GMJournal"] = RenderJournal
@@ -21,9 +25,4 @@ Ext.Require("Components/Journal.lua")
     for UIName, Specs in pairs(BuildSpecifications) do
         UILibrary[UIName] = builder[UIName](Specs)
     end
-end
-
-function S7_Build()
-    local file = Ext.LoadFile("S7UCL.json")
-    S7_UCL_Build(file)
 end
