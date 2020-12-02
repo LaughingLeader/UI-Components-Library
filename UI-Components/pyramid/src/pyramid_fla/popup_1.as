@@ -12,11 +12,8 @@ package pyramid_fla
        
       
       public var close_mc:closeBtn;
-      
       public var holder_mc:MovieClip;
-      
       public var title_txt:TextField;
-      
       public var pyramidsList:horizontalList;
       
       public function popup_1()
@@ -36,9 +33,9 @@ package pyramid_fla
          (root as MovieClip).close();
       }
       
-      public function setTitle(param1:String) : *
+      public function setTitle(titleText:String) : *
       {
-         this.title_txt.htmlText = param1.toUpperCase();
+         this.title_txt.htmlText = titleText.toUpperCase();
       }
       
       public function cleanupObsolete() : *
@@ -64,24 +61,24 @@ package pyramid_fla
          this.pyramidsList.positionElements();
       }
       
-      public function setPyramid(param1:Number, param2:String, param3:Boolean) : *
+      public function setPyramid(elementID:Number, IggyIconName:String, isVisible:Boolean) : *
       {
-         var _loc4_:MovieClip = this.pyramidsList.getElementByNumber("id",param1);
-         if(_loc4_ == null)
+         var uiELement:MovieClip = this.pyramidsList.getElementByNumber("id",elementID);
+         if(uiELement == null)
          {
-            _loc4_ = new Pyramid();
-            _loc4_.id = param1;
-            _loc4_.iconMc = new IggyIcon();
-            _loc4_.icon_mc.addChild(_loc4_.iconMc);
-            this.pyramidsList.addElement(_loc4_,false);
-            _loc4_.initialize("",this.pyramidPressed,_loc4_);
-            _loc4_.onOverFunc = this.onPyramidOver;
-            _loc4_.onOutFunc = this.onPyramidOut;
-            _loc4_.onOverParams = _loc4_;
+            uiELement = new Pyramid();
+            uiELement.id = elementID;
+            uiELement.iconMc = new IggyIcon();
+            uiELement.icon_mc.addChild(uiELement.iconMc);
+            this.pyramidsList.addElement(uiELement,false);
+            uiELement.initialize("",this.pyramidPressed,uiELement);
+            uiELement.onOverFunc = this.onPyramidOver;
+            uiELement.onOutFunc = this.onPyramidOut;
+            uiELement.onOverParams = uiELement;
          }
-         _loc4_.disabled_mc.visible = !param3;
-         _loc4_.isUpdated = true;
-         _loc4_.iconMc.name = "iggy_" + param2;
+         uiELement.disabled_mc.visible = !isVisible;
+         uiELement.isUpdated = true;
+         uiELement.iconMc.name = "iggy_" + IggyIconName;
       }
       
       public function onPyramidOver(param1:MovieClip) : *
@@ -100,6 +97,7 @@ package pyramid_fla
          if(!param1.disabled_mc.visible)
          {
             ExternalInterface.call("pyramidPressed",param1.id);
+            ExternalInterface.call("S7PyramidPressed",param1.id, param1.iconMc);
             (root as MovieClip).close();
          }
       }

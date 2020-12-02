@@ -9,6 +9,7 @@ Ext.Require("S7_UCL_Auxiliary.lua")
 
 Ext.Require("Components/msgBox.lua")
 Ext.Require("Components/Journal.lua")
+Ext.Require("Components/Pyramid.lua")
 
 --  ================
 --  BUILDER FUNCTION
@@ -17,7 +18,8 @@ Ext.Require("Components/Journal.lua")
 function UCLBuild(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
-        ["GMJournal"] = RenderJournal
+        ["GMJournal"] = RenderJournal,
+        ["pyramid"] = RenderPyramid
     }
 
     local BuildSpecifications = Ext.JsonParse(buildSpecs)

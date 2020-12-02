@@ -8,25 +8,15 @@ package pyramid_fla
        
       
       public var popup_mc:MovieClip;
-      
       public const iconHeight = 54;
-      
       public const iconWidth = 54;
-      
       public var events:Array;
-      
       public var layout:String;
-      
       public const anchorId:String = "pyramid";
-      
       public const anchorPos:String = "center";
-      
       public const anchorTPos:String = "center";
-      
       public const anchorTarget:String = "screen";
-      
       public var text_array:Array;
-      
       public var pyramid_array:Array;
       
       public function MainTimeline()
@@ -102,9 +92,9 @@ package pyramid_fla
          ExternalInterface.call("hideUI");
       }
       
-      public function setPyramid(param1:Number, param2:String, param3:String, param4:Boolean) : *
+      public function setPyramid(elementID:Number,  iggyIconName:String, param3:String, isVisible:Boolean) : *
       {
-         this.popup_mc.setPyramid(param1,param2,param4);
+         this.popup_mc.setPyramid(elementID, iggyIconName, isVisible);
       }
       
       public function setTitle(param1:String) : *
