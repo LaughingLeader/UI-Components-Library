@@ -37,7 +37,6 @@
       public var entries:Array;
       public var EGMJournalNodeType:Object;
       public var entriesMap:Object;
-      public var debugPrint:int;
       
       // =============
       // MAIN TIMELINE
@@ -56,8 +55,7 @@
       public function onClose() : *
       {
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
-         // ExternalInterface.call("closeUI");
-         ExternalInterface.call("S7HideUI");
+         ExternalInterface.call("S7_UI_Journal_Hide");
       }
 
       public function onToggleEdit() : *
@@ -165,7 +163,7 @@
          this.content_mc.rebuildLayout();
          this.entries = new Array();
       }
-      
+
       public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
          var catElement:* = this.content_mc.createCategory(entriesMapIndex, positionIndex, strContent, isShared);

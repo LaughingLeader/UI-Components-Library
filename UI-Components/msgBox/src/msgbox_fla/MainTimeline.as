@@ -130,7 +130,7 @@
       
       public function onClose() : *
       {
-         ExternalInterface.call("S7HideUI");
+         ExternalInterface.call("S7_UI_msgBox_Hide");
       }
 
       public function setWaiting(param1:Boolean) : *

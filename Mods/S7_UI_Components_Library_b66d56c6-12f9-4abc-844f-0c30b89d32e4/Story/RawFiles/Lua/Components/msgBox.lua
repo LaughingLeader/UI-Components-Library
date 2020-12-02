@@ -115,7 +115,7 @@ function CreateMsgBox(Specs)
         --  REGISTER CLOSE BUTTON LISTENER
         --  ------------------------------
 
-        Ext.RegisterUICall(MsgBox.UI, "S7HideUI", function(ui, call, ...)
+        Ext.RegisterUICall(MsgBox.UI, "S7_UI_msgBox_Hide", function(ui, call, ...)
             MsgBox.Root.hideWin()    --  Hide or Destroy ??
             ReinitializeMsgBox()
         end)
