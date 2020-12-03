@@ -41,7 +41,7 @@
       
       public function Init(elementMC:MovieClip, strContent:String, width:Number, height:Number) : *
       { 
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categoryListElement:editableElement_mc:Init()", "Initializing new Editable Element", strContent)
+         ExternalInterface.call("S7_DebugHook", "editableElement", "Initializing new Editable Element", "String Content", strContent)
          this.ident = "";
          this._w = width;
          width = width;

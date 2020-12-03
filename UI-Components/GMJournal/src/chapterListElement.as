@@ -28,7 +28,7 @@ package
       
       public function Init(strContent:String, chapID:Number) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categories:categoryListElement:chapterListElement:Init()", "Initializing chapterList", strContent, chapID)
+         ExternalInterface.call("S7_DebugHook", "chapterListElement", "Initializing chapterList", "ChapID", chapID, "String Content", strContent)
          this._id = chapID;
          this.paragraphs = new Array();
          this.editableElement_mc.Init(this.chapter_mc, strContent, 523, 27);
@@ -98,7 +98,7 @@ package
       
       public function createParagraph(ID:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categories:catListElement:chapListElement:createParagraph()", "Creating Paragraph", ID, positionIndex, strContent, isShared)
+         ExternalInterface.call("S7_DebugHook", "chapterListElement", "Creating Paragraph", "ID", ID, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var paraList:* = new paragraphListElement();
 
          paraList.Init(strContent, ID);

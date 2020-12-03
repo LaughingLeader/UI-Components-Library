@@ -131,7 +131,7 @@ package GMJournal_fla
       
       public function setEditable(editable:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:setEditable()", "Toggling Edit Mode", editable)
+         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:setEditable()", editable)
          
          var paragraphElement:* = undefined;
          this._editable = editable;

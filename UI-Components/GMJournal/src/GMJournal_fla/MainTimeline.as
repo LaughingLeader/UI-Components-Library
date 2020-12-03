@@ -22,21 +22,25 @@
       // =====================
 
       public var caption_mc:TextField;
-      public var closeButton_mc:closeButton;
+      
       public var content_mc:MovieClip;
       public var paragraphs_mc:MovieClip;
+
       public var shareWithParty_mc:CheckBoxWlabel;
+      public var closeButton_mc:closeButton;
       public var toggleEditButton_mc:toggleEditButton;
+      
+      public var EGMJournalNodeType:Object;
+      public var strings:Object;
+      public var editable:Boolean;
+      public var entries:Array;
+      public var entriesMap:Object;
+      
       public var layout:String;
       public var isDragging:Boolean;
       public const CONTEXT_MENU_EVENT:String = "IE ContextMenu";
       public var events:Array;
       public var contextTarget:Number;
-      public var strings:Object;
-      public var editable:Boolean;
-      public var entries:Array;
-      public var EGMJournalNodeType:Object;
-      public var entriesMap:Object;
       
       // =============
       // MAIN TIMELINE
@@ -61,7 +65,7 @@
 
       public function onToggleEdit() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:onToggleEdit()", "Toggling Edit", this.editable)
+         ExternalInterface.call("S7_DebugHook", "Root:onToggleEdit()", "Toggling Edit", "Root.editable", this.editable)
          this.editable = !this.editable;  // Boolean to control editable state
          if(!this.editable)
          {
@@ -96,7 +100,7 @@
       }
       
       public function updateCaptions(): * {
-         ExternalInterface.call("S7_DebugHook", "Root:updateCaptions()", "Updating Captions", this.strings.caption, this.string.editButtonCaption, this.strings.addCategory, this.strings.addParagraph, this.strings.shareWithParty)
+         ExternalInterface.call("S7_DebugHook", "Root:updateCaptions()", "Updating Captions", "Caption", this.strings.caption, "editButtonCaption", this.string.editButtonCaption, "addCategory", this.strings.addCategory, "addParagraph", this.strings.addParagraph, "shareWithParty", this.strings.shareWithParty)
          this.caption_mc.htmlText = this.strings.caption;
          this.toggleEditButton_mc.text_txt.htmlText = this.strings.editButtonCaption;
          this.content_mc.addCategoryButton_mc.text_txt.htmlText = this.strings.addCategory;
@@ -127,7 +131,7 @@
             strContent = this.entries[i++];           // this.entries[4] 5
             isShared = this.entries[i++];             // this.entries[5] 6
 
-            ExternalInterface.call("S7_DebugHook", "Root:updateEntries()", "Updating Entries", journalNodeTypeIndex, positionIndex, entriesMapIndex, categoryIndex, strContent, isShared)
+            ExternalInterface.call("S7_DebugHook", "Root:updateEntries()", "Updating Entries", "journalNodeTypeIndex", journalNodeTypeIndex, "positionIndex", positionIndex, "entriesMapIndex", entriesMapIndex, "categoryMapIndex", categoryIndex, "String Content", strContent, "isShared", isShared)
 
             entryMovieClip = this.entriesMap[entriesMapIndex];
             
@@ -214,7 +218,7 @@
       
       public function updateChapter(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", categoryIndex, positionIndex, strContent, isShared)
+         ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
@@ -264,7 +268,7 @@
       
       public function updateParagraph(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:updateParagraph()", "Updating Paragraph", categoryIndex, positionIndex, strContent, isShared)
+         ExternalInterface.call("S7_DebugHook", "Root:updateParagraph()", "Updating Paragraph", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;

@@ -22,7 +22,7 @@ package GMJournal_fla
       
       public function Init() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:Init()", "Initializing content_mc")
+         ExternalInterface.call("S7_DebugHook", "content", "Initializing content_mc")
          var rootMC:MovieClip = root as MovieClip;
 
          this.categories = new scrollList();
@@ -58,7 +58,7 @@ package GMJournal_fla
       
       public function setEditControlsVisible(editable:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:setEditControlsVisible()", "Toggling Edit Controls Visibility", editable)
+         ExternalInterface.call("S7_DebugHook", "content:setEditControlsVisible()", editable)
          
          var categoryElement:MovieClip = null;  // Initialize MovieClip
          this._editControlsVisible = editable;  // Set parameters
@@ -84,7 +84,7 @@ package GMJournal_fla
 
       public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         ExternalInterface.call("S7_DebugHook", "Root:content_mc:createCategory()", "Creating New Category", entriesMapIndex, positionIndex, strContent, isShared)
+         ExternalInterface.call("S7_DebugHook", "content", "Creating New Category", "entriesMapIndex", entriesMapIndex, "positionIndex",positionIndex, "String Content", strContent, "isShared", isShared)
          
          var catListElement:* = new categoryListElement();  // Initialize new element
 

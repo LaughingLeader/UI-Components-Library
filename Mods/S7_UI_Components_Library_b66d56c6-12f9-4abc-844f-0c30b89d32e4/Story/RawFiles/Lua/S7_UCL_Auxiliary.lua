@@ -16,15 +16,20 @@ function RegisterDebugHooks(UI)
     if Ext.IsDeveloperMode() then
         Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
             local args = {...}
-            Ext.Print("=============================================")
-            Ext.Print("[S7_UCL:Lua:Auxiliary] --- " .. args[1])
-            Ext.Print("---------------------------------------------")
-            local i = 2
+            Ext.Print("========================================================")
+            Ext.Print("[S7_UCL:Lua:Auxiliary] --- " .. args[1] .. ":" .. args[2])
+            Ext.Print("--------------------------------------------------------")
+            local i = 3
             while i <= #args do
-                Ext.Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
-                i = i + 2
+                if args[i+1] ~= nil then
+                    Ext.Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
+                    i = i + 2
+                else
+                    Ext.Print(tostring(args[i]))
+                    i = i + 1
+                end
             end
-            Ext.Print("=============================================")
+            Ext.Print("========================================================")
         end)
     end
 end
@@ -34,10 +39,10 @@ end
 --  ===============================
 
 local files2Override = {
-    ["GameGUI"] = {
-        -- "msgBox.swf",
-        -- "pyramid.swf"
-    },
+    -- ["GameGUI"] = {
+    --     "msgBox.swf",
+    --     "pyramid.swf"
+    -- },
     -- ["GameMasterGUI"] = {"GMJournal.swf"}
 }
 
