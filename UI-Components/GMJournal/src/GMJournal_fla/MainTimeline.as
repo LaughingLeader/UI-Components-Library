@@ -55,11 +55,13 @@
       public function onClose() : *
       {
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
+         ExternalInterface.call("S7_DebugHook", "Root:onClose()", "Closing UI")
          ExternalInterface.call("S7_UI_Journal_Hide");
       }
 
       public function onToggleEdit() : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:onToggleEdit()", "Toggling Edit", this.editable)
          this.editable = !this.editable;  // Boolean to control editable state
          if(!this.editable)
          {
@@ -71,25 +73,30 @@
       
       public function HideSharedThings() : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:HideSharedThings()", "Hiding Shared Stuff")
          this.shareWithParty_mc.visible = false;
       }
       
       public function onEventInit() : *
       {
-         ExternalInterface.call("registerAnchorId","gmjournal");
-         ExternalInterface.call("setPosition","center","screen","center");
+         ExternalInterface.call("S7_DebugHook", "Root:onEventInit()", "Event Initialization")
+
+         ExternalInterface.call("registerAnchorId", "gmjournal");
+         ExternalInterface.call("setPosition", "center", "screen", "center");
          
          this.HideSharedThings();
          this.caption_mc.htmlText = this.strings.caption;
+
          this.toggleEditButton_mc.initialize(this.strings.editButtonCaption, this.onToggleEdit);
-         
          this.closeButton_mc.init(this.onClose);
+         
          this.content_mc.Init();
          this.paragraphs_mc.Init();
          this.shareWithParty_mc.init(this.onShareWithParty);
       }
       
       public function updateCaptions(): * {
+         ExternalInterface.call("S7_DebugHook", "Root:updateCaptions()", "Updating Captions", this.strings.caption, this.string.editButtonCaption, this.strings.addCategory, this.strings.addParagraph, this.strings.shareWithParty)
          this.caption_mc.htmlText = this.strings.caption;
          this.toggleEditButton_mc.text_txt.htmlText = this.strings.editButtonCaption;
          this.content_mc.addCategoryButton_mc.text_txt.htmlText = this.strings.addCategory;
@@ -110,7 +117,7 @@
          var strContent:String = null;
          var isShared:Boolean = false;
          var entryMovieClip:* = undefined;
-         
+
          while(i < this.entries.length)
          {
             journalNodeTypeIndex = this.entries[i++]; // this.entries[0] 1
@@ -119,6 +126,8 @@
             categoryIndex = this.entries[i++];        // this.entries[3] 4
             strContent = this.entries[i++];           // this.entries[4] 5
             isShared = this.entries[i++];             // this.entries[5] 6
+
+            ExternalInterface.call("S7_DebugHook", "Root:updateEntries()", "Updating Entries", journalNodeTypeIndex, positionIndex, entriesMapIndex, categoryIndex, strContent, isShared)
 
             entryMovieClip = this.entriesMap[entriesMapIndex];
             
@@ -166,6 +175,7 @@
 
       public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
+         ExternalInterface.call("S7_DebugHook", "Root:createCategory()", "Creating Category")
          var catElement:* = this.content_mc.createCategory(entriesMapIndex, positionIndex, strContent, isShared);
          catElement.editableElement_mc.ownerScrollList = this.content_mc.categories;
          this.entriesMap[entriesMapIndex] = catElement;
@@ -175,6 +185,7 @@
       
       public function updateCategory(entryMovieClip:MovieClip, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:updateCategory()", "Updating Category")
          if(entryMovieClip.list_pos != positionIndex)
          {
             this.content_mc.categories.addElementOnPosition(entryMovieClip, positionIndex, false);
@@ -186,6 +197,8 @@
       
       public function createChapter(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
+         ExternalInterface.call("S7_DebugHook", "Root:createChapter()", "Creating Chapter")
+         
          var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
          if(catElement == null)
          {
@@ -199,94 +212,97 @@
          return newCatElement;
       }
       
-      public function updateChapter(entriesMapIndex:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
+      public function updateChapter(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", categoryIndex, positionIndex, strContent, isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
 
-         if(entriesMapIndex.parentId != categoryIndex)
+         if(entriesMovieClip.parentId != categoryIndex)
          {
-            _loc6_ = this.entriesMap[entriesMapIndex.parentId];
+            _loc6_ = this.entriesMap[entriesMovieClip.parentId];
             if(_loc6_ != null)
             {
-               _loc6_.removeChapter(entriesMapIndex);
+               _loc6_.removeChapter(entriesMovieClip);
             }
             _loc7_ = this.entriesMap[categoryIndex];
             if(_loc7_ != null)
             {
-               _loc7_.addChapter(entriesMapIndex, positionIndex);
+               _loc7_.addChapter(entriesMovieClip, positionIndex);
             }
          }
-         else if(positionIndex != entriesMapIndex.list_pos)
+         else if(positionIndex != entriesMovieClip.list_pos)
          {
             _loc8_ = this.entriesMap[categoryIndex];
             if(_loc8_ != null)
             {
-               _loc8_.addChapter(entriesMapIndex, positionIndex);
+               _loc8_.addChapter(entriesMovieClip, positionIndex);
             }
          }
-         entriesMapIndex.editableElement_mc.updateText(strContent);
-         entriesMapIndex.editableElement_mc.setShared(isShared);
+         entriesMovieClip.editableElement_mc.updateText(strContent);
+         entriesMovieClip.editableElement_mc.setShared(isShared);
       }
       
       public function createParagraph(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:createParagraph()", "Creating Paragraph")
          var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
          if(catElement == null)
          {
             catElement = this.createChapter(categoryIndex,-1,0,"",false);
          }
-         var paragraphElement:* = catElement.createParagraph(entriesMapIndex, positionIndex, strContent, isShared);
-         paragraphElement.editableElement_mc.ownerScrollList = this.paragraphs_mc._paragraphsList;
-         this.entriesMap[entriesMapIndex] = paragraphElement;
+         var newCatElement:* = catElement.createParagraph(entriesMapIndex, positionIndex, strContent, isShared);
+         newCatElement.editableElement_mc.ownerScrollList = this.paragraphs_mc._paragraphsList;
+         this.entriesMap[entriesMapIndex] = newCatElement;
          if(catElement == this.paragraphs_mc._currentChapter)
          {
-            this.paragraphs_mc.addParagraph(paragraphElement,positionIndex);
+            this.paragraphs_mc.addParagraph(newCatElement,positionIndex);
          }
-         paragraphElement.onDestroy = this.onParagraphDestroy;
+         newCatElement.onDestroy = this.onParagraphDestroy;
       }
       
-      public function updateParagraph(entriesMapIndex:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
+      public function updateParagraph(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:updateParagraph()", "Updating Paragraph", categoryIndex, positionIndex, strContent, isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
-         if(entriesMapIndex.parentId != categoryIndex)
+         if(entriesMovieClip.parentId != categoryIndex)
          {
-            _loc6_ = this.entriesMap[entriesMapIndex.parentId];
+            _loc6_ = this.entriesMap[entriesMovieClip.parentId];
             if(_loc6_ != null)
             {
-               _loc6_.removeParagraph(entriesMapIndex);
+               _loc6_.removeParagraph(entriesMovieClip);
                if(_loc6_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.removeParagraph(entriesMapIndex);
+                  this.paragraphs_mc.removeParagraph(entriesMovieClip);
                }
             }
             _loc7_ = this.entriesMap[categoryIndex];
             if(_loc7_ != null)
             {
-               _loc7_.addParagraph(entriesMapIndex,positionIndex);
+               _loc7_.addParagraph(entriesMovieClip,positionIndex);
                if(_loc7_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.addParagraph(entriesMapIndex, positionIndex);
+                  this.paragraphs_mc.addParagraph(entriesMovieClip, positionIndex);
                }
             }
          }
-         else if(positionIndex != entriesMapIndex.list_pos)
+         else if(positionIndex != entriesMovieClip.list_pos)
          {
             _loc8_ = this.entriesMap[categoryIndex];
             if(_loc8_ != null)
             {
-               _loc8_.addParagraph(entriesMapIndex,positionIndex);
+               _loc8_.addParagraph(entriesMovieClip,positionIndex);
                if(_loc8_ == this.paragraphs_mc._currentChapter)
                {
-                  this.paragraphs_mc.addParagraph(entriesMapIndex, positionIndex);
+                  this.paragraphs_mc.addParagraph(entriesMovieClip, positionIndex);
                }
             }
          }
-         entriesMapIndex.editableElement_mc.updateText(strContent);
-         entriesMapIndex.editableElement_mc.setShared(isShared);
+         entriesMovieClip.editableElement_mc.updateText(strContent);
+         entriesMovieClip.editableElement_mc.setShared(isShared);
       }
       
       public function removeEntry(param1:Number) : *

@@ -8,15 +8,10 @@ package GMJournal_fla
    public dynamic class content_7 extends MovieClip
    {
        
-      
       public var addCategoryButton_mc:addCategoryButton;
-      
       public var categoriesListHolder_mc:MovieClip;
-      
       public var mouseHook_mc:MovieClip;
-      
       public var categories:scrollList;
-      
       public var _editControlsVisible:Boolean;
       
       public function content_7()
@@ -27,6 +22,7 @@ package GMJournal_fla
       
       public function Init() : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:Init()", "Initializing content_mc")
          var rootMC:MovieClip = root as MovieClip;
 
          this.categories = new scrollList();
@@ -44,10 +40,10 @@ package GMJournal_fla
          this.categories.canPositionInvisibleElements = false;
          this.categories.elementSpacing = 3;
 
-         this.addCategoryButton_mc.initialize(rootMC.strings.addCategory,this.onAddCategory);
+         this.addCategoryButton_mc.initialize(rootMC.strings.addCategory, this.onAddCategory);
          this.addCategoryButton_mc.visible = this._editControlsVisible;
          this.addCategoryButton_mc.heightOverride = 27;
-         this.categories.addElement(this.addCategoryButton_mc,false);   // param2 allows .setPosition(). Why is this false?
+         this.categories.addElement(this.addCategoryButton_mc, false);   // param2 allows .setPosition(). Why is this false?
          this.categories.positionElements(); // Maybe this is why lmao.
          
          var spriteGr:Sprite = new Sprite();
@@ -62,17 +58,19 @@ package GMJournal_fla
       
       public function setEditControlsVisible(editable:Boolean) : *
       {
-         var contentMC:MovieClip = null;  // Initialize MovieClip
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:setEditControlsVisible()", "Toggling Edit Controls Visibility", editable)
+         
+         var categoryElement:MovieClip = null;  // Initialize MovieClip
          this._editControlsVisible = editable;  // Set parameters
          this.addCategoryButton_mc.visible = editable;
 
          var iterator:* = 0;
          while(iterator < this.categories.length - 1)
          {
-            contentMC = this.categories.getAt(iterator);
-            if(contentMC.setEditable != undefined)
+            categoryElement = this.categories.getAt(iterator);
+            if(categoryElement.setEditable != undefined)
             {
-               contentMC.setEditable(editable);
+               categoryElement.setEditable(editable);
             }
             iterator++;
          }
@@ -86,11 +84,13 @@ package GMJournal_fla
 
       public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:createCategory()", "Creating New Category", entriesMapIndex, positionIndex, strContent, isShared)
+         
          var catListElement:* = new categoryListElement();  // Initialize new element
 
          this.categories.addElementOnPosition(catListElement, positionIndex, false);  // Creates element at position positionIndex. positionElements false?
          
-         catListElement.Init(entriesMapIndex,strContent);
+         catListElement.Init(entriesMapIndex, strContent);
          catListElement.setEditable(this._editControlsVisible);
          catListElement.addEventListener("HeightChanged",this.rebuildLayout);
          catListElement.editableElement_mc.setShared(isShared);

@@ -8,15 +8,10 @@ package GMJournal_fla
    public dynamic class category_30 extends MovieClip
    {
        
-      
       public var expand_mc:expand;
-      
       public var text_txt:TextField;
-      
       public var _list:listDisplay;
-      
       public var _linesCount:int;
-      
       public var heightOverride:Number;
       
       public function category_30()
@@ -27,17 +22,18 @@ package GMJournal_fla
       
       public function Init() : *
       {
-         this.expand_mc.init(this.onExpandPressed);
+         this.expand_mc.init(this.onExpandPressed);   // Initialize LSStateButton
       }
       
       public function onExpandPressed() : *
       {
-         var _loc1_:* = false;
+         var listIsActive:* = false;
+
          if(this._list)
          {
-            _loc1_ = !this.expand_mc.isActive;
-            this._list.visible = _loc1_;
-            if(_loc1_)
+            listIsActive = !this.expand_mc.isActive;
+            this._list.visible = listIsActive;
+            if(listIsActive)
             {
                this._list.positionElements();
             }

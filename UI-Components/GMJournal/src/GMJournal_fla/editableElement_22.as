@@ -1,4 +1,4 @@
-package GMJournal_fla
+﻿package GMJournal_fla
 {
    import LS_Classes.scrollList;
    import LS_Classes.textHelpers;
@@ -17,35 +17,20 @@ package GMJournal_fla
        
       
       public var border_mc:MovieClip;
-      
       public var eye_mc:eye;
-      
       public var highlight_mc:MovieClip;
-      
       public var remove_mc:removeButton;
-      
       public var _content:MovieClip;
-      
       public var _w:Number;
-      
       public var _linesCount:int;
-      
       public var _text:TextField;
-      
       public var _shared;
-      
       public var heightOverride:Number;
-      
       public var onRemove:Function;
-      
       public var _dirty:Boolean;
-      
       public var id:Number;
-      
       public var _textY:Number;
-      
       public var ownerScrollList:scrollList;
-      
       public var ident:String;
       
       public function editableElement_22()
@@ -54,20 +39,21 @@ package GMJournal_fla
          addFrameScript(0,this.frame1);
       }
       
-      public function Init(categoryMC:MovieClip, strContent:String, width:Number, height:Number) : *
-      {
+      public function Init(elementMC:MovieClip, strContent:String, width:Number, height:Number) : *
+      { 
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categoryListElement:editableElement_mc:Init()", "Initializing new Editable Element", strContent)
          this.ident = "";
          this._w = width;
          width = width;
          this.heightOverride = height;
-         this.border_mc.Init(width,height);
+         this.border_mc.Init(width, height);
          
-         this._content = categoryMC;
+         this._content = elementMC;
          this._text = this._content.text_txt;
          this._textY = this._text.y;
          textHelpers.makeInputFieldModal(this._text);
          
-         addChild(categoryMC);
+         addChild(elementMC);
          this._text.autoSize = TextFieldAutoSize.LEFT;
          this._text.addEventListener(Event.CHANGE,this.onTextChanged);
          this._text.htmlText = strContent;
@@ -104,12 +90,12 @@ package GMJournal_fla
          this.ident = this.ident.substring(0,this.ident.length - 1);
       }
       
-      public function setEditable(param1:Boolean) : *
+      public function setEditable(editable:Boolean) : *
       {
-         this.border_mc.visible = param1;
-         this.remove_mc.visible = param1;
-         this._text.type = !!param1?TextFieldType.INPUT:TextFieldType.DYNAMIC;
-         if(param1)
+         this.border_mc.visible = editable;
+         this.remove_mc.visible = editable;
+         this._text.type = !!editable?TextFieldType.INPUT:TextFieldType.DYNAMIC;
+         if(editable)
          {
             this._content.removeEventListener(MouseEvent.MOUSE_UP,this.mouseUp);
             removeEventListener(MouseEvent.ROLL_OVER,this.onMouseOver);

@@ -11,21 +11,13 @@ package
        
       
       public var chapter_mc:MovieClip;
-      
       public var editableElement_mc:MovieClip;
-      
       public var onRemove:Function;
-      
       public var heightOverride:Number;
-      
       public var onSelect:Function;
-      
       public var _id:Number;
-      
       public var parentId:Number;
-      
       public var paragraphs:Array;
-      
       public var onDestroy:Function;
       
       public function chapterListElement()
@@ -34,14 +26,16 @@ package
          addFrameScript(0,this.frame1);
       }
       
-      public function Init(param1:String, param2:Number) : *
+      public function Init(strContent:String, chapID:Number) : *
       {
-         this._id = param2;
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categories:categoryListElement:chapterListElement:Init()", "Initializing chapterList", strContent, chapID)
+         this._id = chapID;
          this.paragraphs = new Array();
-         this.editableElement_mc.Init(this.chapter_mc,param1,523,27);
+         this.editableElement_mc.Init(this.chapter_mc, strContent, 523, 27);
+         
          this.editableElement_mc.onRemove = this.onChapterRemove;
          this.editableElement_mc.addEventListener("HeightChanged",this.onHeightChanged);
-         this.editableElement_mc.id = param2;
+         this.editableElement_mc.id = chapID;
          this.updateHeight();
       }
       
@@ -56,10 +50,10 @@ package
          this.heightOverride = this.editableElement_mc.heightOverride;
       }
       
-      public function setEditable(param1:Boolean) : *
+      public function setEditable(editable:Boolean) : *
       {
-         this.editableElement_mc.setEditable(param1);
-         if(param1)
+         this.editableElement_mc.setEditable(editable);
+         if(editable)
          {
             addEventListener(FocusEvent.FOCUS_IN,this.onFocusIn);
             removeEventListener(MouseEvent.MOUSE_UP,this.onMouseUp);
@@ -90,7 +84,7 @@ package
          {
             this.onRemove(this.list_pos);
          }
-         ExternalInterface.call("removeNode",this.id);
+         ExternalInterface.call("removeNode", this.id);
          if(this.onDestroy != null)
          {
             this.onDestroy(this);
@@ -102,21 +96,24 @@ package
          this.selectThis();
       }
       
-      public function createParagraph(param1:Number, param2:int, param3:String, param4:Boolean) : MovieClip
+      public function createParagraph(ID:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         var _loc5_:* = new paragraphListElement();
-         _loc5_.Init(param3,param1);
-         _loc5_.editableElement_mc.setShared(param4);
-         _loc5_.parentId = this._id;
-         if(this.paragraphs.length <= param2)
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categories:catListElement:chapListElement:createParagraph()", "Creating Paragraph", ID, positionIndex, strContent, isShared)
+         var paraList:* = new paragraphListElement();
+
+         paraList.Init(strContent, ID);
+         paraList.editableElement_mc.setShared(isShared);
+
+         paraList.parentId = this._id;
+         if(this.paragraphs.length <= positionIndex)
          {
-            this.paragraphs[param2] = _loc5_;
+            this.paragraphs[positionIndex] = paraList;
          }
          else
          {
-            this.paragraphs.splice(param2,0,_loc5_);
+            this.paragraphs.splice(positionIndex,0,paraList);
          }
-         return _loc5_;
+         return paraList;
       }
       
       public function get id() : Number

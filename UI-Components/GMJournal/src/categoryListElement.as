@@ -1,4 +1,4 @@
-package
+﻿package
 {
    // =======
    // IMPORTS
@@ -36,6 +36,7 @@ package
       
       public function Init(entriesMapIndex:Number, strContent:String) : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categoryListElement:Init()", "Initializing new categoryListElement", entriesMapIndex, strContent)
          this._id = entriesMapIndex;   // Maps to FlashObject
          
          this.addChapterButton_mc.initialize((root as MovieClip).strings.addChapter, this.onAddChapter);
@@ -44,7 +45,7 @@ package
          this.category_mc.Init();
          this.category_mc.addEventListener("HeightChanged",this.onHeightChanged);
          
-         this.editableElement_mc.Init(this.category_mc,strContent,523,27);
+         this.editableElement_mc.Init(this.category_mc, strContent,523,27);
          this.editableElement_mc.onRemove = this.onRemove;
          this.editableElement_mc.addEventListener("HeightChanged",this.onHeightChanged);
          this.editableElement_mc.id = this._id;
@@ -53,27 +54,27 @@ package
          this.chaptersHolder_mc.addChild(this._chapters);
          this.category_mc.attachList(this._chapters);
          this._chapters.elementSpacing = 3;
-         this._chapters.addElement(this.addChapterButton_mc,false);
+         this._chapters.addElement(this.addChapterButton_mc, false);
          this._chapters.canPositionInvisibleElements = false;
          this._chapters.positionElements();
          this.updateHeight();
       }
       
-      public function setEditable(param1:Boolean) : *
+      public function setEditable(editable:Boolean) : *
       {
-         var _loc3_:* = undefined;
-         this._editable = param1;
-         this.editableElement_mc.setEditable(param1);
-         this.addChapterButton_mc.visible = param1;
-         var _loc2_:int = 0;
-         while(_loc2_ < this._chapters.length)
+         var chapterElement:* = undefined;
+         this._editable = editable;
+         this.editableElement_mc.setEditable(editable);
+         this.addChapterButton_mc.visible = editable;
+         var i:int = 0;
+         while(i < this._chapters.length)
          {
-            _loc3_ = this._chapters.getAt(_loc2_);
-            if(_loc3_ != null && _loc3_.setEditable != undefined)
+            chapterElement = this._chapters.getAt(i);
+            if(chapterElement != null && chapterElement.setEditable != undefined)
             {
-               _loc3_.setEditable(param1);
+               chapterElement.setEditable(editable);
             }
-            _loc2_++;
+            i++;
          }
          this._chapters.positionElements();
          this.onHeightChanged(null);
@@ -111,21 +112,22 @@ package
          ExternalInterface.call("addChapter", this._id);
       }
       
-      public function createChapter(param1:Number, param2:int, param3:String, param4:Boolean) : MovieClip
+      public function createChapter(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         var _loc5_:* = new chapterListElement();
-         this._chapters.addElementOnPosition(_loc5_,param2,false);
-         _loc5_.onRemove = this.onChapterRemove;
-         _loc5_.Init(param3,param1);
-         _loc5_.setEditable(this._editable);
-         _loc5_.addEventListener("HeightChanged",this.onChapterHeightChanged);
-         _loc5_.editableElement_mc.setShared(param4);
-         _loc5_.parentId = this._id;
-         var _loc6_:DisplayObjectContainer = this.addChapterButton_mc.parent;
-         _loc6_.setChildIndex(this.addChapterButton_mc,_loc6_.numChildren - 1);
+         ExternalInterface.call("S7_DebugHook", "Root:content_mc:categoryListElement:createChapter()", "Creating Chapter", entriesMapIndex, positionIndex, strContent)
+         var chapterElement:* = new chapterListElement();
+         this._chapters.addElementOnPosition(chapterElement, positionIndex, false);
+         chapterElement.onRemove = this.onChapterRemove;
+         chapterElement.Init(strContent, entriesMapIndex);
+         chapterElement.setEditable(this._editable);
+         chapterElement.addEventListener("HeightChanged",this.onChapterHeightChanged);
+         chapterElement.editableElement_mc.setShared(isShared);
+         chapterElement.parentId = this._id;
+         var displayContainer:DisplayObjectContainer = this.addChapterButton_mc.parent;
+         displayContainer.setChildIndex(this.addChapterButton_mc,displayContainer.numChildren - 1);
          this._chapters.positionElements();
          this.onHeightChanged(null);
-         return _loc5_;
+         return chapterElement;
       }
       
       public function onChapterRemove(param1:int) : *

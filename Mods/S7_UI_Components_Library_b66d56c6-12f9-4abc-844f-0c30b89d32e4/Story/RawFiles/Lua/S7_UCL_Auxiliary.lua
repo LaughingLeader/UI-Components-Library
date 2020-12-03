@@ -8,6 +8,27 @@ Dir = {
     ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/"
 }
 
+--  ========================
+--  REGISTER DEBUG LISTENERS
+--  ========================
+
+function RegisterDebugHooks(UI)
+    if Ext.IsDeveloperMode() then
+        Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
+            local args = {...}
+            Ext.Print("=============================================")
+            Ext.Print("[S7_UCL:Lua:Auxiliary] --- " .. args[1])
+            Ext.Print("---------------------------------------------")
+            local i = 2
+            while i <= #args do
+                Ext.Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
+                i = i + 2
+            end
+            Ext.Print("=============================================")
+        end)
+    end
+end
+
 --  ===============================
 --  REGISTER PATH-OVERRIDE LISTENER
 --  ===============================
@@ -15,7 +36,7 @@ Dir = {
 local files2Override = {
     ["GameGUI"] = {
         -- "msgBox.swf",
-        "pyramid.swf"
+        -- "pyramid.swf"
     },
     -- ["GameMasterGUI"] = {"GMJournal.swf"}
 }

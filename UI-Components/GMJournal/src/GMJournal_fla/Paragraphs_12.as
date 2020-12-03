@@ -10,28 +10,18 @@ package GMJournal_fla
    
    public dynamic class Paragraphs_12 extends MovieClip
    {
-       
+   
       
       public var addParagraphButton_mc:addParagraphButton;
-      
       public var caption_txt:TextField;
-      
       public var listHolder_mc:MovieClip;
-      
       public var mouseHook_mc:MovieClip;
-      
       public const addParagraphTopMargin:Number = 30;
-      
       public const paragraphListScrollbarOffset:Number = -50;
-      
       public var _paragraphsList:scrollList;
-      
       public var _editable:Boolean;
-      
       public var _currentChapter:MovieClip;
-      
       public const defaultListHeight:Number = 660;
-      
       public const defaultListWidth:Number = 660;
       
       public function Paragraphs_12()
@@ -42,6 +32,7 @@ package GMJournal_fla
       
       public function Init() : *
       {
+         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:Init()", "Initializing paragraphs_mc")
          this._paragraphsList = new scrollList();
          this._paragraphsList.mouseWheelWhenOverEnabled = true;
          this._paragraphsList.setTileableBG = "rightPageBG";
@@ -138,23 +129,26 @@ package GMJournal_fla
          this._paragraphsList.m_topSpacing = this.caption_txt.height - this.addParagraphTopMargin;
       }
       
-      public function setEditable(param1:Boolean) : *
+      public function setEditable(editable:Boolean) : *
       {
-         var _loc3_:* = undefined;
-         this._editable = param1;
-         var _loc2_:* = 0;
-         while(_loc2_ < this._paragraphsList.length - 1)
+         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:setEditable()", "Toggling Edit Mode", editable)
+         
+         var paragraphElement:* = undefined;
+         this._editable = editable;
+         
+         var i:* = 0;
+         while(i < this._paragraphsList.length - 1)
          {
-            _loc3_ = this._paragraphsList.getAt(_loc2_);
-            if(_loc3_.setEditable != undefined)
+            paragraphElement = this._paragraphsList.getAt(i);
+            if(paragraphElement.setEditable != undefined)
             {
-               _loc3_.setEditable(param1);
+               paragraphElement.setEditable(editable);
             }
-            _loc2_++;
+            i++;
          }
          if(this._currentChapter != null)
          {
-            this.addParagraphButton_mc.visible = param1;
+            this.addParagraphButton_mc.visible = editable;
          }
          this._paragraphsList.positionElements();
       }
