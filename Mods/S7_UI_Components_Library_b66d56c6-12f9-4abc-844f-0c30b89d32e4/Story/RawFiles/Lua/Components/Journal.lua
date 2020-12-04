@@ -5,7 +5,7 @@
 Ext.Require("S7_UCL_Auxiliary.lua")
 
 --  =======
---  Journal
+--  JOURNAL
 --  =======
 
 Journal = UILibrary.GMJournal
@@ -67,14 +67,16 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.UI, 'addCategory', function (ui, call, ...)
         Journal.Root.entries[0] = 1 --  Journal Node Type 1: Category
 
-        local Pos = #Journal.Component.CategoryEntryMap --  Get Position Index
+        -- local Pos = #Journal.Component.CategoryEntryMap --  Get Position Index
+        local Pos = Journal.Root.content_mc.categories.length - 1 --  Get Position Index
         Journal.Root.entries[1] = Pos   --  Set Position Index
 
-        Journal.Component.CategoryEntryMap[Pos + 1] = Ext.Random(1, 999) * 1000000  --  Generate EntriesMapID
-        Journal.Component.ChapterEntryMap[Journal.Component.CategoryEntryMap[Pos + 1]] = {} --  Initialize Chapter-Table for generated entry
+        local entriesMapId = Ext.Random(1, 999) * 1000000  --  Generate EntriesMapID
+        Journal.Component.CategoryEntryMap[Pos + 1] = entriesMapId
+        Journal.Component.ChapterEntryMap[entriesMapId] = {} --  Initialize Chapter-Table for generated entry
 
-        Journal.Root.entries[2] = Journal.Component.CategoryEntryMap[Pos + 1]   --  Set EntriesMapID
-        Journal.Root.entries[3] = Journal.Component.CategoryEntryMap[Pos + 1]   --  Set ParentMapID
+        Journal.Root.entries[2] = entriesMapId   --  Set EntriesMapID
+        Journal.Root.entries[3] = entriesMapId   --  Set ParentMapID
         Journal.Root.entries[4] = "New Category"    --  Set Entry String Content
         Journal.Root.entries[5] = false --  Set Entry isShared Boolean
 
@@ -87,13 +89,14 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.UI, 'addChapter', function (ui, call, id)
         Journal.Root.entries[0] = 2 --  Journal Node Type 2: Chapter
 
-        local Pos = #Journal.Component.ChapterEntryMap[id]  --  Get Position Index
+        local Pos = #Journal.Component.ChapterEntryMap[id] or 0  --  Get Position Index
         Journal.Root.entries[1] = Pos   --  Set Position
 
-        Journal.Component.ChapterEntryMap[id][Pos + 1] = id + Ext.Random(1, 999) * 1000 --  Generate EntriesMapID
-        Journal.Component.ParagraphEntryMap[Journal.Component.ChapterEntryMap[id][Pos + 1]] = {}    -- Initialize Paragraph-Table for generated entry
+        local chapterId = id + Ext.Random(1, 999) * 1000 --  Generate chapterID
+        Journal.Component.ChapterEntryMap[id][Pos + 1] = chapterId
+        Journal.Component.ParagraphEntryMap[chapterId] = {}    -- Initialize Paragraph-Table for generated entry
 
-        Journal.Root.entries[2] = Journal.Component.ChapterEntryMap[id][Pos + 1]    --  Set EntriesMapID
+        Journal.Root.entries[2] = chapterId    --  Set EntriesMapID
         Journal.Root.entries[3] = id    --  Set ParentMapID
         Journal.Root.entries[4] = "New Chapter" --  Set Entry String Content
         Journal.Root.entries[5] = false -- Set Entry isShared Boolean
@@ -110,9 +113,10 @@ local function RegisterJournalListeners()
         local Pos = #Journal.Component.ParagraphEntryMap[id]    -- Get Position Index
         Journal.Root.entries[1] = Pos   --  Set Position Index
 
-        Journal.Component.ParagraphEntryMap[id][Pos + 1] = id + Ext.Random(1, 999)  --  Generate EntriesMapID
+        local paraId = id + Ext.Random(1, 999)  --  Generate EntriesMapID
+        Journal.Component.ParagraphEntryMap[id][Pos + 1] = paraId
 
-        Journal.Root.entries[2] = Journal.Component.ParagraphEntryMap[id][Pos + 1]  --  Set EntriesMapID
+        Journal.Root.entries[2] = paraId  --  Set EntriesMapID
         Journal.Root.entries[3] = id    --  Set ParentMapID
         Journal.Root.entries[4] = "New Paragraph"   -- Set Entry String Content
         Journal.Root.entries[5] = false -- Set Entry isShared Boolean
@@ -326,24 +330,13 @@ SpecsHandler["Journal"] = {
     --  ==============
 
     ["Component"] = function(Component)
-        
-        local function determineString(Component, str)
-            local val = ""
-            if Component[str] == "" or Component[str] == nil then
-                val = Journal.Component.Strings[str]
-            else
-                val = Component.Strings[str]
-            end
-            return val
-        end
-        
         if Journal.Root.strings ~= nil then
-            Journal.Root.strings.caption = determineString(Component, "caption")
-            Journal.Root.strings.editButtonCaption = determineString(Component, "editButtonCaption")
-            Journal.Root.strings.addChapter = determineString(Component, "addChapter")
-            Journal.Root.strings.addCategory = determineString(Component, "addCategory")
-            Journal.Root.strings.addParagraph = determineString(Component, "addParagraph")
-            Journal.Root.strings.shareWithParty = determineString(Component, "shareWithParty")
+            Journal.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
+            Journal.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
+            Journal.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
+            Journal.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
+            Journal.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
+            Journal.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
         end
 
         Journal.Root.updateCaptions()

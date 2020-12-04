@@ -100,7 +100,6 @@
       }
       
       public function updateCaptions(): * {
-         ExternalInterface.call("S7_DebugHook", "Root:updateCaptions()", "Updating Captions", "Caption", this.strings.caption, "editButtonCaption", this.string.editButtonCaption, "addCategory", this.strings.addCategory, "addParagraph", this.strings.addParagraph, "shareWithParty", this.strings.shareWithParty)
          this.caption_mc.htmlText = this.strings.caption;
          this.toggleEditButton_mc.text_txt.htmlText = this.strings.editButtonCaption;
          this.content_mc.addCategoryButton_mc.text_txt.htmlText = this.strings.addCategory;

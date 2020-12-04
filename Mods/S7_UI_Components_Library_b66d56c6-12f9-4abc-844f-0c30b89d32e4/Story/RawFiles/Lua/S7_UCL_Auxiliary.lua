@@ -3,22 +3,22 @@
 --  ===========
 
 Dir = {
-    ["GameGUI"] = "Public/Game/GUI/",
-    ["GameMasterGUI"] = "Public/Game/GUI/GM/",
-    ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/"
+    ["GameGUI"] = "Public/Game/GUI/",   --  GameUI Directory
+    ["GameMasterGUI"] = "Public/Game/GUI/GM/",  --  GameMasterUI Directory
+    ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/"    -- UCLibrary Directory
 }
 
---  ========================
---  REGISTER DEBUG LISTENERS
---  ========================
+--  =======================
+--  REGISTER DEBUG LISTENER
+--  =======================
 
 function RegisterDebugHooks(UI)
     if Ext.IsDeveloperMode() then
         Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
             local args = {...}
-            Ext.Print("========================================================")
-            Ext.Print("[S7_UCL:Lua:Auxiliary] --- " .. args[1] .. ":" .. args[2])
-            Ext.Print("--------------------------------------------------------")
+            Ext.Print("===================================================================================================")
+            Ext.Print("[S7_UCL:Lua:Auxiliary] --- " .. tostring(args[1]) .. ":" .. tostring(args[2]))
+            Ext.Print("---------------------------------------------------------------------------------------------------")
             local i = 3
             while i <= #args do
                 if args[i+1] ~= nil then
@@ -29,7 +29,7 @@ function RegisterDebugHooks(UI)
                     i = i + 1
                 end
             end
-            Ext.Print("========================================================")
+            Ext.Print("===================================================================================================")
         end)
     end
 end
