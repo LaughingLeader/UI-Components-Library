@@ -59,13 +59,13 @@
       public function onClose() : *
       {
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
-         ExternalInterface.call("S7_DebugHook", "Root:onClose()", "Closing UI")
+         //ExternalInterface.call("S7_DebugHook", "Root:onClose()", "Closing UI")
          ExternalInterface.call("S7_UI_Journal_Hide");
       }
 
       public function onToggleEdit() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:onToggleEdit()", "Toggling Edit", "Root.editable", this.editable)
+         //ExternalInterface.call("S7_DebugHook", "Root:onToggleEdit()", "Toggling Edit", "Root.editable", this.editable)
          this.editable = !this.editable;  // Boolean to control editable state
          if(!this.editable)
          {
@@ -77,13 +77,13 @@
       
       public function HideSharedThings() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:HideSharedThings()", "Hiding Shared Stuff")
+         //ExternalInterface.call("S7_DebugHook", "Root:HideSharedThings()", "Hiding Shared Stuff")
          this.shareWithParty_mc.visible = false;
       }
       
       public function onEventInit() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:onEventInit()", "Event Initialization")
+         //ExternalInterface.call("S7_DebugHook", "Root:onEventInit()", "Event Initialization")
 
          ExternalInterface.call("registerAnchorId", "gmjournal");
          ExternalInterface.call("setPosition", "center", "screen", "center");
@@ -130,7 +130,7 @@
             strContent = this.entries[i++];           // this.entries[4] 5
             isShared = this.entries[i++];             // this.entries[5] 6
 
-            ExternalInterface.call("S7_DebugHook", "Root:updateEntries()", "Updating Entries", "journalNodeTypeIndex", journalNodeTypeIndex, "positionIndex", positionIndex, "entriesMapIndex", entriesMapIndex, "categoryMapIndex", categoryIndex, "String Content", strContent, "isShared", isShared)
+            //ExternalInterface.call("S7_DebugHook", "Root:updateEntries()", "Updating Entries", "journalNodeTypeIndex", journalNodeTypeIndex, "positionIndex", positionIndex, "entriesMapIndex", entriesMapIndex, "categoryMapIndex", categoryIndex, "String Content", strContent, "isShared", isShared)
 
             entryMovieClip = this.entriesMap[entriesMapIndex];
             
@@ -178,7 +178,7 @@
 
       public function createCategory(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         ExternalInterface.call("S7_DebugHook", "Root:createCategory()", "Creating Category")
+         //ExternalInterface.call("S7_DebugHook", "Root:createCategory()", "Creating Category")
          var catElement:* = this.content_mc.createCategory(entriesMapIndex, positionIndex, strContent, isShared);
          catElement.editableElement_mc.ownerScrollList = this.content_mc.categories;
          this.entriesMap[entriesMapIndex] = catElement;
@@ -188,7 +188,7 @@
       
       public function updateCategory(entryMovieClip:MovieClip, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:updateCategory()", "Updating Category")
+         //ExternalInterface.call("S7_DebugHook", "Root:updateCategory()", "Updating Category")
          if(entryMovieClip.list_pos != positionIndex)
          {
             this.content_mc.categories.addElementOnPosition(entryMovieClip, positionIndex, false);
@@ -200,7 +200,7 @@
       
       public function createChapter(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         ExternalInterface.call("S7_DebugHook", "Root:createChapter()", "Creating Chapter")
+         //ExternalInterface.call("S7_DebugHook", "Root:createChapter()", "Creating Chapter")
          
          var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
          if(catElement == null)
@@ -217,7 +217,7 @@
       
       public function updateChapter(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
+         //ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;
@@ -249,7 +249,7 @@
       
       public function createParagraph(entriesMapIndex:Number, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:createParagraph()", "Creating Paragraph")
+         //ExternalInterface.call("S7_DebugHook", "Root:createParagraph()", "Creating Paragraph")
          var catElement:MovieClip = this.entriesMap[categoryIndex] as MovieClip;
          if(catElement == null)
          {
@@ -267,7 +267,7 @@
       
       public function updateParagraph(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:updateParagraph()", "Updating Paragraph", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
+         //ExternalInterface.call("S7_DebugHook", "Root:updateParagraph()", "Updating Paragraph", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;

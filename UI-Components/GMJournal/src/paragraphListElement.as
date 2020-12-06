@@ -24,7 +24,7 @@
       
       public function Init(strContent:String, paraID:Number) : *
       {
-         ExternalInterface.call("S7_DebugHook", "paragraphListElement", "Initializing paragraphListElement", "paraID", paraID, "String Content", strContent)
+         //ExternalInterface.call("S7_DebugHook", "paragraphListElement", "Initializing paragraphListElement", "paraID", paraID, "String Content", strContent)
          this.editableElement_mc.Init(this.paragraph_mc, strContent, 523, 27); // editableElement_mc.Init(categoryMC:MovieClip, strContent:String, width:Number, height:Number) : *
          
          this.editableElement_mc.onRemove = this.onElementRemove;

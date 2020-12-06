@@ -36,7 +36,7 @@
       
       public function Init(entriesMapIndex:Number, strContent:String) : *
       {
-         ExternalInterface.call("S7_DebugHook", "categoryListElement", "Initializing new categoryListElement", "entriesMapIndex", entriesMapIndex, "String Content", strContent)
+         //ExternalInterface.call("S7_DebugHook", "categoryListElement", "Initializing new categoryListElement", "entriesMapIndex", entriesMapIndex, "String Content", strContent)
          this._id = entriesMapIndex;   // Maps to FlashObject
          
          this.addChapterButton_mc.initialize((root as MovieClip).strings.addChapter, this.onAddChapter);
@@ -114,7 +114,7 @@
       
       public function createChapter(entriesMapIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : MovieClip
       {
-         ExternalInterface.call("S7_DebugHook", "categoryListElement", "Creating Chapter", "entriesMapIndex", entriesMapIndex, "positionIndex", positionIndex, "String Content", strContent)
+         //ExternalInterface.call("S7_DebugHook", "categoryListElement", "Creating Chapter", "entriesMapIndex", entriesMapIndex, "positionIndex", positionIndex, "String Content", strContent)
          var chapterElement:* = new chapterListElement();
          this._chapters.addElementOnPosition(chapterElement, positionIndex, false);
          chapterElement.onRemove = this.onChapterRemove;

@@ -32,7 +32,7 @@ package GMJournal_fla
       
       public function Init() : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:Init()", "Initializing paragraphs_mc")
+         //ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:Init()", "Initializing paragraphs_mc")
          this._paragraphsList = new scrollList();
          this._paragraphsList.mouseWheelWhenOverEnabled = true;
          this._paragraphsList.setTileableBG = "rightPageBG";
@@ -131,7 +131,7 @@ package GMJournal_fla
       
       public function setEditable(editable:Boolean) : *
       {
-         ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:setEditable()", editable)
+         //ExternalInterface.call("S7_DebugHook", "Root:paragraphs_mc:setEditable()", editable)
          
          var paragraphElement:* = undefined;
          this._editable = editable;
