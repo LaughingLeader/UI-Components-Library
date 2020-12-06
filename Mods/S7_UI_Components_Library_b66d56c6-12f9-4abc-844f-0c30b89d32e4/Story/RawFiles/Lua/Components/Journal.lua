@@ -247,14 +247,14 @@ function UpdateJournal(JournalData)
             --  GET POSITION
             --  ------------
 
-            local function getPos(journalNodeType, entriesMapId, parentId)
+            local function getPos(journalNodeType, pos, entriesMapId, parentId)
                 if journalNodeType == 1 then
                     if Journal.JournalMetaData.CategoryEntryMap ~= nil then
                         for k, v in pairs(Journal.JournalMetaData.CategoryEntryMap) do
                             if v == entriesMapId then return k end
                         end
                     end
-                    return 0
+                    return pos
 
                 elseif journalNodeType == 2 then
                     if Journal.JournalMetaData.ChapterEntryMap[parentId] ~= nil then
@@ -262,7 +262,7 @@ function UpdateJournal(JournalData)
                             if v == entriesMapId then return k end
                         end
                     end
-                    return 0
+                    return pos
 
                 elseif journalNodeType == 3 then
                     if Journal.JournalMetaData.ParagraphEntryMap[parentId] ~= nil then
@@ -270,22 +270,43 @@ function UpdateJournal(JournalData)
                             if v == entriesMapId then return k end
                         end
                     end
-                    return 0
+                    return pos
                 end
             end
 
             --  UPDATE ENTRIES
             --  --------------
 
-            for _, data in pairs(journalEntry) do
+            for i, data in pairs(journalEntry) do
 
+                local Pos = getPos(data["JournalNodeType"], i, data["entriesMapId"], data["parentMapId"])
                 Journal.Root.entries[0] = data["JournalNodeType"]
-                Journal.Root.entries[1] = getPos(data["JournalNodeType"], data["entriesMapId"], data["parentMapId"])
+                Journal.Root.entries[1] = Pos
                 Journal.Root.entries[2] = data["entriesMapId"]
                 Journal.Root.entries[3] = data["parentMapId"]
                 Journal.Root.entries[4] = data["StringContent"]
                 Journal.Root.entries[5] = data["isShared"]
                 Journal.Root.updateEntries()
+
+                --  Update MetaData
+                --  ===============
+
+                if data.JournalNodeType == 1 then
+                    Journal.JournalMetaData.CategoryEntryMap[Pos] = data.entriesMapId
+                    if Journal.JournalMetaData.ChapterEntryMap[data.entriesMapId] == nil then
+                        Journal.JournalMetaData.ChapterEntryMap[data.entriesMapId] = {}
+                    end
+                elseif data.JournalNodeType == 2 then
+                    Journal.JournalMetaData.ChapterEntryMap[data.parentMapId][Pos] = data.entriesMapId
+                    if Journal.JournalMetaData.ParagraphEntryMap[data.entriesMapId] == nil then
+                        Journal.JournalMetaData.ParagraphEntryMap[data.entriesMapId] = {}
+                    end
+                elseif data.JournalNodeType == 3 then
+                    if Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId] == nil then
+                        Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId] = {}
+                    end
+                    Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId][Pos] = data.entriesMapId
+                end
 
                 --  Recursions
                 --  ----------
