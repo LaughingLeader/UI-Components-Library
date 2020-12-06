@@ -37,8 +37,8 @@ function ReinitializeJournal()
                 -- [2] = 2000000,
             },
             ["ChapterEntryMap"] = {
-                -- [1000000] = { 1010000, 1020000 }
-                -- [2000000] = { 2010000, 2020000 }
+                -- [1000000] = { 1001000, 1002000 }
+                -- [2000000] = { 2001000, 2002000 }
             },
             ["ParagraphEntryMap"] = {
                 -- [1001000] = { 1001001, 1001002 }
@@ -54,7 +54,7 @@ end
 
 Journal = Rematerialize(ReinitializeJournal())  --  Reinitialize Journal
 
---  ##########################################################################################################
+--  ########################################################################################################################################
 
 --  ==========================
 --  REGISTER JOURNAL LISTENERS
@@ -68,7 +68,7 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.UI, 'addCategory', function (ui, call, ...)
         Journal.Root.entries[0] = 1 --  Journal Node Type 1: Category
 
-        local Pos = Journal.Root.content_mc.categories.length - 1 or #Journal.JournalMetaData.CategoryEntryMap --  Get Position Index
+        local Pos = #Journal.JournalMetaData.CategoryEntryMap --  Get Position Index
         Journal.Root.entries[1] = Pos   --  Set Position Index
 
         local entriesMapId = Ext.Random(1, 999) * 1000000  --  Generate EntriesMapID
@@ -153,7 +153,6 @@ local function RegisterJournalListeners()
 
         elseif zeroes < 6 and zeroes >= 3 then  --  Journal Entry Type: Chapter
             local parentId = math.floor(id / 1000000) * 1000000
-            Ext.Print(parentId)
             for pos, target in ipairs(Journal.JournalMetaData.ChapterEntryMap[parentId]) do
                 if target == id then
                     if Journal.JournalMetaData.ChapterEntryMap[parentId][pos+1] ~= nil then
@@ -172,7 +171,6 @@ local function RegisterJournalListeners()
 
         elseif zeroes < 3 then  --  Journal Entry Type: Paragraph
             local parentId = math.floor(id / 1000) * 1000
-                    Ext.Print(parentId)
             for pos, target in ipairs(Journal.JournalMetaData.ParagraphEntryMap[parentId]) do
                 if target == id then
                     if Journal.JournalMetaData.ParagraphEntryMap[parentId][pos+1] ~= nil then
@@ -186,11 +184,8 @@ local function RegisterJournalListeners()
         end
     end)
 
-    Ext.RegisterUICall(Journal.UI, "S7_UI_Journal_Hide", function(ui, call, ...)
-        Journal.UI:Hide()
-    end)
-
-    RegisterDebugHooks(Journal.UI)
+    Ext.RegisterUICall(Journal.UI, "S7_UI_Journal_Hide", function(ui, call, ...) Journal.UI:Hide() end)
+    -- RegisterDebugHooks(Journal.UI)
 end
 
 --  ########################################################################################################################################
@@ -223,20 +218,10 @@ function RenderJournal(Specs)
 
     if Specs ~= nil then
         for key, value in pairs(Specs) do
-            if key == "Component" then
-                if SpecsHandler["Journal"][key] ~= nil then
-                    SpecsHandler["Journal"][key](value)
-                end
-            elseif key == "SubComponent" then
-                for k, v in pairs(value) do
-                    if SpecsHandler["Journal"][key][k] ~= nil then
-                        SpecsHandler["Journal"][key][k](v)
-                    end
-                end
-            elseif key == "JournalData" then
-                if SpecsHandler["Journal"][key] ~= nil then
-                    SpecsHandler["Journal"][key](value)
-                end
+            if key == "SubComponent" then
+                --  Doesn't have SubComponents
+            elseif SpecsHandler["Journal"][key] ~= nil then
+                SpecsHandler["Journal"][key](value)
             end
         end
     end
@@ -251,58 +236,59 @@ end
 --  ==============
 
 function UpdateJournal(JournalData)
-    Journal.JournalData = Ext.JsonParse(JournalData)
+    Journal.JournalData = Ext.JsonParse(JournalData) -- Parse Stringified Input
 
     --  BUILD JOURNAL
     --  =============
-    
+
     local function buildJournal(journalEntry)
         if journalEntry ~= nil then
-            for _, data in pairs(journalEntry) do
-                local function getPos(journalNodeType, parentId)
-                    if journalNodeType == 1 then return #Journal.JournalMetaData.CategoryEntryMap or 0
-                    elseif journalNodeType == 2 then return #Journal.JournalMetaData.ChapterEntryMap[parentId] or 0
-                    elseif journalNodeType == 3 then
-                        if Journal.JournalMetaData.ParagraphEntryMap[parentId] ~= nil then
-                        return #Journal.JournalMetaData.ParagraphEntryMap[parentId]
-                        else return 0
+
+            --  GET POSITION
+            --  ------------
+
+            local function getPos(journalNodeType, entriesMapId, parentId)
+                if journalNodeType == 1 then
+                    if Journal.JournalMetaData.CategoryEntryMap ~= nil then
+                        for k, v in pairs(Journal.JournalMetaData.CategoryEntryMap) do
+                            if v == entriesMapId then return k end
                         end
                     end
+                    return 0
+
+                elseif journalNodeType == 2 then
+                    if Journal.JournalMetaData.ChapterEntryMap[parentId] ~= nil then
+                        for k, v in pairs(Journal.JournalMetaData.ChapterEntryMap[parentId]) do
+                            if v == entriesMapId then return k end
+                        end
+                    end
+                    return 0
+
+                elseif journalNodeType == 3 then
+                    if Journal.JournalMetaData.ParagraphEntryMap[parentId] ~= nil then
+                        for k, v in pairs(Journal.JournalMetaData.ParagraphEntryMap[parentId]) do
+                            if v == entriesMapId then return k end
+                        end
+                    end
+                    return 0
                 end
-                
-                --  Update Entries
-                --  ==============
+            end
+
+            --  UPDATE ENTRIES
+            --  --------------
+
+            for _, data in pairs(journalEntry) do
 
                 Journal.Root.entries[0] = data["JournalNodeType"]
-                Journal.Root.entries[1] = getPos(data["JournalNodeType"], data["parentMapId"])
+                Journal.Root.entries[1] = getPos(data["JournalNodeType"], data["entriesMapId"], data["parentMapId"])
                 Journal.Root.entries[2] = data["entriesMapId"]
                 Journal.Root.entries[3] = data["parentMapId"]
                 Journal.Root.entries[4] = data["StringContent"]
                 Journal.Root.entries[5] = data["isShared"]
                 Journal.Root.updateEntries()
 
-                --  Update MetaData
-                --  ===============
-
-                if data.JournalNodeType == 1 then
-                    Journal.JournalMetaData.CategoryEntryMap[getPos(data.JournalNodeType, data.parentMapId) + 1] = data.entriesMapId
-                    if Journal.JournalMetaData.ChapterEntryMap[data.entriesMapId] == nil then
-                        Journal.JournalMetaData.ChapterEntryMap[data.entriesMapId] = {}
-                    end
-                elseif data.JournalNodeType == 2 then
-                    Journal.JournalMetaData.ChapterEntryMap[data.parentMapId][getPos(data.JournalNodeType, data.parentMapId) + 1] = data.entriesMapId
-                    if Journal.JournalMetaData.ParagraphEntryMap[data.entriesMapId] == nil then
-                        Journal.JournalMetaData.ParagraphEntryMap[data.entriesMapId] = {}
-                    end
-                elseif data.JournalNodeType == 3 then
-                    if Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId] == nil then
-                        Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId] = {}
-                    end
-                    Journal.JournalMetaData.ParagraphEntryMap[data.parentMapId][getPos(data.JournalNodeType, data.parentMapId) + 1] = data.entriesMapId
-                end
-
                 --  Recursions
-                --  ==========
+                --  ----------
 
                 if data.Chapters ~= nil then
                     buildJournal(data.Chapters)
@@ -318,12 +304,12 @@ function UpdateJournal(JournalData)
     buildJournal(Journal.JournalData)
 end
 
---  ===============
---  FUNCTION MAPPER
---  ===============
+--  =============
+--  SPECS HANDLER
+--  =============
 
 SpecsHandler["Journal"] = {
-    --  ==============
+    
     --  MAIN COMPONENT
     --  ==============
 
@@ -336,15 +322,25 @@ SpecsHandler["Journal"] = {
             Journal.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
             Journal.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
         end
-
         Journal.Root.updateCaptions()
     end,
-    --  =============
+
     --  SUBCOMPONENTS
     --  =============
 
     ["SubComponent"] = {},
+    
+    --  JOURNAL DATA
+    --  ============
+
     ['JournalData'] = function (data)
         UpdateJournal(Ext.JsonStringify(data))
+    end,
+
+    --  JOURNAL META-DATA
+    --  =================
+
+    ["JournalMetaData"] = function (data)
+        Journal.JournalMetaData = Rematerialize(data)
     end
 }
