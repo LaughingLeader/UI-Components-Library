@@ -240,7 +240,7 @@ local function RegisterJournalListeners()
         end
     end)
 
-    Ext.RegisterUICall(Journal.UI, "S7_UI_Journal_Hide", function(ui, call, ...) Journal.UI:Hide() end)
+    Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...) Journal.UI:Hide() end)
     RegisterDebugHooks(Journal.UI)
 end
 

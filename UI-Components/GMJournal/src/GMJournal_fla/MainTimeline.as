@@ -60,7 +60,7 @@
       {
          ExternalInterface.call("PlaySound","UI_Game_Journal_Close");
          //ExternalInterface.call("S7_DebugHook", "Root:onClose()", "Closing UI")
-         ExternalInterface.call("S7_UI_Journal_Hide");
+         ExternalInterface.call("S7_Journal_UI_Hide");
       }
 
       public function onToggleEdit() : *
