@@ -297,11 +297,11 @@ function UpdateJournal(JournalData)
 
                 --  Recursions
                 --  ----------
-                if data.Chapters ~= nil then
-                    buildJournal(data.Chapters)
+                if data.chapters ~= nil then
+                    buildJournal(data.chapters)
                 end
-                if data.Paragraphs ~= nil then
-                    buildJournal(data.Paragraphs)
+                if data.paragraphs ~= nil then
+                    buildJournal(data.paragraphs)
                 end
             end
         end
