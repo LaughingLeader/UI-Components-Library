@@ -25,6 +25,12 @@ function ReinitializeJournal()
                 ["shareWithParty"] = "Share with Party"
             }
         },
+        ["SubComponent"] = {
+            ["ToggleEditButton"] = {
+                ["Title"] = "ToggleEditButton",
+                ["Visible"] = true
+            }
+        },
         ["JournalMetaData"] = {
             ["CategoryEntryMap"] = {},
             ["ChapterEntryMap"] = {},
@@ -130,10 +136,10 @@ local function handleEntry(data)
     if data.ID == nil or type(data.ID) ~= "number" then return end
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID)
     Journal.Root.entries[0] = journalNodeType
-    
+
     local Pos, catPos, chapPos, paraPos = getPos(data.ID)
     Journal.Root.entries[1] = Pos - 1
-    
+
     local entryID, parentID = determineEntryID(data.ID)
     Journal.Root.entries[2] = entryID
     Journal.Root.entries[3] = parentID
@@ -147,10 +153,10 @@ local function handleEntry(data)
         Journal.JournalData[catPos]["strContent"] = data.strContent
         Journal.JournalData[catPos]["isShared"] = data.isShared or false
         if Journal.JournalData[catPos]["chapters"] == nil then Journal.JournalData[catPos]["chapters"] = {} end
-        
+
         Journal.JournalMetaData.CategoryEntryMap[catPos] = entryID
         if Journal.JournalMetaData.ChapterEntryMap[entryID] == nil then Journal.JournalMetaData.ChapterEntryMap[entryID] = {} end
-    
+
     elseif journalNodeType == 2 then
         if Journal.JournalData[catPos]["chapters"][chapPos] == nil then Journal.JournalData[catPos]["chapters"][chapPos] = {} end
         Journal.JournalData[catPos]["chapters"][chapPos]["ID"] = data.ID
@@ -160,7 +166,7 @@ local function handleEntry(data)
 
         Journal.JournalMetaData.ChapterEntryMap[parentID][chapPos] = entryID
         if Journal.JournalMetaData.ParagraphEntryMap[entryID] == nil then Journal.JournalMetaData.ParagraphEntryMap[entryID] = {} end
-    
+
     elseif journalNodeType == 3 then
         if Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos] == nil then Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos] = {} end
         Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["ID"] = data.ID
@@ -263,12 +269,8 @@ function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
 
     if Specs ~= nil then
-        for key, value in pairs(Specs) do
-            if key == "SubComponent" then
-                --  Doesn't have SubComponents
-            elseif SpecsHandler["Journal"][key] ~= nil then
-                SpecsHandler["Journal"][key](value)
-            end
+        for specType, specifications in pairs(Specs) do
+            SpecsHandler["Journal"][specType](specifications)
         end
     end
 
@@ -314,7 +316,7 @@ end
 --  =============
 
 SpecsHandler["Journal"] = {
-    
+
     --  MAIN COMPONENT
     --  --------------
     ["Component"] = function(Component)
@@ -331,8 +333,13 @@ SpecsHandler["Journal"] = {
 
     --  SUBCOMPONENTS
     --  -------------
-    ["SubComponent"] = {},
-    
+    ["SubComponent"] = function (SubComponent)
+        if SubComponent.ToggleEditButton ~= nil then
+            Journal.Root.toggleEditButton_mc.visible = SubComponent.ToggleEditButton.Visible
+            Journal.SubComponent.ToggleEditButton.Visible = SubComponent.ToggleEditButton.Visible
+        end
+    end,
+
     --  JOURNAL DATA
     --  ------------
     ['JournalData'] = function (data)

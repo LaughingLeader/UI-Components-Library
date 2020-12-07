@@ -5,6 +5,10 @@
 
 ## [0.3.0.0] --- 7th December 2020 --- 📖**_Remastered Journal_**📖
 
+### NEW
+
+* _Added_ *SubComponent* option to `ToggleEditButton_mc` Visibility.
+
 ### CHANGED
 
 * _Recreated_ `Journal.lua` from the ground-up.
