@@ -217,7 +217,7 @@
       
       public function updateChapter(entriesMovieClip:MovieClip, categoryIndex:Number, positionIndex:int, strContent:String, isShared:Boolean) : *
       {
-         //ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
+         // ExternalInterface.call("S7_DebugHook", "Root:updateChapter()", "Updating Chapter", "categoryIndex", categoryIndex, "positionIndex", positionIndex, "String Content", strContent, "isShared", isShared)
          var _loc6_:MovieClip = null;
          var _loc7_:MovieClip = null;
          var _loc8_:MovieClip = null;

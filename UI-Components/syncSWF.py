@@ -29,5 +29,4 @@ for subdirectory, directory, files in os.walk(sourceDir):
             shutil.copy(filePath, os.path.join(targetDir + fileName))
 
             dashes = "-" * len(fileName)
-            print(
-                f"{fileName}\n{dashes}\nMoved swf at {sourceDir + fileName}\n to {targetDir + fileName}\n")
+            print(f"{fileName}\n{dashes}\nMoved swf at {sourceDir + fileName}\n to {targetDir + fileName}\n")

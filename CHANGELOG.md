@@ -2,6 +2,13 @@
 
 ----------
 
+
+## [0.3.0.0] --- 7th December 2020 --- 📖**_Remastered Journal_**📖
+
+### CHANGED
+
+* _Recreated_ `Journal.lua` from the ground-up.
+
 ## [0.2.7.0] -- 27th November 2020 --- **_Journal Improvements_**
 
 ### CHANGED
