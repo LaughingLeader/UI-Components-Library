@@ -7,7 +7,8 @@
 
 ### NEW
 
-* _Added_ *SubComponent* option to `ToggleEditButton_mc` Visibility.
+* _Added_ *SubComponent* option to toggle `ToggleEditButton_mc` Visibility.
+* _Added_ *SubComponent* option to toggle `CloseButton_mc` Visibility.
 
 ### CHANGED
 

@@ -70,6 +70,14 @@ function ReinitializeMsgBox()
                 ["Visible"] = false --  Visibility of Input-Text Box
             },
             
+            --  CLOSE BUTTON
+            --  ------------
+
+            ["CloseButton"] = {
+                ["Name"] = "CloseButton",
+                ["Visible"] = true
+            },
+
             --  BUTTONS
             --  -------
             
@@ -347,6 +355,10 @@ SpecsHandler["MsgBox"] = {
             MsgBox.UI:Invoke("setInputText", SubComponent.InputText or MsgBox.SubComponent.InputText.InputText or "")
             MsgBox.UI:Invoke("setCopyBtnVisible", SubComponent.CopyBtnVisible or MsgBox.SubComponent.InputText.CopyBtnVisible or false)
             MsgBox.UI:Invoke("setPasteBtnVisible", SubComponent.PasteBtnVisible or MsgBox.SubComponent.InputText.PasteBtnVisible or false)
+        end,
+
+        ["CloseButton"] = function (SubComponent)
+            MsgBox.Root.closeButton_mc.visible = SubComponent.Visible
         end,
         --      BUTTONS
         --      -------
