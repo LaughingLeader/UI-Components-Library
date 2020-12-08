@@ -9,6 +9,7 @@
 
 * _Added_ *SubComponent* option to toggle `ToggleEditButton_mc` Visibility.
 * _Added_ *SubComponent* option to toggle `CloseButton_mc` Visibility.
+* _Sync_ `JournalData` when text-updates.
 
 ### CHANGED
 

@@ -216,6 +216,22 @@ local function RegisterJournalListeners()
         })
     end)
 
+    --  UPDATE TEXT
+    --  -----------
+
+    Ext.RegisterUICall(Journal.UI, "textUpdate", function (ui, call, id, updatedText)
+        local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id)
+        local Pos, catPos, chapPos, paraPos = getPos(id)
+
+        if journalNodeType == 1 then
+            Journal.JournalData[catPos]["strContent"] = updatedText
+        elseif journalNodeType == 2 then
+            Journal.JournalData[catPos]["chapters"][chapPos]["strContent"] = updatedText
+        elseif journalNodeType == 3 then
+            Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["strContent"] = updatedText
+        end
+    end)
+
     --  REMOVE NODES
     --  ============
 
