@@ -123,6 +123,7 @@ Thumbs.db
 #   VSCode Workspace
 *.code-workspace
 .vscode
+Images/
 
 #   GIMP XCF
 *.xcf
