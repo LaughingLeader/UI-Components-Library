@@ -27,7 +27,7 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
     ![msgBox1](https://i.imgur.com/sw4UCSh.png)
     ![msgBox4](https://i.imgur.com/Kf0SJLZ.png)
     - **GMJournal**: A modified GMJournal intended to be used for story-mode journals, in-game manuals and in-game changelogs etc.
-    ![GMJournal](https://i.imgur.com/8QH29mn.png)
+    ![GMJournal](https://imgur.com/tHcOoGF.png)
 
 ----------
 
