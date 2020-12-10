@@ -286,7 +286,9 @@ function RenderJournal(Specs)
 
     if Specs ~= nil then
         for specType, specifications in pairs(Specs) do
-            SpecsHandler["Journal"][specType](specifications)
+            if SpecsHandler["Journal"][specType] ~= nil then
+                SpecsHandler["Journal"][specType](specifications)
+            end
         end
     end
 
