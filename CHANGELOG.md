@@ -2,6 +2,11 @@
 
 ----------
 
+## [0.3.0.0] --- 12th December 2020 --- **_Unload Journal_**
+
+### NEW
+
+* _Created_ `UnloadJournal`. <-- Removes all entries from the journal.
 
 ## [0.3.0.0] --- 7th December 2020 --- 📖**_Remastered Journal_**📖
 

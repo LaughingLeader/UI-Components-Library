@@ -8,10 +8,9 @@ Ext.Require("S7_UCL_Auxiliary.lua")
 --  JOURNAL
 --  =======
 
-Journal = UILibrary.GMJournal
 
 function ReinitializeJournal()
-    local defaultJournal = {
+    UILibrary.GMJournal = {
         ["Exists"] = false, --  Whether journal element exists
         ["UI"] = {}, -- The actual element
         ["Root"] = {}, --  Root Object
@@ -38,10 +37,10 @@ function ReinitializeJournal()
         },
         ["JournalData"] = {}
     }
-    return defaultJournal
 end
+ReinitializeJournal()  --  Reinitialize Journal
 
-Journal = Rematerialize(ReinitializeJournal())  --  Reinitialize Journal
+Journal = UILibrary.GMJournal
 
 --  ================
 --  HELPER FUNCTIONS
@@ -249,10 +248,12 @@ local function RegisterJournalListeners()
         elseif journalNodeType == 1 then
             table.remove(Journal.JournalData, catPos)
             table.remove(Journal.JournalMetaData.CategoryEntryMap, catPos)
-            for _, chaps in pairs(Journal.JournalMetaData.ChapterEntryMap[catMapID]) do
-                Journal.JournalMetaData.ParagraphEntryMap[chaps] = nil
+            if Journal.JournalMetaData.ChapterEntryMap[tostring(catMapID)] ~= nil then
+                for _, chaps in ipairs(Journal.JournalMetaData.ChapterEntryMap[tostring(catMapID)]) do
+                    Journal.JournalMetaData.ParagraphEntryMap[chaps] = nil
+                end
+                Journal.JournalMetaData.ChapterEntryMap[catMapID] = nil
             end
-            Journal.JournalMetaData.ChapterEntryMap[catMapID] = nil
         end
     end)
 
@@ -283,7 +284,6 @@ end
 
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
-
     if Specs ~= nil then
         for specType, specifications in pairs(Specs) do
             if SpecsHandler["Journal"][specType] ~= nil then
@@ -327,6 +327,16 @@ function UpdateJournal(JournalData)
 --  ---------------------------------
     buildJournal(Journal.JournalData)
 --  ---------------------------------
+end
+
+--  ==============
+--  UNLOAD JOURNAL
+--  ==============
+
+function UnloadJournal()
+    for _, catID in ipairs(Journal.JournalMetaData.CategoryEntryMap) do
+        Journal.Root.entriesMap[catID].onRemove()
+    end
 end
 
 --  =============
