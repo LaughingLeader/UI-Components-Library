@@ -38,8 +38,8 @@ function ReinitializeJournal()
         ["JournalData"] = {}
     }
 end
-ReinitializeJournal()  --  Reinitialize Journal
 
+ReinitializeJournal()  --  Reinitialize Journal
 Journal = UILibrary.GMJournal
 
 --  ================
@@ -54,6 +54,7 @@ local function parseID(ID, reMerge)
     local reMerge = reMerge or true
     local zeroes = GetTrailingZeroes(ID)
     local journalNodeType = 1
+
     if zeroes >= 6 then journalNodeType = 1
     elseif zeroes < 6 and zeroes >= 3 then journalNodeType = 2
     elseif zeroes < 3 then journalNodeType = 3 end
@@ -132,7 +133,7 @@ end
 --  =============
 
 local function handleEntry(data)
-    if data.ID == nil or type(data.ID) ~= "number" then return end
+    if type(data.ID) == "nil" or type(data.ID) ~= "number" then return end
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID)
     Journal.Root.entries[0] = journalNodeType
 
@@ -248,8 +249,8 @@ local function RegisterJournalListeners()
         elseif journalNodeType == 1 then
             table.remove(Journal.JournalData, catPos)
             table.remove(Journal.JournalMetaData.CategoryEntryMap, catPos)
-            if Journal.JournalMetaData.ChapterEntryMap[tostring(catMapID)] ~= nil then
-                for _, chaps in ipairs(Journal.JournalMetaData.ChapterEntryMap[tostring(catMapID)]) do
+            if Journal.JournalMetaData.ChapterEntryMap[catMapID] ~= nil then
+                for _, chaps in ipairs(Journal.JournalMetaData.ChapterEntryMap[catMapID]) do
                     Journal.JournalMetaData.ParagraphEntryMap[chaps] = nil
                 end
                 Journal.JournalMetaData.ChapterEntryMap[catMapID] = nil

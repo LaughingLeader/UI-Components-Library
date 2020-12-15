@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.3.0.0] --- 15th December 2020 --- **_LinkedLists_**
+
+### NEW
+
+* _Created_ `S7_LinkedList.lua` for doubly linked-list functionality. -- Time to revamp journal again.
+
 ## [0.3.0.0] --- 12th December 2020 --- **_Unload Journal_**
 
 ### NEW
