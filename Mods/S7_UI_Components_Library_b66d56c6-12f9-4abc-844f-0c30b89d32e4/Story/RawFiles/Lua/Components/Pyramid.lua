@@ -2,7 +2,7 @@
 --  IMPORTS
 --  =======
 
-Ext.Require("S7_UCL_Auxiliary.lua")
+Ext.Require("Auxiliary.lua")
 
 --  =======
 --  PYRAMID

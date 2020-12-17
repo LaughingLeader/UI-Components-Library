@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.3.0.0] --- 17th December 2020 --- **_Casual Rewrite of the entire code_**
+
+### CHANGED
+
+* _Renamed_ `S7_UCL_Auxiliary.lua` to `Auxiliary.lua`.
+
 ## [0.3.0.0] --- 15th December 2020 --- **_LinkedLists_**
 
 ### NEW
