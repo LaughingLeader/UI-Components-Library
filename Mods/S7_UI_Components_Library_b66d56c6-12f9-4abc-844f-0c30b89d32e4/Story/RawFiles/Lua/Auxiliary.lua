@@ -20,6 +20,7 @@ Dir = {
 function Rematerialize(element, clones)
     clones = clones or {}
     local clone
+
     if type(element) == "table" then
         if clones[element] then clone = clones[element]
         else
@@ -96,20 +97,17 @@ function RegisterDebugHooks(UI)
     if Ext.IsDeveloperMode() then
         Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
             local args = {...}
-            Ext.Print("===================================================================================================")
-            S7DebugPrint(tostring(args[1]) .. ":" .. tostring(args[2]))
-            Ext.Print("---------------------------------------------------------------------------------------------------")
+            S7DebugPrint(tostring(args[1]) .. ":" .. tostring(args[2]), "Auxiliary", "Log", nil, true)
             local i = 3
             while i <= #args do
                 if args[i+1] ~= nil then
-                    Ext.Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
+                    S7DebugPrint(tostring(args[i]) .. ":" .. tostring(args[i+1]), "Auxiliary")
                     i = i + 2
                 else
-                    Ext.Print(tostring(args[i]))
+                    S7DebugPrint(tostring(args[i]), "Auxiliary")
                     i = i + 1
                 end
             end
-            Ext.Print("===================================================================================================")
         end)
     end
 end

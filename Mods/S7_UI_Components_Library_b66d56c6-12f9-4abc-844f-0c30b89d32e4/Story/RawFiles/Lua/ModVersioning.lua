@@ -31,24 +31,20 @@ function ParseVersion(version, returnMode)
         versionTable = table.pack(major, minor, revision, build)
 	end
 
-    if returnMode == "table" then
-        return versionTable
-    elseif returnMode == "string" then
-        return string.format("%s.%s.%s.%s", major, minor, revision, build)
-    else
-        return major, minor, revision, build
-    end
+    if returnMode == "table" then return versionTable
+    elseif returnMode == "string" then return string.format("%s.%s.%s.%s", major, minor, revision, build)
+    else return major, minor, revision, build end
 end
 
 --  UPDATER
 --  -------
 
-local prevVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
+local oldVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
 if CENTRAL[IDENTIFIER] ~= nil and CENTRAL[IDENTIFIER]["Version"] ~= nil then
-    prevVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table")
+    oldVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table")
 end
 
-local currVersion = ParseVersion(ModInfo.Version, "table")
+local newVersion = ParseVersion(ModInfo.Version, "table")
 
 local function ModUpdater(prevVersion, currVersion, forceUpdate)
     local isUpdatedRequired = false
@@ -68,4 +64,6 @@ local function ModUpdater(prevVersion, currVersion, forceUpdate)
     end
 end
 
-ModUpdater(prevVersion, currVersion)
+--  ------------------------------
+ModUpdater(oldVersion, newVersion)
+--  ------------------------------
