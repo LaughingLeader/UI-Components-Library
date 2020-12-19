@@ -2,49 +2,141 @@
 --  IMPORTS
 --  =======
 
-Ext.Require("S7_UCL_Auxiliary.lua")
+Ext.Require("Auxiliary.lua")
+
+--  =================
+--  CLASS DEFINITIONS
+--  =================
+
+local function newClass(parent, object)
+    local object = object or {}
+    setmetatable(object, parent.mt)
+    parent.mt.__index = parent
+    parent.properties.Counter = 1
+    return object
+end
+
+local function classFunction_GenerateNextID(parent) return parent.properties.Counter * parent.properties.IDIncrementor end
+
+local function classFunction_Find(parent, ID)
+    for key, value in pairs(parent) do if value.ID == ID then return key end end
+    return nil
+end
+
+local function classFunction_Push(parent, element)
+    if type(element) ~="table" then return end
+    local position = classFunction_Find(parent, element.ID)
+    if position ~= nil then parent[position] = element
+    else table.insert(parent, element) end
+    parent.properties.Counter = parent.properties.Counter + 1
+end
+
+local function classFunction_GetElement(parent, ID)
+    local position = parent:Find(ID)
+    if position then return parent[position] end
+    return nil
+end
+
+local function classFunction_Remove(parent, ID)
+    local position = parent:Find(ID)
+    if position then table.remove(parent, position) end
+end
+
+--  JOURNAL LIST
+--  ------------
+
+JournalList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000000}}
+JournalList.mt = {}
+setmetatable(JournalList, JournalList.mt)
+
+function JournalList:New(object) return newClass(self, object) end
+function JournalList:Find(ID) return classFunction_Find(self, ID) end
+function JournalList:GetElement(ID) return classFunction_GetElement(self, ID) end
+function JournalList:Remove(ID) classFunction_Remove(self, ID) end
+function JournalList:GenerateNextID() return classFunction_GenerateNextID(self) end
+
+--  CHAPTERS LIST
+--  -------------
+
+ChapterList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000}}
+ChapterList.mt = {}
+setmetatable(ChapterList, ChapterList.mt)
+
+function ChapterList:New(object) return newClass(self, object) end
+function ChapterList:Find(ID) return classFunction_Find(self, ID) end
+function ChapterList:GetElement(ID) return classFunction_GetElement(self, ID) end
+function ChapterList:Remove(ID) classFunction_Remove(self, ID) end
+function ChapterList:GenerateNextID() return classFunction_GenerateNextID(self) end
+
+--  PARAGRAPHS LIST
+--  ---------------
+
+ParagraphList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1}}
+ParagraphList.mt = {}
+setmetatable(ParagraphList, ParagraphList.mt)
+
+function ParagraphList:New(object) return newClass(self, object) end
+function ParagraphList:Find(ID) return classFunction_Find(self, ID) end
+function ParagraphList:GetElement(ID) return classFunction_GetElement(self, ID) end
+function ParagraphList:Remove(ID) classFunction_Remove(self, ID) end
+function ParagraphList:GenerateNextID() return classFunction_GenerateNextID(self) end
+
+function JournalList:Push(element) element.Chapters = ChapterList:New(); classFunction_Push(self, element) end
+function ChapterList:Push(element) element.Paragraphs = ParagraphList:New(); classFunction_Push(self, element) end
+function ParagraphList:Push(element) classFunction_Push(self, element) end
 
 --  =======
 --  JOURNAL
 --  =======
 
+UILibrary.GMJournal.prototype = {
+    ["Exists"] = false,
+    ["UI"] = {},
+    ["Root"] = {},
+    ["Component"] = {
+        ["Strings"] = {
+            ["caption"] = "Your Journal",
+            ["editButtonCaption"] = "TOGGLE EDIT MODE",
+            ["addChapter"] = "Add New Chapter",
+            ["addCategory"] = "Add New Category",
+            ["addParagraph"] = "Add New Entry...",
+            ["shareWithParty"] = "Share with Party"
+        }
+    },
+    ["SubComponent"] = {
+        ["ToggleEditButton"] = {
+            ["Title"] = "ToggleEditButton",
+            ["Visible"] = true
+        }
+    },
+    ["JournalData"] = JournalList:New()
+}
+UILibrary.GMJournal.mt = {}
+setmetatable(UILibrary.GMJournal, UILibrary.GMJournal.mt)
+UILibrary.GMJournal.mt.__index = UILibrary.GMJournal.prototype
 
-function ReinitializeJournal()
-    UILibrary.GMJournal = {
-        ["Exists"] = false, --  Whether journal element exists
-        ["UI"] = {}, -- The actual element
-        ["Root"] = {}, --  Root Object
-        ["Component"] = {
-            ["Strings"] = {
-                ["caption"] = "Your Journal",
-                ["editButtonCaption"] = "TOGGLE EDIT MODE",
-                ["addChapter"] = "Add New Chapter",
-                ["addCategory"] = "Add New Category",
-                ["addParagraph"] = "Add New Entry...",
-                ["shareWithParty"] = "Share with Party"
-            }
-        },
-        ["SubComponent"] = {
-            ["ToggleEditButton"] = {
-                ["Title"] = "ToggleEditButton",
-                ["Visible"] = true
-            }
-        },
-        ["JournalMetaData"] = {
-            ["CategoryEntryMap"] = {},
-            ["ChapterEntryMap"] = {},
-            ["ParagraphEntryMap"] = {}
-        },
-        ["JournalData"] = {}
-    }
+function UILibrary.GMJournal:New(object)
+    local object = object or {}
+    setmetatable(object, self.mt)
+    self.mt.__index = self.prototype
+    return object
 end
 
-ReinitializeJournal()  --  Reinitialize Journal
-Journal = UILibrary.GMJournal
+--  ===============================
+Journal = UILibrary.GMJournal:New()
+--  ===============================
 
 --  ================
 --  HELPER FUNCTIONS
 --  ================
+
+--  ---------
+--  PRINT ALL
+--  ---------
+
+function RevealJournal()
+    Ext.Print(Ext.JsonStringify(Journal.JournalData))
+end
 
 --  --------
 --  PARSE ID
@@ -77,30 +169,20 @@ end
 
 local function getPos(ID)
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(ID, true)
-    local Pos, catPos, chapPos, paraPos = 1, 1, 1, 1
+    local Pos, catPos, chapPos, paraPos
 
-    if Journal.JournalMetaData.CategoryEntryMap ~= nil then
-        catPos = #Journal.JournalMetaData.CategoryEntryMap + 1
-        for k, v in pairs(Journal.JournalMetaData.CategoryEntryMap) do
-            if v == catMapID then catPos = k end
-        end
+    if journalNodeType >= 1 then
+        catPos = Journal.JournalData:Find(catMapID) or #Journal.JournalData + 1
+        Pos = catPos
     end
-    if Journal.JournalMetaData.ChapterEntryMap[catMapID] ~= nil then
-        chapPos = #Journal.JournalMetaData.ChapterEntryMap[catMapID] + 1
-        for k, v in pairs(Journal.JournalMetaData.ChapterEntryMap[catMapID]) do
-            if v == chapMapID then chapPos = k end
-        end
+    if journalNodeType >= 2 then
+        chapPos = Journal.JournalData:GetElement(catMapID).Chapters:Find(chapMapID) or #Journal.JournalData:GetElement(catMapID).Chapters + 1
+        Pos = chapPos
     end
-    if Journal.JournalMetaData.ParagraphEntryMap[chapMapID] ~= nil then
-        paraPos = #Journal.JournalMetaData.ParagraphEntryMap[chapMapID] + 1
-        for k, v in pairs(Journal.JournalMetaData.ParagraphEntryMap[chapMapID]) do
-            if v == paraMapID then paraPos = k end
-        end
+    if journalNodeType >= 3 then
+        paraPos = Journal.JournalData:GetElement(catMapID).Chapters:GetElement(chapMapID).Paragraphs:Find(paraMapID) or #Journal.JournalData:GetElement(catMapID).Chapters:GetElement(chapMapID).Paragraphs + 1
+        Pos = paraPos
     end
-
-    if journalNodeType == 1 then Pos = catPos
-    elseif journalNodeType == 2 then Pos = chapPos
-    elseif journalNodeType == 3 then Pos = paraPos end
 
     return Pos, catPos, chapPos, paraPos
 end
@@ -110,23 +192,14 @@ end
 --  --------------------------------
 
 local function determineEntryID(ID)
-    local entryID, parentID = 0, 0
+    local entryID, parentID
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(ID, true)
 
-    if journalNodeType == 1 then
-        entryID = catMapID
-        parentID = catMapID
-    elseif journalNodeType == 2 then
-        parentID = catMapID
-        entryID = chapMapID
-    elseif journalNodeType == 3 then
-        parentID = chapMapID
-        entryID = paraMapID
-    end
-    return entryID, parentID
+    if journalNodeType == 1 then entryID = catMapID; parentID = catMapID
+    elseif journalNodeType == 2 then parentID = catMapID; entryID = chapMapID
+    elseif journalNodeType == 3 then parentID = chapMapID; entryID = paraMapID
+    end return entryID, parentID
 end
-
---  ########################################################################################################################################
 
 --  =============
 --  ENTRY HANDLER
@@ -147,33 +220,9 @@ local function handleEntry(data)
     Journal.Root.entries[5] = data.isShared or false
     Journal.Root.updateEntries()
 
-    if journalNodeType == 1 then
-        if Journal.JournalData[catPos] == nil then Journal.JournalData[catPos] = {} end
-        Journal.JournalData[catPos]["ID"] = data.ID
-        Journal.JournalData[catPos]["strContent"] = data.strContent
-        Journal.JournalData[catPos]["isShared"] = data.isShared or false
-        if Journal.JournalData[catPos]["chapters"] == nil then Journal.JournalData[catPos]["chapters"] = {} end
-
-        Journal.JournalMetaData.CategoryEntryMap[catPos] = entryID
-        if Journal.JournalMetaData.ChapterEntryMap[entryID] == nil then Journal.JournalMetaData.ChapterEntryMap[entryID] = {} end
-
-    elseif journalNodeType == 2 then
-        if Journal.JournalData[catPos]["chapters"][chapPos] == nil then Journal.JournalData[catPos]["chapters"][chapPos] = {} end
-        Journal.JournalData[catPos]["chapters"][chapPos]["ID"] = data.ID
-        Journal.JournalData[catPos]["chapters"][chapPos]["strContent"] = data.strContent
-        Journal.JournalData[catPos]["chapters"][chapPos]["isShared"] = data.isShared or false
-        if Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"] == nil then Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"] = {} end
-
-        Journal.JournalMetaData.ChapterEntryMap[parentID][chapPos] = entryID
-        if Journal.JournalMetaData.ParagraphEntryMap[entryID] == nil then Journal.JournalMetaData.ParagraphEntryMap[entryID] = {} end
-
-    elseif journalNodeType == 3 then
-        if Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos] == nil then Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos] = {} end
-        Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["ID"] = data.ID
-        Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["strContent"] = data.strContent
-        Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["isShared"] = data.isShared or false
-
-        Journal.JournalMetaData.ParagraphEntryMap[parentID][paraPos] = entryID
+    if journalNodeType == 1 then Journal.JournalData:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
+    elseif journalNodeType == 2 then Journal.JournalData[catPos]["Chapters"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
+    elseif journalNodeType == 3 then Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     end
 end
 
@@ -188,7 +237,7 @@ local function RegisterJournalListeners()
 
     Ext.RegisterUICall(Journal.UI, 'addCategory', function (ui, call, ...)
         handleEntry({
-            ["ID"] = (#Journal.JournalMetaData.CategoryEntryMap + 1) * 1000000,
+            ["ID"] = Journal.JournalData:GenerateNextID(),
             ["strContent"] = "New Category",
             ["isShared"] = false
         })
@@ -198,8 +247,9 @@ local function RegisterJournalListeners()
     --  ===========
 
     Ext.RegisterUICall(Journal.UI, 'addChapter', function (ui, call, id)
+        local Pos, catPos, chapPos, paraPos = getPos(id)
         handleEntry({
-            ["ID"] = id + (#Journal.JournalMetaData.ChapterEntryMap[id] + 1) * 1000,
+            ["ID"] = id + Journal.JournalData[catPos].Chapters:GenerateNextID(),
             ["strContent"] = "New Chapter",
             ["isShared"] = false
         })
@@ -209,8 +259,9 @@ local function RegisterJournalListeners()
     --  =============
 
     Ext.RegisterUICall(Journal.UI, 'addParagraph', function (ui, call, id)
+        local Pos, catPos, chapPos, paraPos = getPos(id)
         handleEntry({
-            ["ID"] = id + (#Journal.JournalMetaData.ParagraphEntryMap[id] + 1),
+            ["ID"] = id + Journal.JournalData[catPos].Chapters[chapPos].Paragraphs:GenerateNextID(),
             ["strContent"] = "New Paragraph",
             ["isShared"] = false
         })
@@ -223,12 +274,9 @@ local function RegisterJournalListeners()
         local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id)
         local Pos, catPos, chapPos, paraPos = getPos(id)
 
-        if journalNodeType == 1 then
-            Journal.JournalData[catPos]["strContent"] = updatedText
-        elseif journalNodeType == 2 then
-            Journal.JournalData[catPos]["chapters"][chapPos]["strContent"] = updatedText
-        elseif journalNodeType == 3 then
-            Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"][paraPos]["strContent"] = updatedText
+        if journalNodeType == 1 then Journal.JournalData[catPos]["strContent"] = updatedText
+        elseif journalNodeType == 2 then Journal.JournalData[catPos]["Chapters"][chapPos]["strContent"] = updatedText
+        elseif journalNodeType == 3 then Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"][paraPos]["strContent"] = updatedText
         end
     end)
 
@@ -239,22 +287,9 @@ local function RegisterJournalListeners()
         local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id, true)
         local Pos, catPos, chapPos, paraPos = getPos(id)
 
-        if journalNodeType == 3 then
-            table.remove(Journal.JournalData[catPos]["chapters"][chapPos]["paragraphs"], paraPos)
-            table.remove(Journal.JournalMetaData.ParagraphEntryMap[chapMapID], paraPos)
-        elseif journalNodeType == 2 then
-            table.remove(Journal.JournalData[catPos]["chapters"], chapPos)
-            table.remove(Journal.JournalMetaData.ChapterEntryMap[catMapID], chapPos)
-            Journal.JournalMetaData.ParagraphEntryMap[chapMapID] = nil
-        elseif journalNodeType == 1 then
-            table.remove(Journal.JournalData, catPos)
-            table.remove(Journal.JournalMetaData.CategoryEntryMap, catPos)
-            if Journal.JournalMetaData.ChapterEntryMap[catMapID] ~= nil then
-                for _, chaps in ipairs(Journal.JournalMetaData.ChapterEntryMap[catMapID]) do
-                    Journal.JournalMetaData.ParagraphEntryMap[chaps] = nil
-                end
-                Journal.JournalMetaData.ChapterEntryMap[catMapID] = nil
-            end
+        if journalNodeType == 1 then Journal.JournalData:Remove(catMapID)
+        elseif journalNodeType == 2 then Journal.JournalData[catPos].Chapters:Remove(chapMapID)
+        elseif journalNodeType == 3 then Journal.JournalData[catPos].Chapters[chapPos].Paragraphs:Remove(paraMapID)
         end
     end)
 
@@ -269,14 +304,12 @@ end
 --  ==============
 
 function CreateJournal(Specs)
-    if not Journal.Exists then
-        ReinitializeJournal()
-        Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
-        Journal.UI = Ext.GetUI("S7Journal")
-        Journal.Root = Journal.UI:GetRoot()
-        RegisterJournalListeners()
-        Journal.Exists = true
-    end
+    Journal = UILibrary.GMJournal:New()
+    Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
+    Journal.UI = Ext.GetUI("S7Journal")
+    Journal.Root = Journal.UI:GetRoot()
+    RegisterJournalListeners()
+    Journal.Exists = true
 end
 
 --  ==============
@@ -302,32 +335,19 @@ end
 --  ==============
 
 function UpdateJournal(JournalData)
-    Journal.JournalData = Ext.JsonParse(JournalData) -- Parse Stringified Input
-
-    --  BUILD JOURNAL
-    --  =============
     local function buildJournal(journalEntry)
-        if journalEntry ~= nil then
+        if journalEntry ~= nil and type(journalEntry) == 'table' then
 
-            --  UPDATE ENTRIES
-            --  --------------
-            for _, data in pairs(journalEntry) do
-                handleEntry(data)
-
-                --  Recursions
-                --  ----------
-                if data.chapters ~= nil then
-                    buildJournal(data.chapters)
-                end
-                if data.paragraphs ~= nil then
-                    buildJournal(data.paragraphs)
-                end
+            for _, Data in pairs(journalEntry) do
+                handleEntry(Data)
+                if Data.Chapters ~= nil then buildJournal(Data.Chapters) end
+                if Data.Paragraphs ~= nil then buildJournal(Data.Paragraphs) end
             end
         end
     end
---  ---------------------------------
-    buildJournal(Journal.JournalData)
---  ---------------------------------
+--  ----------------------------------------
+    buildJournal(Ext.JsonParse(JournalData))
+--  ----------------------------------------
 end
 
 --  ==============
@@ -335,8 +355,8 @@ end
 --  ==============
 
 function UnloadJournal()
-    for _, catID in ipairs(Journal.JournalMetaData.CategoryEntryMap) do
-        Journal.Root.entriesMap[catID].onRemove()
+    for _, value in ipairs(Journal.JournalData) do
+        Journal.Root.entriesMap[value.ID].onRemove()
     end
 end
 
@@ -345,9 +365,6 @@ end
 --  =============
 
 SpecsHandler["Journal"] = {
-
-    --  MAIN COMPONENT
-    --  --------------
     ["Component"] = function(Component)
         if Journal.Root.strings ~= nil then
             Journal.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
@@ -359,9 +376,6 @@ SpecsHandler["Journal"] = {
         end
         Journal.Root.updateCaptions()
     end,
-
-    --  SUBCOMPONENTS
-    --  -------------
     ["SubComponent"] = function (SubComponent)
         if SubComponent.ToggleEditButton ~= nil then
             Journal.Root.toggleEditButton_mc.visible = SubComponent.ToggleEditButton.Visible
@@ -369,15 +383,7 @@ SpecsHandler["Journal"] = {
         end
     end,
 
-    --  JOURNAL DATA
-    --  ------------
     ['JournalData'] = function (data)
         UpdateJournal(Ext.JsonStringify(data))
     end,
-
-    --  JOURNAL META-DATA
-    --  -----------------
-    ["JournalMetaData"] = function (data)
-        Journal.JournalMetaData = Rematerialize(data)
-    end
 }
