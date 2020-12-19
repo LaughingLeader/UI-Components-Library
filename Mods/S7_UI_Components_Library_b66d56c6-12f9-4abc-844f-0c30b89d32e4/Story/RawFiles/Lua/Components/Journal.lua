@@ -12,11 +12,8 @@ local function newClass(parent, object)
     local object = object or {}
     setmetatable(object, parent.mt)
     parent.mt.__index = parent
-    parent.properties.Counter = 1
     return object
 end
-
-local function classFunction_GenerateNextID(parent) return parent.properties.Counter * parent.properties.IDIncrementor end
 
 local function classFunction_Find(parent, ID)
     for key, value in pairs(parent) do if value.ID == ID then return key end end
@@ -28,7 +25,6 @@ local function classFunction_Push(parent, element)
     local position = classFunction_Find(parent, element.ID)
     if position ~= nil then parent[position] = element
     else table.insert(parent, element) end
-    parent.properties.Counter = parent.properties.Counter + 1
 end
 
 local function classFunction_GetElement(parent, ID)
@@ -53,7 +49,7 @@ function JournalList:New(object) return newClass(self, object) end
 function JournalList:Find(ID) return classFunction_Find(self, ID) end
 function JournalList:GetElement(ID) return classFunction_GetElement(self, ID) end
 function JournalList:Remove(ID) classFunction_Remove(self, ID) end
-function JournalList:GenerateNextID() return classFunction_GenerateNextID(self) end
+function JournalList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
 --  CHAPTERS LIST
 --  -------------
@@ -66,7 +62,7 @@ function ChapterList:New(object) return newClass(self, object) end
 function ChapterList:Find(ID) return classFunction_Find(self, ID) end
 function ChapterList:GetElement(ID) return classFunction_GetElement(self, ID) end
 function ChapterList:Remove(ID) classFunction_Remove(self, ID) end
-function ChapterList:GenerateNextID() return classFunction_GenerateNextID(self) end
+function ChapterList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
 --  PARAGRAPHS LIST
 --  ---------------
@@ -79,17 +75,17 @@ function ParagraphList:New(object) return newClass(self, object) end
 function ParagraphList:Find(ID) return classFunction_Find(self, ID) end
 function ParagraphList:GetElement(ID) return classFunction_GetElement(self, ID) end
 function ParagraphList:Remove(ID) classFunction_Remove(self, ID) end
-function ParagraphList:GenerateNextID() return classFunction_GenerateNextID(self) end
+function ParagraphList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
-function JournalList:Push(element) element.Chapters = ChapterList:New(); classFunction_Push(self, element) end
-function ChapterList:Push(element) element.Paragraphs = ParagraphList:New(); classFunction_Push(self, element) end
-function ParagraphList:Push(element) classFunction_Push(self, element) end
+function JournalList:Push(element) element.Chapters = ChapterList:New(); classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
+function ChapterList:Push(element) element.Paragraphs = ParagraphList:New(); classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
+function ParagraphList:Push(element) classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
 
 --  =======
 --  JOURNAL
 --  =======
 
-UILibrary.GMJournal.prototype = {
+UILibrary.GMJournal = {
     ["Exists"] = false,
     ["UI"] = {},
     ["Root"] = {},
@@ -113,12 +109,12 @@ UILibrary.GMJournal.prototype = {
 }
 UILibrary.GMJournal.mt = {}
 setmetatable(UILibrary.GMJournal, UILibrary.GMJournal.mt)
-UILibrary.GMJournal.mt.__index = UILibrary.GMJournal.prototype
+UILibrary.GMJournal.mt.__index = UILibrary.GMJournal
 
 function UILibrary.GMJournal:New(object)
     local object = object or {}
     setmetatable(object, self.mt)
-    self.mt.__index = self.prototype
+    self.mt.__index = self
     return object
 end
 
@@ -129,14 +125,6 @@ Journal = UILibrary.GMJournal:New()
 --  ================
 --  HELPER FUNCTIONS
 --  ================
-
---  ---------
---  PRINT ALL
---  ---------
-
-function RevealJournal()
-    Ext.Print(Ext.JsonStringify(Journal.JournalData))
-end
 
 --  --------
 --  PARSE ID
@@ -355,8 +343,8 @@ end
 --  ==============
 
 function UnloadJournal()
-    for _, value in ipairs(Journal.JournalData) do
-        Journal.Root.entriesMap[value.ID].onRemove()
+    for i = 1, #Journal.JournalData, 1 do
+        Journal.Root.entriesMap[Journal.JournalData[i].ID].onRemove()
     end
 end
 
