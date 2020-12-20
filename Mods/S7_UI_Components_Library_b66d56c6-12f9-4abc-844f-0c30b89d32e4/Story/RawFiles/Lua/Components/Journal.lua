@@ -25,6 +25,7 @@ local function classFunction_Push(parent, element)
     local position = classFunction_Find(parent, element.ID)
     if position ~= nil then parent[position] = element
     else table.insert(parent, element) end
+    parent.properties.Counter = parent.properties.Counter + 1
 end
 
 local function classFunction_GetElement(parent, ID)
@@ -50,6 +51,7 @@ function JournalList:Find(ID) return classFunction_Find(self, ID) end
 function JournalList:GetElement(ID) return classFunction_GetElement(self, ID) end
 function JournalList:Remove(ID) classFunction_Remove(self, ID) end
 function JournalList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
+function JournalList:ResetParameters() self.properties.Counter = 1 end
 
 --  CHAPTERS LIST
 --  -------------
@@ -77,9 +79,9 @@ function ParagraphList:GetElement(ID) return classFunction_GetElement(self, ID) 
 function ParagraphList:Remove(ID) classFunction_Remove(self, ID) end
 function ParagraphList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
-function JournalList:Push(element) element.Chapters = ChapterList:New(); classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
-function ChapterList:Push(element) element.Paragraphs = ParagraphList:New(); classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
-function ParagraphList:Push(element) classFunction_Push(self, element); self.properties.Counter = self.properties.Counter + 1 end
+function JournalList:Push(element) element.Chapters = ChapterList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000}}); classFunction_Push(self, element) end
+function ChapterList:Push(element) element.Paragraphs = ParagraphList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1}}); classFunction_Push(self, element) end
+function ParagraphList:Push(element) classFunction_Push(self, element) end
 
 --  =======
 --  JOURNAL
@@ -185,8 +187,8 @@ local function determineEntryID(ID)
 
     if journalNodeType == 1 then entryID = catMapID; parentID = catMapID
     elseif journalNodeType == 2 then parentID = catMapID; entryID = chapMapID
-    elseif journalNodeType == 3 then parentID = chapMapID; entryID = paraMapID
-    end return entryID, parentID
+    elseif journalNodeType == 3 then parentID = chapMapID; entryID = paraMapID end
+    return entryID, parentID
 end
 
 --  =============
@@ -237,7 +239,7 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.UI, 'addChapter', function (ui, call, id)
         local Pos, catPos, chapPos, paraPos = getPos(id)
         handleEntry({
-            ["ID"] = id + Journal.JournalData[catPos].Chapters:GenerateNextID(),
+            ["ID"] = math.floor(id + Journal.JournalData[catPos].Chapters:GenerateNextID()),
             ["strContent"] = "New Chapter",
             ["isShared"] = false
         })
@@ -249,7 +251,7 @@ local function RegisterJournalListeners()
     Ext.RegisterUICall(Journal.UI, 'addParagraph', function (ui, call, id)
         local Pos, catPos, chapPos, paraPos = getPos(id)
         handleEntry({
-            ["ID"] = id + Journal.JournalData[catPos].Chapters[chapPos].Paragraphs:GenerateNextID(),
+            ["ID"] = math.floor(id + Journal.JournalData[catPos].Chapters[chapPos].Paragraphs:GenerateNextID()),
             ["strContent"] = "New Paragraph",
             ["isShared"] = false
         })
@@ -281,7 +283,10 @@ local function RegisterJournalListeners()
         end
     end)
 
-    Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...) Journal.UI:Hide() end)
+    Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
+        Journal.UI:Hide()
+        Journal.JournalData:ResetParameters()
+    end)
     RegisterDebugHooks(Journal.UI)
 end
 
