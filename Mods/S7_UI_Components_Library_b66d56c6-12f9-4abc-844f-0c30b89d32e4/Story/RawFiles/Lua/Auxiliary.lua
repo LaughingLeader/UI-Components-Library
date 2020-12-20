@@ -85,7 +85,8 @@ if CENTRAL[IDENTIFIER] == nil then CENTRAL[IDENTIFIER] = {} end
 Ext.Require("ModVersioning.lua")
 --  ============================
 
-for k, v in pairs(ModInfo) do CENTRAL[IDENTIFIER][k] = v end
+local modInfoFields = {"Author", "Name", "UUID", "Version", "PublishedVersion", "ModVersion", "ModSettings"}
+for _, field in pairs(modInfoFields) do if ModInfo[field] then CENTRAL[IDENTIFIER][field] = ModInfo[field] end end
 CENTRAL[IDENTIFIER]["ModVersion"] = ParseVersion(ModInfo.Version, "string")
 Ext.SaveFile("S7Central.json", Ext.JsonStringify(CENTRAL))
 
