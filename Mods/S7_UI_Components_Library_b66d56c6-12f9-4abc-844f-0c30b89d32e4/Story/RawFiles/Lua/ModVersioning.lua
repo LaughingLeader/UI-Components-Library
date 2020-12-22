@@ -42,35 +42,35 @@ end
 --  UPDATER
 --  -------
 
-local oldVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
+local prevVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
 if CENTRAL[IDENTIFIER] ~= nil and CENTRAL[IDENTIFIER]["Version"] ~= nil then
-    oldVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table")
+    prevVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table")
 end
 
-local newVersion = ParseVersion(ModInfo.Version, "table")
+local currVersion = ParseVersion(ModInfo.Version, "table")
 
 --- Mod Update Logic
----@param prevVersion table
----@param currVersion table
+---@param oldVersion table
+---@param newVersion table
 ---@param forceUpdate boolean
-local function ModUpdater(prevVersion, currVersion, forceUpdate)
+local function ModUpdater(oldVersion, newVersion, forceUpdate)
     local isUpdatedRequired = false
     local forceUpdate = forceUpdate or false
 
-    for k, _ in ipairs(currVersion) do
-        if currVersion[k] == prevVersion[k] then
+    for k, _ in ipairs(newVersion) do
+        if newVersion[k] == oldVersion[k] then
         else
-            isUpdatedRequired = currVersion[k] > prevVersion[k]
+            isUpdatedRequired = newVersion[k] > oldVersion[k]
             break
         end
     end
 
     if isUpdatedRequired or forceUpdate then
-        S7DebugPrint("Updating " .. IDENTIFIER .. ": " .. ParseVersion(prevVersion, "string") .. " --> " .. ParseVersion(currVersion, "string"), "ModVersioning", "Log", true, true)
+        S7DebugPrint("Updating " .. IDENTIFIER .. ": " .. ParseVersion(oldVersion, "string") .. " --> " .. ParseVersion(newVersion, "string"), "ModVersioning", "Log", true, true)
         --  DO UPDATE STUFF
     end
 end
 
---  ------------------------------
-ModUpdater(oldVersion, newVersion)
---  ------------------------------
+--  --------------------------------
+ModUpdater(prevVersion, currVersion)
+--  --------------------------------
