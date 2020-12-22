@@ -10,31 +10,30 @@ Ext.Require("Auxiliary.lua")
 
 local function newClass(parent, object)
     local object = object or {}
-    setmetatable(object, parent.mt)
-    parent.mt.__index = parent
+    object = Integrate(object, parent)
     return object
 end
 
-local function classFunction_Find(parent, ID)
+local function cf_Find(parent, ID)
     for key, value in pairs(parent) do if value.ID == ID then return key end end
     return nil
 end
 
-local function classFunction_Push(parent, element)
+local function cf_Push(parent, element)
     if type(element) ~="table" then return end
-    local position = classFunction_Find(parent, element.ID)
+    local position = cf_Find(parent, element.ID)
     if position ~= nil then parent[position] = element
     else table.insert(parent, element) end
     parent.properties.Counter = parent.properties.Counter + 1
 end
 
-local function classFunction_GetElement(parent, ID)
+local function cf_GetElement(parent, ID)
     local position = parent:Find(ID)
     if position then return parent[position] end
     return nil
 end
 
-local function classFunction_Remove(parent, ID)
+local function cf_Remove(parent, ID)
     local position = parent:Find(ID)
     if position then table.remove(parent, position) end
 end
@@ -43,13 +42,11 @@ end
 --  ------------
 
 JournalList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000000}}
-JournalList.mt = {}
-setmetatable(JournalList, JournalList.mt)
 
 function JournalList:New(object) return newClass(self, object) end
-function JournalList:Find(ID) return classFunction_Find(self, ID) end
-function JournalList:GetElement(ID) return classFunction_GetElement(self, ID) end
-function JournalList:Remove(ID) classFunction_Remove(self, ID) end
+function JournalList:Find(ID) return cf_Find(self, ID) end
+function JournalList:GetElement(ID) return cf_GetElement(self, ID) end
+function JournalList:Remove(ID) cf_Remove(self, ID) end
 function JournalList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 function JournalList:ResetParameters() self.properties.Counter = 1 end
 
@@ -57,41 +54,45 @@ function JournalList:ResetParameters() self.properties.Counter = 1 end
 --  -------------
 
 ChapterList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000}}
-ChapterList.mt = {}
-setmetatable(ChapterList, ChapterList.mt)
 
 function ChapterList:New(object) return newClass(self, object) end
-function ChapterList:Find(ID) return classFunction_Find(self, ID) end
-function ChapterList:GetElement(ID) return classFunction_GetElement(self, ID) end
-function ChapterList:Remove(ID) classFunction_Remove(self, ID) end
+function ChapterList:Find(ID) return cf_Find(self, ID) end
+function ChapterList:GetElement(ID) return cf_GetElement(self, ID) end
+function ChapterList:Remove(ID) cf_Remove(self, ID) end
 function ChapterList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
 --  PARAGRAPHS LIST
 --  ---------------
 
 ParagraphList = {["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1}}
-ParagraphList.mt = {}
-setmetatable(ParagraphList, ParagraphList.mt)
 
 function ParagraphList:New(object) return newClass(self, object) end
-function ParagraphList:Find(ID) return classFunction_Find(self, ID) end
-function ParagraphList:GetElement(ID) return classFunction_GetElement(self, ID) end
-function ParagraphList:Remove(ID) classFunction_Remove(self, ID) end
+function ParagraphList:Find(ID) return cf_Find(self, ID) end
+function ParagraphList:GetElement(ID) return cf_GetElement(self, ID) end
+function ParagraphList:Remove(ID) cf_Remove(self, ID) end
 function ParagraphList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
 
-function JournalList:Push(element) element.Chapters = ChapterList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000}}); classFunction_Push(self, element) end
-function ChapterList:Push(element) element.Paragraphs = ParagraphList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1}}); classFunction_Push(self, element) end
-function ParagraphList:Push(element) classFunction_Push(self, element) end
+function JournalList:Push(element) element.Chapters = ChapterList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000}}); cf_Push(self, element) end
+function ChapterList:Push(element) element.Paragraphs = ParagraphList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1}}); cf_Push(self, element) end
+function ParagraphList:Push(element) cf_Push(self, element) end
 
 --  =======
 --  JOURNAL
 --  =======
 
+---@class GMJournal @GMJournal UI Component
+---@field private Exists boolean
+---@field private UI UIObject
+---@field private Root FlashObject
+---@field public Component table Holds information about the UI Component
+---@field public SubComponent table Holds information about constituting elements
 UILibrary.GMJournal = {
     ["Exists"] = false,
-    ["UI"] = {},
-    ["Root"] = {},
+    -- ["UI"] = {},
+    -- ["Root"] = {},
     ["Component"] = {
+        ["Name"] = "S7Journal",
+        ["Layer"] = 10,
         ["Strings"] = {
             ["caption"] = "Your Journal",
             ["editButtonCaption"] = "TOGGLE EDIT MODE",
@@ -109,14 +110,13 @@ UILibrary.GMJournal = {
     },
     ["JournalData"] = JournalList:New()
 }
-UILibrary.GMJournal.mt = {}
-setmetatable(UILibrary.GMJournal, UILibrary.GMJournal.mt)
-UILibrary.GMJournal.mt.__index = UILibrary.GMJournal
 
+--- Initialize new GMJournal Object
+---@param object table|nil Object to instantiate
+---@return GMJournal object GMJournal object
 function UILibrary.GMJournal:New(object)
     local object = object or {}
-    setmetatable(object, self.mt)
-    self.mt.__index = self
+    object = Integrate(object, self)
     return object
 end
 
@@ -132,6 +132,12 @@ Journal = UILibrary.GMJournal:New()
 --  PARSE ID
 --  --------
 
+---@param ID number JournalData ID
+---@param reMerge boolean Remerge IDs
+---@return number catMapID Category Map ID
+---@return number chapMapID Chapter Map ID
+---@return number paraMapID Paragraph Map ID
+---@return number journalNodeType Journal Node Type
 local function parseID(ID, reMerge)
     local reMerge = reMerge or true
     local zeroes = GetTrailingZeroes(ID)
@@ -157,6 +163,11 @@ end
 --  GET POSITION
 --  ------------
 
+---@param ID number JournalData ID
+---@return number Pos Position
+---@return number catPos Category Position
+---@return number chapPos Chapter Position
+---@return number paraPos Paragraph Position
 local function getPos(ID)
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(ID, true)
     local Pos, catPos, chapPos, paraPos
@@ -181,6 +192,9 @@ end
 --  DETERMINE ENTRY-ID and PARENT-ID
 --  --------------------------------
 
+---@param ID number JournalData ID
+---@return number entryID Journal entry ID
+---@return number parentID Parent's Journal entry ID
 local function determineEntryID(ID)
     local entryID, parentID
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(ID, true)
@@ -195,6 +209,8 @@ end
 --  ENTRY HANDLER
 --  =============
 
+--- Journal entry handler
+---@param data table Entry data
 local function handleEntry(data)
     if type(data.ID) == "nil" or type(data.ID) ~= "number" then return end
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID)
@@ -220,6 +236,7 @@ end
 --  REGISTER JOURNAL LISTENERS
 --  ==========================
 
+--- Registers UICall Listeners to Journal.UI Component
 local function RegisterJournalListeners()
 
     --  ADD CATEGORY
@@ -296,10 +313,12 @@ end
 --  CREATE JOURNAL
 --  ==============
 
+--- Create new Journal UI Component
+--- @param Specs table Journal build specifications
 function CreateJournal(Specs)
-    Journal = UILibrary.GMJournal:New()
-    Ext.CreateUI("S7Journal", Dir.ModGUI .. "GMJournal.swf", 10)
-    Journal.UI = Ext.GetUI("S7Journal")
+    Journal = UILibrary.GMJournal:New(Specs)
+    Ext.CreateUI(Journal.Component.Name, Dir.ModGUI .. "GMJournal.swf", Journal.Component.Layer)
+    Journal.UI = Ext.GetUI(Journal.Component.Name)
     Journal.Root = Journal.UI:GetRoot()
     RegisterJournalListeners()
     Journal.Exists = true
@@ -309,15 +328,13 @@ end
 --  RENDER JOURNAL
 --  ==============
 
+--- Render Journal UI
+--- @param Specs table Journal build specifications
+--- @return GMJournal Journal
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
-    if Specs ~= nil then
-        for specType, specifications in pairs(Specs) do
-            if SpecsHandler["Journal"][specType] ~= nil then
-                SpecsHandler["Journal"][specType](specifications)
-            end
-        end
-    end
+
+    for key, handler in pairs(SpecsHandler["Journal"]) do handler(Journal[key]) end
 
     Journal.UI:Show()
     return Journal
@@ -327,6 +344,8 @@ end
 --  UPDATE JOURNAL
 --  ==============
 
+--- Updates JournalData
+---@param JournalData table JournalData
 function UpdateJournal(JournalData)
     local function buildJournal(journalEntry)
         if journalEntry ~= nil and type(journalEntry) == 'table' then
@@ -347,6 +366,7 @@ end
 --  UNLOAD JOURNAL
 --  ==============
 
+--- Clears out entries from Journal UI
 function UnloadJournal()
     for i = 1, #Journal.JournalData, 1 do
         Journal.Root.entriesMap[Journal.JournalData[i].ID].onRemove()
@@ -360,12 +380,12 @@ end
 SpecsHandler["Journal"] = {
     ["Component"] = function(Component)
         if Journal.Root.strings ~= nil then
-            Journal.Root.strings.caption = Component.Strings.caption or Journal.Component.Strings.caption
-            Journal.Root.strings.editButtonCaption = Component.Strings.editButtonCaption or Journal.Component.Strings.editButtonCaption
-            Journal.Root.strings.addChapter = Component.Strings.addChapter or Journal.Component.Strings.addChapter
-            Journal.Root.strings.addCategory = Component.Strings.addCategory or Journal.Component.Strings.addCategory
-            Journal.Root.strings.addParagraph = Component.Strings.addParagraph or Journal.Component.Strings.addParagraph
-            Journal.Root.strings.shareWithParty = Component.Strings.shareWithParty or Journal.Component.Strings.shareWithParty
+            Journal.Root.strings.caption = Component.Strings.caption
+            Journal.Root.strings.editButtonCaption = Component.Strings.editButtonCaption
+            Journal.Root.strings.addChapter = Component.Strings.addChapter
+            Journal.Root.strings.addCategory = Component.Strings.addCategory
+            Journal.Root.strings.addParagraph = Component.Strings.addParagraph
+            Journal.Root.strings.shareWithParty = Component.Strings.shareWithParty
         end
         Journal.Root.updateCaptions()
     end,
@@ -377,6 +397,7 @@ SpecsHandler["Journal"] = {
     end,
 
     ['JournalData'] = function (data)
+        data = Rematerialize(data)
         UpdateJournal(Ext.JsonStringify(data))
     end,
 }

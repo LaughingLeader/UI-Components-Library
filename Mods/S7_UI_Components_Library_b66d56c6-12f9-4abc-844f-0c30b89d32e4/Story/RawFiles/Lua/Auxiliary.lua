@@ -17,21 +17,48 @@ Dir = {
 --  REMATERIALIZE
 --  =============
 
-function Rematerialize(element, clones)
+--- Completely clone an element
+---@param element any Element to copy
+---@param config table
+---@param clones table
+---@return any clone Rematerialized element
+function Rematerialize(element, config, clones)
+    config = config or {}
     clones = clones or {}
-    local clone
+    local clone = {}
 
     if type(element) == "table" then
         if clones[element] then clone = clones[element]
         else
             clone = {}
             clones[element] = clone
-            for key, value in pairs(element) do clone[Rematerialize(key, clones)] = Rematerialize(value, clones) end
-            setmetatable(clone, Rematerialize(getmetatable(element), clones))
+            for key, value in next, element do clone[Rematerialize(key, clones)] = Rematerialize(value, clones) end
+            if config.metatables then setmetatable(clone, Rematerialize(getmetatable(element), clones)) end   --  Copy metatables
         end
-    else clone = element end
+    elseif type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element end
+    else clone = element end    --  if element is anything other than a table, return as is
 
     return clone
+end
+
+--  =========
+--  INTEGRATE
+--  =========
+
+--- Merge source and target. Existing source elements have priority.
+---@param source table
+---@param target table
+---@return table source
+function Integrate(source, target)
+    local source = source or {}
+    for key, value in pairs(target) do
+        if type(value) == "table" then
+            if not source[key] then source[key] = {} end
+            source[key] = Integrate(source[key], value)
+        end
+        source[key] = source[key] or value
+    end
+    return source
 end
 
 --  ===========
@@ -67,7 +94,9 @@ end
 --  VALIDATE NON-EMPTY STRING
 --  =========================
 
-function ValidString(str) --  Checks if a string is not nil and is not empty.
+--- Check if string is not nil and is not empty
+---@param str any Element to check validity of
+function ValidString(str)
     if type(str) == "string" and str ~= nil and str ~= "" and str ~= "{}" and str ~= "[]" then return true
     else return false end
 end
@@ -85,7 +114,6 @@ local modInfoTable = {
     ["ModVersion"] = "0.0.0.0",
 }
 
-
 CENTRAL = {}    --  Holds Global Settings and Information
 local file = Ext.LoadFile("S7Central.json") or "{}"
 if ValidString(file) then CENTRAL = Ext.JsonParse(file) end
@@ -95,6 +123,9 @@ if CENTRAL[IDENTIFIER] == nil then CENTRAL[IDENTIFIER] = Rematerialize(modInfoTa
 Ext.Require("ModVersioning.lua")
 --  ============================
 
+--- Initialize CENTRAL
+---@param ref table Reference table
+---@param tar table Target table
 local function initCENTRAL(ref, tar)
     for field, value in pairs(ref) do
         if ModInfo[field] then tar[field] = Rematerialize(ModInfo[field])
@@ -111,6 +142,7 @@ Ext.SaveFile("S7Central.json", Ext.JsonStringify(CENTRAL))
 --  REGISTER DEBUG LISTENER
 --  =======================
 
+---@param UI UIObject
 function RegisterDebugHooks(UI)
     if Ext.IsDeveloperMode() then
         Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
@@ -134,6 +166,8 @@ end
 --  TRAILING ZEROES COUNTER
 --  =======================
 
+---@param n number
+---@return number count Number of trailing zeroes
 function GetTrailingZeroes(n)
     local i, count = 10, 0
     while n % i == 0 do

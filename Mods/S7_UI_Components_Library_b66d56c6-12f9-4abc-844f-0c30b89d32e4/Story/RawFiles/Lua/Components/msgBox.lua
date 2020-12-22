@@ -8,20 +8,27 @@ Ext.Require("Auxiliary.lua")
 --  MsgBox
 --  ======
 
+---@class MsgBox @UILibrary msgBox
+---@field private Exists boolean
+---@field private UI UIObject
+---@field private Root FlashObject
+---@field public Component table Holds information about the UI Component
+---@field public SubComponent table Holds information about constituting elements
 UILibrary.msgBox = {
-    ["Exists"] = false, --  MsgBox exists
-    ["UI"] = {}, -- The UI Object
-    ["Root"] = {}, --  The Root Object
+    ["Exists"] = false,
+    -- ["UI"] = {},
+    -- ["Root"]= {},
 
     --  --------------
     --  Main Component
     --  --------------
     ["Component"] = {
-        ["Name"] = "msgBox", --  Name of UI element
+        ["Name"] = "S7_UI_MsgBox", --  Name of UI element
+        ["Layer"] = 10, --  Layer stack order of UI element
         ["PopupType"] = 1, --  Popup Variant
         ["flexOrder"] = "NoOrder",  --  flexOrder for positioning of subcomponents. "Order", "NoOrder", "Forced"
-        ["flexMode"] = "Start", -- Start, Center, End. Determines vertical positioning of subcomponents
-        ["flexStart"] = 50, --  Top Margin.
+        ["flexMode"] = "Start", -- Determines vertical positioning of subcomponents. "Start", "Center", "End"
+        ["flexStart"] = 50, --  Top Margin
         ["Padding"] = 10,   --  Padding between subcomponents
         ["AutoResize"] = true, -- AutoResizes the popup-background based if content overflows.
         ["Visible"] = false -- Visibility of popup_mc
@@ -97,14 +104,12 @@ UILibrary.msgBox = {
     }
 }
 
-UILibrary.msgBox.mt = {}
-setmetatable(UILibrary.msgBox, UILibrary.msgBox.mt)
-UILibrary.msgBox.mt.__index = UILibrary.msgBox
-
+--- Initialize new MsgBox Object
+---@param object table|nil Object to instantiate
+---@return MsgBox object MsgBox object
 function UILibrary.msgBox:New(object)
     local object = object or {}
-    setmetatable(object, self.mt)
-    self.mt.__index = self
+    object = Integrate(object, self)
     return object
 end
 
@@ -118,46 +123,33 @@ MsgBox = UILibrary.msgBox:New()
 --  CREATE MESSAGE-BOX
 --  ==================
 
+--- Create new MsgBox UI Component
+--- @param Specs table MsgBox build specifications
 function CreateMsgBox(Specs)
-    MsgBox = UILibrary.msgBox:New()    --  Reinitialize MsgBox
-    Ext.CreateUI("S7_msgBox", Dir.ModGUI .. "msgBox.swf", 5)   -- Get MsgBox UI
-    MsgBox.UI = Ext.GetUI("S7_msgBox")
-    MsgBox.Root = MsgBox.UI:GetRoot()   --  Get UI Root
+    MsgBox = UILibrary.msgBox:New(Specs)    --  Reinitialize MsgBox
+    Ext.CreateUI(MsgBox.Component.Name, Dir.ModGUI .. "msgBox.swf", MsgBox.Component.Layer)
+    MsgBox.UI = Ext.GetUI(MsgBox.Component.Name)
+    MsgBox.Root = MsgBox.UI:GetRoot()
 
     --  REGISTER CLOSE BUTTON LISTENER
     --  ------------------------------
 
-    Ext.RegisterUICall(MsgBox.UI, "S7_UI_msgBox_Hide", function(ui, call, ...)
-        MsgBox.Root.hideWin()    --  Hide or Destroy ??
-        MsgBox = UILibrary.msgBox:New()
+    Ext.RegisterUICall(MsgBox.UI, "S7HideUI", function(ui, call, ...)
+        MsgBox.UI:Invoke("hideWin")    --  Hide or Destroy ??
+        CloseMsgBox()
     end)
 
     MsgBox.Exists = true    --  Set MsgBox existance to true
-    RenderMsgBox(Specs)
+    RenderMsgBox(Specs) --  Rerender MsgBox
 end
-
--- --  ==================
--- --  UPDATE MESSAGE-BOX
--- --  ==================
-
--- function UpdateMsgBox(SpecsTable)
---     if SpecsTable ~= nil then
---         for key, value in pairs(MsgBox) do
---             if type(value) ~= "table" then
---                 MsgBox[key] = SpecsTable[key] or value
---             else
---                 for k, v in pairs(value) do
---                     MsgBox[key][k] = SpecsTable[key][k] or v
---                 end
---             end
---         end
---     end
--- end
 
 --  ==================
 --  RENDER MESSAGE-BOX
 --  ==================
 
+--- Render MsgBox UI
+--- @param Specs table MsgBox build specifications
+--- @return MsgBox MsgBox
 function RenderMsgBox(Specs)
     --  Create if MsgBox doesn't already exist
     if not MsgBox.Exists then CreateMsgBox(Specs) end
@@ -166,14 +158,7 @@ function RenderMsgBox(Specs)
     --  SPECS HANDLER
     --  -------------
 
-    if Specs ~= nil then
-        for key, value in pairs(Specs) do
-            if key == "Component" then if SpecsHandler["MsgBox"][key] ~= nil then SpecsHandler["MsgBox"][key](value) end
-            elseif key == "SubComponent" then for k, v in pairs(value) do if SpecsHandler["MsgBox"][key][k] ~= nil then SpecsHandler["MsgBox"][key][k](v) end end
-            end
-        end
-    end
-
+    for key, handler in pairs(SpecsHandler["MsgBox"]) do handler(MsgBox[key]) end
 
     --  -------------------
     --  REPOSITION ELEMENTS
@@ -183,16 +168,16 @@ function RenderMsgBox(Specs)
     --  -----------
 
     local order = {}    --  Holds the order of flex-components
-    local push = 0  --  If two subcomponents have the same order, push tracks the positional shift of succeeding elements.
-    for subCompName, subComp in pairs(Specs.SubComponent) do
+    local push = 0  --  If two subcomponents have the same order, push tracks the positional shift of succeeding elements
+    for subCompName, subComp in pairs(MsgBox.SubComponent) do
         if subComp.Order ~= nil and subComp.Visible or subComp.ReserveSpace then -- If Order Specified + SubComponent Visible or SpaceReserved
             if order[subComp.Order] ~= nil then --  If Order Index already mapped
                 push = push + 1 --  Increase push by 1
             end
-            order[subComp.Order + push] = subCompName   --  Add to Order Table
+            order[tonumber(subComp.Order + push)] = subCompName   --  Add to Order Table
         elseif subComp.Order == nil and subComp.Visible or subComp.ReserveSpace then -- If Order not Specified + SubComponent Visible or SpaceReserved
-            if Specs.Component.Order == "Forced" then -- flexOrder is enforced
-                order[#order + 1] = subCompName -- Append SubComponent at the end of Order Table.
+            if MsgBox.Component.Order == "Forced" then -- flexOrder is enforced
+                order[tonumber(#order + 1)] = subCompName -- Append SubComponent at the end of Order Table.
             end
         end
     end
@@ -201,7 +186,7 @@ function RenderMsgBox(Specs)
     --  Recenter Popup Background
     --  -------------------------
 
-    if Specs.Component.PopupType >= 4 then MsgBox.Root.setY(200)
+    if MsgBox.Component.PopupType >= 4 then MsgBox.Root.setY(200)
     else MsgBox.Root.setY(330) end
 
 
@@ -209,12 +194,7 @@ function RenderMsgBox(Specs)
     --  -------------
 
     local textHeight = 0
-    local function determineTextHeight()
-        if MsgBox.Root.popup_mc.text_mc.text_txt.height >= MsgBox.Root.popup_mc.text_mc.text_txt.textHeight then return MsgBox.Root.popup_mc.text_mc.text_txt.textHeight
-        else return MsgBox.Root.popup_mc.text_mc.text_txt.height
-        end
-    end
-    textHeight = determineTextHeight()
+    textHeight = MsgBox.Root.popup_mc.text_mc.text_txt.height >= MsgBox.Root.popup_mc.text_mc.text_txt.textHeight and MsgBox.Root.popup_mc.text_mc.text_txt.textHeight or MsgBox.Root.popup_mc.text_mc.text_txt.height
 
     local subComponentHeights = {
         ["Popup"] = MsgBox.Root.popup_mc.height,
@@ -232,9 +212,9 @@ function RenderMsgBox(Specs)
         if subComponentHeights[comp] ~= nil  and comp ~= "Popup" then totalHeight = totalHeight + subComponentHeights[comp] end
     end
 
-    if Specs.Component.AutoResize ~= false then
-        if totalHeight > subComponentHeights["Popup"] and Specs.Component.PopupType < 4 then MsgBox.UI:Invoke("setPopupType", 4)
-        elseif totalHeight < subComponentHeights["Popup"] and Specs.Component.PopupType > 4 then MsgBox.UI:Invoke("setPopupType", 1)
+    if MsgBox.Component.AutoResize then
+        if totalHeight > subComponentHeights["Popup"] and MsgBox.Component.PopupType < 4 then MsgBox.UI:Invoke("setPopupType", 4)
+        elseif totalHeight < subComponentHeights["Popup"] and MsgBox.Component.PopupType > 4 then MsgBox.UI:Invoke("setPopupType", 1)
         end
     end
 
@@ -243,14 +223,14 @@ function RenderMsgBox(Specs)
 
     local flexPos = 0
     local flexEnd = subComponentHeights["Popup"] - MsgBox.Component.flexStart
-    if Specs.Component.flexMode == "Start" then flexPos = MsgBox.Component.flexStart
-    elseif Specs.Component.flexMode == "Center" then flexPos = (subComponentHeights["Popup"] - totalHeight) / 2
-    elseif Specs.Component.flexMode == "End" then flexPos = flexEnd - totalHeight
+    if MsgBox.Component.flexMode == "Start" then flexPos = MsgBox.Component.flexStart
+    elseif MsgBox.Component.flexMode == "Center" then flexPos = (subComponentHeights["Popup"] - totalHeight) / 2
+    elseif MsgBox.Component.flexMode == "End" then flexPos = flexEnd - totalHeight
     end
 
-    if Specs.Component.Order ~= "NoOrder" then
-        for index, element in ipairs(order) do
-            if Specs.SubComponent[element].Visible or Specs.SubComponent[element].SpaceReserved then
+    if MsgBox.Component.Order ~= "NoOrder" then
+        for _, element in ipairs(order) do
+            if MsgBox.SubComponent[element].Visible or MsgBox.SubComponent[element].SpaceReserved then
                 if element == "Title" then
                     MsgBox.Root.popup_mc.title_txt.y = flexPos
                     flexPos = flexPos + subComponentHeights["Title"] + MsgBox.Component.Padding
@@ -261,7 +241,7 @@ function RenderMsgBox(Specs)
                     MsgBox.Root.popup_mc.input_mc.y = flexPos
                     flexPos = flexPos + subComponentHeights["InputText"] + MsgBox.Component.Padding
                 elseif element == "Buttons" then
-                    if Specs.SubComponent.Buttons.AlwaysAtBottom then
+                    if MsgBox.SubComponent.Buttons.AlwaysAtBottom then
                         MsgBox.Root.popup_mc.setBtnPos(flexEnd - MsgBox.Root.popup_mc.btnList.height)
                     else
                         MsgBox.Root.popup_mc.setBtnPos(flexPos)
@@ -276,7 +256,7 @@ function RenderMsgBox(Specs)
     --  SHOW MESSAGE BOX
     --  ----------------
 
-    MsgBox.Root.showWin()
+    MsgBox.UI:Invoke("showWin")
     return MsgBox
 end
 
@@ -284,6 +264,7 @@ end
 --  DESTROY MESSAGE-BOX
 --  ===================
 
+--- Destroy MsgBox UI
 function CloseMsgBox()
     MsgBox.UI:Destroy()
     MsgBox = UILibrary.msgBox:New()
@@ -300,59 +281,55 @@ SpecsHandler["MsgBox"] = {
     --  ==============
 
     ["Component"] = function(Component)
-        MsgBox.UI:Invoke("setPopupType", Component.PopupType or MsgBox.Component.PopupType)
-        MsgBox.Root.popup_mc.visible = Component.Visible or MsgBox.Component.Visible or false
+        MsgBox.UI:Invoke("setPopupType", Component.PopupType)
+        MsgBox.Root.popup_mc.visible = Component.Visible or false
     end,
     --  =============
     --  SUBCOMPONENTS
     --  =============
 
-    ["SubComponent"] = {
+    ["SubComponent"] = function (SubComponent)
 
-        --      TITLE
-        --      -----
+        --  TITLE
+        --  =====
+        if SubComponent.Title then
+            MsgBox.UI:Invoke("setTitleText", SubComponent.Title.TitleText)
+            MsgBox.Root.popup_mc.title_txt.visible = SubComponent.Title.Visible or false
+        end
 
-        ["Title"] = function(SubComponent)
-            MsgBox.UI:Invoke("setTitleText", SubComponent.TitleText or MsgBox.SubComponent.Title.TitleText)
-            MsgBox.Root.popup_mc.title_txt.visible = SubComponent.Visible or MsgBox.SubComponent.Title.Visible or false
-        end,
+        --  TEXT
+        --  ====
+        if SubComponent.Text then
+            MsgBox.UI:Invoke("setText", SubComponent.Text.Text)
+            MsgBox.Root.popup_mc.text_mc.gotoAndStop(SubComponent.Text.Type)
+            MsgBox.Root.popup_mc.text_mc.visible = SubComponent.Text.Visible or false
+        end
 
-        --      TEXT
-        --      ----
-
-        ["Text"] = function(SubComponent)
-            MsgBox.UI:Invoke("setText", SubComponent.Text or MsgBox.SubComponent.Text.Text)
-            MsgBox.Root.popup_mc.text_mc.gotoAndStop(SubComponent.Type or MsgBox.SubComponent.Text.Type)
-            MsgBox.Root.popup_mc.text_mc.visible = SubComponent.Visible or MsgBox.SubComponent.Title.Visible or false
-        end,
-
-        --      INPUT-TEXT
-        --      ----------
-
-        ["InputText"] = function(SubComponent)
+        --  INPUT TEXT
+        --  ==========
+        if SubComponent.InputText then
             MsgBox.UI:Invoke(
-                "setInputEnabled",
-                SubComponent.Visible or MsgBox.SubComponent.InputText.Visible or false,
-                SubComponent.MinChar or MsgBox.SubComponent.InputText.MinChar or 0,
-                SubComponent.MaxChar or MsgBox.SubComponent.InputText.MaxChar or 46
-            )
-            MsgBox.Root.popup_mc.input_mc.gotoAndStop(SubComponent.Type or MsgBox.SubComponent.InputText.Type)
-            MsgBox.UI:Invoke("setInputText", SubComponent.InputText or MsgBox.SubComponent.InputText.InputText or "")
-            MsgBox.UI:Invoke("setCopyBtnVisible", SubComponent.CopyBtnVisible or MsgBox.SubComponent.InputText.CopyBtnVisible or false)
-            MsgBox.UI:Invoke("setPasteBtnVisible", SubComponent.PasteBtnVisible or MsgBox.SubComponent.InputText.PasteBtnVisible or false)
-        end,
+                    "setInputEnabled",
+                    SubComponent.InputText.Visible or false,
+                    SubComponent.InputText.MinChar or 0,
+                    SubComponent.InputText.MaxChar or 46
+                )
+            MsgBox.Root.popup_mc.input_mc.gotoAndStop(SubComponent.Type)
+            MsgBox.UI:Invoke("setInputText", SubComponent.InputText.InputText or "")
+            MsgBox.UI:Invoke("setCopyBtnVisible", SubComponent.InputText.CopyBtnVisible or false)
+            MsgBox.UI:Invoke("setPasteBtnVisible", SubComponent.InputText.PasteBtnVisible or false)
+        end
 
-        ["CloseButton"] = function (SubComponent)
-            MsgBox.Root.closeButton_mc.visible = SubComponent.Visible
-        end,
+        --  CLOSE BUTTON
+        --  ============
+        if MsgBox.Root.popup_mc.closeButton_mc then MsgBox.Root.popup_mc.closeButton_mc.visible = SubComponent.CloseButton.Visible end
 
-        --      BUTTONS
-        --      -------
-
-        ["Buttons"] = function(SubComponent)
+        --  BUTTONS
+        --  =======
+        if SubComponent.Buttons then
             MsgBox.UI:Invoke("removeButtons")
-            if SubComponent.Btns ~= nil then
-                for id, btn in ipairs(SubComponent.Btns) do
+            if SubComponent.Buttons.Btns ~= nil then
+                for id, btn in ipairs(SubComponent.Buttons.Btns) do
                     if btn.Type == "Blue" then MsgBox.UI:Invoke("addBlueButton", id, btn.Label)
                     elseif btn.Type == "Yes" then MsgBox.UI:Invoke("addYesButton", id)
                     elseif btn.Type == "No" then MsgBox.UI:Invoke("addNoButton", id)
@@ -360,9 +337,9 @@ SpecsHandler["MsgBox"] = {
                     end
                 end
             end
-            MsgBox.Root.popup_mc.cButtons_mc.visible = SubComponent.Visible or MsgBox.SubComponent.Buttons.Visible or false
+            MsgBox.Root.popup_mc.cButtons_mc.visible = SubComponent.Buttons.Visible or false
         end
-    }
+    end
 }
 
 --  ###################################################################################################################################################

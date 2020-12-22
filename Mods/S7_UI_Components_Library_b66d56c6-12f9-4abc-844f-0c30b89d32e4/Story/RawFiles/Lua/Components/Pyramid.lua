@@ -8,24 +8,27 @@ Ext.Require("Auxiliary.lua")
 --  PYRAMID
 --  =======
 
+---@class Pyramid @UILibrary Pyramid
+---@field private Exists boolean
+---@field private UI UIObject
+---@field private Root FlashObject
+---@field public Component table
 UILibrary.Pyramid = {
     ["Exists"] = false,
-    ["UI"] = {},
-    ["Root"] = {},
+    -- ["UI"] = {},
+    -- ["Root"] = {},
     ["Component"] = {
+        ["Name"] = "S7_UI_Pyramid",
+        ["Layer"] = 5,
     }
 }
 
-Pyramid = UILibrary.Pyramid
-
-UILibrary.Pyramid.mt = {}
-setmetatable(UILibrary.Pyramid, UILibrary.Pyramid.mt)
-UILibrary.Pyramid.mt.__index = UILibrary.Pyramid
-
+--- Instantiate new Pyramid
+---@param object table|nil Object to instantiate
+---@return Pyramid object Pyramid Object
 function UILibrary.Pyramid:New(object)
     local object = object or {}
-    setmetatable(object, self.mt)
-    self.mt.__index = self
+    object = Integrate(object, self)
     return object
 end
 
@@ -39,12 +42,14 @@ Pyramid = UILibrary.Pyramid:New()
 --  CREATE PYRAMID
 --  ==============
 
+--- Create new Pyramid UI Component
+---@param Specs table Pyramid build specifications
 function CreatePyramid(Specs)
     if not Pyramid.Exists then   --  If Pyramid doesn't already exist
-        Pyramid = UILibrary.Pyramid:New()    --  Reinitialize Pyramid
-        Ext.CreateUI("S7_Pyramid", Dir.ModGUI .. "pyramid.swf", 7)   -- Get Pyramid UI
-        Pyramid.UI = Ext.GetUI("S7_Pyramid")
-        Pyramid.Root = Pyramid.UI:GetRoot()   --  Get UI Root
+        Pyramid = UILibrary.Pyramid:New(Specs)    --  Reinitialize Pyramid
+        Ext.CreateUI(Pyramid.Component.Name, Dir.ModGUI .. "pyramid.swf", Pyramid.Component.Layer)
+        Pyramid.UI = Ext.GetUI(Pyramid.Component.Name)
+        Pyramid.Root = Pyramid.UI:GetRoot()
 
         Pyramid.Exists = true    --  Set Pyramid existance to true
         RenderPyramid(Specs)
@@ -55,6 +60,9 @@ end
 --  RENDER PYRAMID
 --  ==============
 
+--- Render Pyramid UI
+--- @param Specs table Pyramid build specifications
+--- @return Pyramid Pyramid
 function RenderPyramid(Specs)
     --  Create if Pyramid doesn't already exist
     if not Pyramid.Exists then CreatePyramid(Specs) end
@@ -63,18 +71,12 @@ function RenderPyramid(Specs)
     --  SPECS HANDLER
     --  -------------
 
-    if Specs ~= nil then
-        for key, value in pairs(Specs) do
-            if key == "Component" then if SpecsHandler["Pyramid"][key] ~= nil then SpecsHandler["Pyramid"][key](value) end
-            elseif key == "SubComponent" then for k, v in pairs(value) do if SpecsHandler["Pyramid"][key][k] ~= nil then SpecsHandler["Pyramid"][key][k](v) end end
-            end
-        end
-    end
+    for key, handler in pairs(SpecsHandler["Pyramid"]) do handler(Pyramid[key]) end
 
     return Pyramid
 end
 
 SpecsHandler["Pyramid"] = {
-    ["Component"] = function ()
-    end
+    ["Component"] = function (Component)
+    end,
 }

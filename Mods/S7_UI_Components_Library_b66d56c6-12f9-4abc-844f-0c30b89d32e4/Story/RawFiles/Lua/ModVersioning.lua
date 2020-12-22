@@ -5,6 +5,9 @@
 --  PARSE MOD VERSIONS
 --  ------------------
 
+--- Parse modVersion
+---@param version string|table|number
+---@param returnMode string|nil 'string', 'table' or nil
 function ParseVersion(version, returnMode)
     local major, minor, revision, build = 0, 0, 0, 0
     local versionTable = {}
@@ -46,6 +49,10 @@ end
 
 local newVersion = ParseVersion(ModInfo.Version, "table")
 
+--- Mod Update Logic
+---@param prevVersion table
+---@param currVersion table
+---@param forceUpdate boolean
 local function ModUpdater(prevVersion, currVersion, forceUpdate)
     local isUpdatedRequired = false
     local forceUpdate = forceUpdate or false
