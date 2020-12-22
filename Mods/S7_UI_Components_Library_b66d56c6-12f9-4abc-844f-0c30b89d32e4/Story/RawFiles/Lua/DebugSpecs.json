@@ -1,0 +1,31 @@
+{
+    "msgBox": {
+        "Component": {
+            "flexMode": "Center",
+            "Visible": true
+        },
+        "SubComponent": {
+            "Title": {
+                "TitleText": "Sample Title",
+                "Visible": true
+            },
+            "Text": {
+                "Text": "Lorem Ipsum Dolor Sit Amet",
+                "Visible": true
+            },
+            "Buttons": {
+                "Visible": true,
+                "Btns": {
+                    "1": {
+                        "Label": "First",
+                        "Type": "Blue"
+                    },
+                    "2": {
+                        "Label": "Second",
+                        "Type": "Blue"
+                    }
+                }
+            }
+        }
+    }
+}

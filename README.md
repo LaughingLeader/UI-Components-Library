@@ -4,7 +4,7 @@
 
 ----------
 
-A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin 2: Definitive Edition_.
+A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin 2: Definitive Edition_ mods.
 
 ## Releases
 

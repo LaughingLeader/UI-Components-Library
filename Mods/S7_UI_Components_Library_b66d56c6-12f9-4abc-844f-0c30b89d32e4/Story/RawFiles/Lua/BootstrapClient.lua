@@ -15,6 +15,8 @@ Ext.Require("Components/Pyramid.lua")
 --  BUILDER FUNCTION
 --  ================
 
+--- Delegates UI build task
+---@param buildSpecs string Stringified JSON with build specifications
 function UCLBuild(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
@@ -23,8 +25,13 @@ function UCLBuild(buildSpecs)
     }
 
     local BuildSpecifications = Ext.JsonParse(buildSpecs)
-
     for UIName, Specs in pairs(BuildSpecifications) do
         UILibrary[UIName] = builder[UIName](Specs)
     end
 end
+
+--  ==========
+--  DEBUG MODE
+--  ==========
+
+if Ext.IsDeveloperMode() then Ext.Require("DebugMode.lua") end
