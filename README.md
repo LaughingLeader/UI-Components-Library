@@ -6,11 +6,16 @@
 
 A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin 2: Definitive Edition_ mods.
 
+>**NOTE:** This is a mod-resource intended to be used by other mods. You only need this if some other mod needs it as a dependency.
+
+## Mods that use the UI Components Library
+
+* [***Take-Notes***](https://github.com/Shresht7/Take-Notes)
+
 ## Releases
 
 * ~~***[Steam Workshop]()***~~
 * ***[Github](https://github.com/Shresht7/UI-Components-Library)***
-* ~~***[Nexus]()***~~
 
 ## Requirements
 

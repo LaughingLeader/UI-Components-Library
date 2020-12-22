@@ -6,7 +6,12 @@
 
 ### CHANGED
 
+* Casual Rewrite of the entire code.
 * _Renamed_ `S7_UCL_Auxiliary.lua` to `Auxiliary.lua`.
+
+### REMOVED
+
+* _Dropped_ LikedLists. lol
 
 ## [0.3.0.0] --- 15th December 2020 --- **_LinkedLists_**
 

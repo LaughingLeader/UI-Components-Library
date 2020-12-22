@@ -9,7 +9,7 @@
                 <node id="ModuleInfo">
                     <attribute id="Author" value="Hunter-Ghost-27" type="30" />
                     <attribute id="CharacterCreationLevelName" value="" type="22" />
-                    <attribute id="Description" value="A collection of prebuilt reusable UI-components for Divinity Original Sin 2: Definitive Edition." type="30" />
+                    <attribute id="Description" value="A collection of prebuilt reusable UI components for Divinity Original Sin 2: Definitive Edition mods." type="30" />
                     <attribute id="DescriptionName" value="" handle="ls::TranslatedStringRepository::s_HandleUnknown" type="28" />
                     <attribute id="DisplayName" value="" handle="ls::TranslatedStringRepository::s_HandleUnknown" type="28" />
                     <attribute id="Folder" value="S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4" type="30" />
