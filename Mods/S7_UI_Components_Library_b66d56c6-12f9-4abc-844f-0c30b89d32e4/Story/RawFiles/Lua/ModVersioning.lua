@@ -43,10 +43,7 @@ end
 --  -------
 
 local prevVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
-if CENTRAL[IDENTIFIER] ~= nil and CENTRAL[IDENTIFIER]["Version"] ~= nil then
-    prevVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table")
-end
-
+if CENTRAL[IDENTIFIER] and CENTRAL[IDENTIFIER]["Version"] then prevVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table") end
 local currVersion = ParseVersion(ModInfo.Version, "table")
 
 --- Mod Update Logic
@@ -67,10 +64,12 @@ local function ModUpdater(oldVersion, newVersion, forceUpdate)
 
     if isUpdatedRequired or forceUpdate then
         S7DebugPrint("Updating " .. IDENTIFIER .. ": " .. ParseVersion(oldVersion, "string") .. " --> " .. ParseVersion(newVersion, "string"), "ModVersioning", "Log", true, true)
+        --  ===============
         --  DO UPDATE STUFF
+        --  ===============
     end
 end
 
---  --------------------------------
+--  ================================
 ModUpdater(prevVersion, currVersion)
---  --------------------------------
+--  ================================

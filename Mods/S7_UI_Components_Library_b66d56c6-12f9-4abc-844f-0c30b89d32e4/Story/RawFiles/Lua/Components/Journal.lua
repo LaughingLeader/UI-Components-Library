@@ -8,12 +8,19 @@ Ext.Require("Auxiliary.lua")
 --  CLASS DEFINITIONS
 --  =================
 
+--- Instantiate new object based on parent
+---@param parent table Designated class
+---@param object table|nil Object to instantiate
 local function newClass(parent, object)
     local object = object or {}
     object = Integrate(object, parent)
     return object
 end
 
+--- Find ID in Class
+---@param parent table Class
+---@param ID number Element ID
+---@return number|nil position
 local function cf_Find(parent, ID)
     for key, value in pairs(parent) do
         if type(value) == "table" then
@@ -22,6 +29,9 @@ local function cf_Find(parent, ID)
     return nil
 end
 
+--- Push element in parent class
+---@param parent table Class
+---@param element table New Element
 local function cf_Push(parent, element)
     if type(element) ~="table" then return end
     local position = cf_Find(parent, element.ID)
@@ -30,12 +40,19 @@ local function cf_Push(parent, element)
     parent.properties.Counter = parent.properties.Counter + 1
 end
 
+--- Fetch Element by ID
+---@param parent table Class
+---@param ID number Element ID
+---@return table|nil element
 local function cf_GetElement(parent, ID)
     local position = parent:Find(ID)
     if position then return parent[position] end
     return nil
 end
 
+--- Remove Element from class
+---@param parent table Class
+---@param ID number Element ID
 local function cf_Remove(parent, ID)
     local position = parent:Find(ID)
     if position then table.remove(parent, position) end
@@ -278,7 +295,7 @@ local function RegisterJournalListeners()
     end)
 
     --  UPDATE TEXT
-    --  -----------
+    --  ===========
 
     Ext.RegisterUICall(Journal.UI, "textUpdate", function (ui, call, id, updatedText)
         local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id)

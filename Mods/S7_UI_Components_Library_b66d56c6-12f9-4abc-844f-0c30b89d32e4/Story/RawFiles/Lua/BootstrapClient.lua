@@ -16,7 +16,7 @@ Ext.Require("Components/Pyramid.lua")
 --  ================
 
 --- Delegates UI build task
----@param buildSpecs string Stringified JSON with build specifications
+---@param buildSpecs table Build specifications
 function UCLBuild(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,

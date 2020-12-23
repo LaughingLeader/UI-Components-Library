@@ -43,7 +43,7 @@ end
 
 --- Completely clone an element
 ---@param element any Element to copy
----@param config table
+---@param config table Configuration table
 ---@param clones table
 ---@return any clone Rematerialized element
 function Rematerialize(element, config, clones)
