@@ -15,7 +15,10 @@ local function newClass(parent, object)
 end
 
 local function cf_Find(parent, ID)
-    for key, value in pairs(parent) do if value.ID == ID then return key end end
+    for key, value in pairs(parent) do
+        if type(value) == "table" then
+            if value.ID == ID then return key end end
+        end
     return nil
 end
 
