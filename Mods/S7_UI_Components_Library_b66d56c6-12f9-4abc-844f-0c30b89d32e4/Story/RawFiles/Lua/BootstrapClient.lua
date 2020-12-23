@@ -24,9 +24,10 @@ function UCLBuild(buildSpecs)
         ["pyramid"] = RenderPyramid
     }
 
-    local BuildSpecifications = Ext.JsonParse(buildSpecs)
-    for UIName, Specs in pairs(BuildSpecifications) do
-        UILibrary[UIName] = builder[UIName](Specs)
+    if buildSpecs then
+        for UIName, Specs in pairs(buildSpecs) do
+            UILibrary[UIName] = builder[UIName](Specs)
+        end
     end
 end
 

@@ -8,10 +8,34 @@ IDENTIFIER = "S7_UI_Components_Library"
 --  ===========
 
 Dir = {
-    ["GameGUI"] = "Public/Game/GUI/",   --  GameUI Directory
-    ["GameMasterGUI"] = "Public/Game/GUI/GM/",  --  GameMasterUI Directory
-    ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/"    -- UCLibrary Directory
+    ["GameGUI"] = "Public/Game/GUI/", --  GameUI Directory
+    ["GameMasterGUI"] = "Public/Game/GUI/GM/", -- GameMasterUI Directory
+    ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/", -- UI-Components-Library UI Directory
+    ["Mod"] = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
 }
+
+--  ====
+--  SCAN
+--  ====
+
+Scan = {["level"] = 0}
+
+function Scan:Encapsulate(e) return tostring(e) .. "<" .. type(e):sub(3) .. ">" end
+
+--- Prints detailed information about element to the console
+function Scan:Element(e)
+    if type(e) == 'table' then
+        for key, value in pairs(e) do
+            if type(value) == 'table' then
+                Ext.Print(string.rep("\t", self.level) .. self:Encapsulate(key) .. ":")
+                self.level = self.level + 1
+                Scan:Element(value)
+            else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(key), self:Encapsulate(value)) end
+            Ext.Print("\n")
+        end
+    else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(e)) end
+    self.level = 0
+end
 
 --  =============
 --  REMATERIALIZE
@@ -35,8 +59,8 @@ function Rematerialize(element, config, clones)
             for key, value in next, element do clone[Rematerialize(key, clones)] = Rematerialize(value, clones) end
             if config.metatables then setmetatable(clone, Rematerialize(getmetatable(element), clones)) end   --  Copy metatables
         end
-    elseif type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element else clone = nil end
     else clone = element end    --  if element is anything other than a table, return as is
+    if type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element else clone = nil end end
 
     return clone
 end
@@ -175,6 +199,50 @@ function GetTrailingZeroes(n)
         i = i * 10
     end
     return count
+end
+
+--  ==============
+--  SORT-&-ITERATE
+--  ==============
+
+--- Sort keys then iterate following a order
+---@param t table Table to iterate over
+---@param order string|function "ascending", "descending" or a custom function for table.sort
+function Spairs(t, order)
+    if type(t) ~= "table" then return end
+    local keys = {}
+    if type(order) == 'string' then order = string.lower(order) end
+
+    for k, _ in pairs(t) do keys[#keys+1] = k end
+    if order == "ascending" then table.sort(keys, function(a, b) return tonumber(a) < tonumber(b) end)
+    elseif order == "descending" then table.sort(keys, function(a, b) return tonumber(a) > tonumber(b) end)
+    elseif type(order) == 'function' then table.sort(keys, function(a, b) return order(t, a, b) end)
+    else table.sort(keys) end
+
+    local i = 0
+    return function ()
+        i = i + 1
+        if keys[i] then return keys[i], t[keys[i]] end
+    end
+end
+
+--  ===================
+--  DESTRINGIFY NUMBERS
+--  ===================
+
+--- Destringifies keys that should be numbers
+---@param t table
+function Destringify(t)
+	for key, value in pairs(t) do
+        if type(value) == "table" then Destringify(value) end
+		if type(key) ~= "number" then
+			local n = tonumber(key)
+			if n ~= nil then
+				t[n] = value
+				t[key] = nil
+			end
+		end
+	end
 end
 
 --  ============================

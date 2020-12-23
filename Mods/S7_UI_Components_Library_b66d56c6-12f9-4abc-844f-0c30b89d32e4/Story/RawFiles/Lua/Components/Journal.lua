@@ -51,7 +51,7 @@ function JournalList:Find(ID) return cf_Find(self, ID) end
 function JournalList:GetElement(ID) return cf_GetElement(self, ID) end
 function JournalList:Remove(ID) cf_Remove(self, ID) end
 function JournalList:GenerateNextID() return self.properties.Counter * self.properties.IDIncrementor end
-function JournalList:ResetParameters() self.properties.Counter = 1 end
+function JournalList:ResetParameters(n) self.properties.Counter = n or 1 end
 
 --  CHAPTERS LIST
 --  -------------
@@ -111,7 +111,7 @@ UILibrary.GMJournal = {
             ["Visible"] = true
         }
     },
-    ["JournalData"] = JournalList:New()
+    ["JournalData"] = JournalList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000000}})
 }
 
 --- Initialize new GMJournal Object
@@ -336,6 +336,9 @@ end
 --- @return GMJournal Journal
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
+    Journal = Integrate(Specs, Journal)
+    Destringify(Journal.JournalData)
+    Journal.JournalData.properties = {["Counter"] = 1, ["IDIncrementor"] = 1000000}
 
     for key, handler in pairs(SpecsHandler["Journal"]) do handler(Journal[key]) end
 
@@ -351,18 +354,17 @@ end
 ---@param JournalData table JournalData
 function UpdateJournal(JournalData)
     local function buildJournal(journalEntry)
-        if journalEntry ~= nil and type(journalEntry) == 'table' then
-
-            for _, Data in pairs(journalEntry) do
+        if type(journalEntry) == 'table' then
+            for _, Data in Spairs(journalEntry, function(t, a, b) if t[a]["ID"] and t[b]["ID"] then return t[a]["ID"] < t[b]["ID"] end end) do
                 handleEntry(Data)
                 if Data.Chapters ~= nil then buildJournal(Data.Chapters) end
                 if Data.Paragraphs ~= nil then buildJournal(Data.Paragraphs) end
             end
         end
     end
---  ----------------------------------------
-    buildJournal(Ext.JsonParse(JournalData))
---  ----------------------------------------
+--  -------------------------
+    buildJournal(JournalData)
+--  -------------------------
 end
 
 --  ==============
@@ -401,6 +403,6 @@ SpecsHandler["Journal"] = {
 
     ['JournalData'] = function (data)
         data = Rematerialize(data)
-        UpdateJournal(Ext.JsonStringify(data))
+        UpdateJournal(data)
     end,
 }
