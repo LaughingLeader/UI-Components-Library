@@ -23,7 +23,7 @@ Dir = {
 ---@param clones table
 ---@return any clone Rematerialized element
 function Rematerialize(element, config, clones)
-    config = config or {}
+    config = config or {["metatables"] = false, ['nonstringifiable'] = false}
     clones = clones or {}
     local clone = {}
 
@@ -35,7 +35,7 @@ function Rematerialize(element, config, clones)
             for key, value in next, element do clone[Rematerialize(key, clones)] = Rematerialize(value, clones) end
             if config.metatables then setmetatable(clone, Rematerialize(getmetatable(element), clones)) end   --  Copy metatables
         end
-    elseif type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element end
+    elseif type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element else clone = nil end
     else clone = element end    --  if element is anything other than a table, return as is
 
     return clone
