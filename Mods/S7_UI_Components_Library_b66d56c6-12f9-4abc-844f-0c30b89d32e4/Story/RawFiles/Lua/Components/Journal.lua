@@ -235,8 +235,19 @@ local function handleEntry(data)
     if type(data.ID) == "nil" or type(data.ID) ~= "number" then return end
     local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID)
     Journal.Root.entries[0] = journalNodeType
-
     local Pos, catPos, chapPos, paraPos = getPos(data.ID)
+
+    if journalNodeType == 1 then
+        data.ID = Journal.JournalData:GenerateNextID()
+        Journal.JournalData:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
+    elseif journalNodeType == 2 then
+        data.ID = catMapID + Journal.JournalData[catPos]["Chapters"]:GenerateNextID()
+        Journal.JournalData[catPos]["Chapters"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
+    elseif journalNodeType == 3 then
+        data.ID = chapMapID + Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:GenerateNextID()
+        Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
+    end
+
     Journal.Root.entries[1] = Pos - 1
 
     local entryID, parentID = determineEntryID(data.ID)
@@ -245,11 +256,6 @@ local function handleEntry(data)
     Journal.Root.entries[4] = data.strContent
     Journal.Root.entries[5] = data.isShared or false
     Journal.Root.updateEntries()
-
-    if journalNodeType == 1 then Journal.JournalData:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
-    elseif journalNodeType == 2 then Journal.JournalData[catPos]["Chapters"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
-    elseif journalNodeType == 3 then Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
-    end
 end
 
 --  ==========================
