@@ -128,7 +128,7 @@ UILibrary.GMJournal = {
             ["Visible"] = true
         }
     },
-    ["JournalData"] = JournalList:New({["properties"] = {["Counter"] = 1, ["IDIncrementor"] = 1000000}})
+    ["JournalData"] = JournalList:New()
 }
 
 --- Initialize new GMJournal Object
@@ -322,7 +322,6 @@ local function RegisterJournalListeners()
 
     Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
         Journal.UI:Hide()
-        Journal.JournalData:ResetParameters()
     end)
     RegisterDebugHooks(Journal.UI)
 end
@@ -354,8 +353,8 @@ end
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
     Journal = Integrate(Specs, Journal)
+    Journal.JournalData.properties.Counter = 1
     Destringify(Journal.JournalData)
-    Journal.JournalData.properties = {["Counter"] = 1, ["IDIncrementor"] = 1000000}
 
     for key, handler in pairs(SpecsHandler["Journal"]) do handler(Journal[key]) end
 
