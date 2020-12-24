@@ -10,7 +10,7 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
 
 ## Mods that use the UI Components Library
 
-* [***Take-Notes***](https://github.com/Shresht7/Take-Notes)
+* [***Take-Notes***](https://github.com/Shresht7/Take-Notes) -- Adds editable notebooks for story and GM modes.
 
 ## Releases
 
@@ -40,5 +40,5 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
 
 * [**Divinity: Original Sin 2**](http://store.steampowered.com/app/435150/Divinity_Original_Sin_2/), a game by **[Larian Studios](http://larian.com/)**.
 * **LaughingLeader** for the **[Source Control Generator](https://github.com/LaughingLeader/SourceControlGenerator)**.
-* **Norbyte** for The **[script-extender](https://github.com/Norbyte/ositools)**.
-* **Sebastian Lenz** for the **[VSCode extension](https://marketplace.visualstudio.com/items?itemName=sebastian-lenz.divinity-vscode)**.
+* **Norbyte** for The **[Script-Extender](https://github.com/Norbyte/ositools)**.
+* **Sebastian Lenz** and **LaughingLeader** for the **[VSCode extension](https://marketplace.visualstudio.com/items?itemName=sebastian-lenz.divinity-vscode)**.
