@@ -239,12 +239,15 @@ local function handleEntry(data)
 
     if journalNodeType == 1 then
         data.ID = Journal.JournalData:GenerateNextID()
+        if Journal.JournalData[catPos] then Journal.JournalData[catPos].ID = data.ID end
         Journal.JournalData:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     elseif journalNodeType == 2 then
         data.ID = catMapID + Journal.JournalData[catPos]["Chapters"]:GenerateNextID()
+        if Journal.JournalData[catPos]["Chapters"][chapPos] then Journal.JournalData[catPos]["Chapters"][chapPos].ID = data.ID end
         Journal.JournalData[catPos]["Chapters"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     elseif journalNodeType == 3 then
         data.ID = chapMapID + Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:GenerateNextID()
+        if Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"][paraPos] then Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"][paraPos].ID = data.ID end
         Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     end
 
@@ -395,8 +398,8 @@ end
 
 --- Clears out entries from Journal UI
 function UnloadJournal()
-    for i = 1, #Journal.JournalData, 1 do
-        Journal.Root.entriesMap[Journal.JournalData[i].ID].onRemove()
+    for key, value in pairs(Journal.JournalData) do
+        if type(key) == "number" and type(value) == 'table' then Journal.Root.entriesMap[value.ID].onRemove() end
     end
 end
 
