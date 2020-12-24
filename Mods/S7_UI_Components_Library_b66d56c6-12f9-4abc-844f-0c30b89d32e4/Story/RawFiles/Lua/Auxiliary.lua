@@ -154,7 +154,6 @@ function LoadFile(fileName, context)
     local _, fileContents = pcall(Ext.LoadFile, fileName, context)
     if ValidString(fileContents) then
         file = Ext.JsonParse(fileContents)
-        Destringify(file)
     end
     return file
 end

@@ -353,8 +353,8 @@ end
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
     Journal = Integrate(Specs, Journal)
-    Journal.JournalData.properties.Counter = 1
     Destringify(Journal.JournalData)
+    Journal.JournalData.properties.Counter = 1
 
     for key, handler in pairs(SpecsHandler["Journal"]) do handler(Journal[key]) end
 
