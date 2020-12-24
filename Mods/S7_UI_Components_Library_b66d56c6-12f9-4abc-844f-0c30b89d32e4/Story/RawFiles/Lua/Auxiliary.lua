@@ -19,8 +19,7 @@ Dir = {
 --  ====
 
 Scan = {["level"] = 0}
-
-function Scan:Encapsulate(e) return tostring(e) .. "<" .. type(e):sub(3) .. ">" end
+function Scan:Encapsulate(e) return tostring(e) .. "<" .. type(e):sub(0, 3) .. ">" end
 
 --- Prints detailed information about element to the console
 function Scan:Element(e)
@@ -31,11 +30,32 @@ function Scan:Element(e)
                 self.level = self.level + 1
                 Scan:Element(value)
             else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(key), self:Encapsulate(value)) end
-            Ext.Print("\n")
         end
     else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(e)) end
     self.level = 0
 end
+
+--  =========
+--  INTEGRATE
+--  =========
+
+--- Merge source and target. Existing source elements have priority
+---@param source table
+---@param target table
+---@return table source
+function Integrate(source, target)
+    local source = source or {}
+    if type(target) ~= "table" then return source end
+    for key, value in pairs(target) do
+        if type(value) == "table" then
+            if not source[key] then source[key] = {} end
+            source[key] = Integrate(source[key], value)
+        end
+        source[key] = source[key] or value
+    end
+    return source
+end
+
 
 --  =============
 --  REMATERIALIZE
@@ -47,7 +67,7 @@ end
 ---@param clones table
 ---@return any clone Rematerialized element
 function Rematerialize(element, config, clones)
-    config = config or {["metatables"] = false, ['nonstringifiable'] = false}
+    config = Integrate(config, {["metatables"] = false, ['nonstringifiable'] = false})
     clones = clones or {}
     local clone = {}
 
@@ -63,26 +83,6 @@ function Rematerialize(element, config, clones)
     if type(element) == "function" or type(element) == "userdata" or type(element) == "thread" then if config.nonstringifiable then clone = element else clone = nil end end
 
     return clone
-end
-
---  =========
---  INTEGRATE
---  =========
-
---- Merge source and target. Existing source elements have priority.
----@param source table
----@param target table
----@return table source
-function Integrate(source, target)
-    local source = source or {}
-    for key, value in pairs(target) do
-        if type(value) == "table" then
-            if not source[key] then source[key] = {} end
-            source[key] = Integrate(source[key], value)
-        end
-        source[key] = source[key] or value
-    end
-    return source
 end
 
 --  ===========
@@ -125,6 +125,58 @@ function ValidString(str)
     else return false end
 end
 
+--  ===================
+--  DESTRINGIFY NUMBERS
+--  ===================
+
+--- Destringifies keys that should be numbers
+---@param t table
+function Destringify(t)
+	for key, value in pairs(t) do
+        if type(value) == "table" then Destringify(value) end
+		if type(key) ~= "number" then
+			local n = tonumber(key)
+			if n then t[n] = value; t[key] = nil end
+		end
+	end
+end
+
+--  =========
+--  LOAD FILE
+--  =========
+
+--- Load file contents
+---@param fileName string FilePath
+---@param context string PathContext. 'data' for modData. 'user' or nil for osirisData
+---@return table file Parsed file contents
+function LoadFile(fileName, context)
+    local file
+    local _, fileContents = pcall(Ext.LoadFile, fileName, context)
+    if ValidString(fileContents) then
+        file = Ext.JsonParse(fileContents)
+        Destringify(file)
+    end
+    return file
+end
+
+--  =========
+--  SAVE FILE
+--  =========
+
+--- Save file
+---@param fileName string FilePath
+---@param contents any File Contents to save
+---@param config table Configuration table
+function SaveFile(fileName, contents, config)
+    local config = Integrate(config, {["stringifiableOnly"] = true})
+    local content = {}
+    if ValidString(fileName) then
+        if config.stringifiableOnly then content = Rematerialize(contents) end
+        local fileContents = Ext.JsonStringify(content)
+        Ext.SaveFile(fileName, fileContents)
+    end
+end
+
 --  ===============
 --  MOD INFORMATION
 --  ===============
@@ -139,8 +191,7 @@ local modInfoTable = {
 }
 
 CENTRAL = {}    --  Holds Global Settings and Information
-local file = Ext.LoadFile("S7Central.json") or "{}"
-if ValidString(file) then CENTRAL = Ext.JsonParse(file) end
+CENTRAL = LoadFile("S7Central.json") or {}
 if CENTRAL[IDENTIFIER] == nil then CENTRAL[IDENTIFIER] = Rematerialize(modInfoTable) end
 
 --  =====  MOD VERSIONING  =====
@@ -160,7 +211,7 @@ end
 
 initCENTRAL(modInfoTable, CENTRAL[IDENTIFIER])
 CENTRAL[IDENTIFIER]["ModVersion"] = ParseVersion(ModInfo.Version, "string")
-Ext.SaveFile("S7Central.json", Ext.JsonStringify(CENTRAL))
+SaveFile("S7Central.json", CENTRAL)
 
 --  =======================
 --  REGISTER DEBUG LISTENER
@@ -224,25 +275,6 @@ function Spairs(t, order)
         i = i + 1
         if keys[i] then return keys[i], t[keys[i]] end
     end
-end
-
---  ===================
---  DESTRINGIFY NUMBERS
---  ===================
-
---- Destringifies keys that should be numbers
----@param t table
-function Destringify(t)
-	for key, value in pairs(t) do
-        if type(value) == "table" then Destringify(value) end
-		if type(key) ~= "number" then
-			local n = tonumber(key)
-			if n ~= nil then
-				t[n] = value
-				t[key] = nil
-			end
-		end
-	end
 end
 
 --  ============================
