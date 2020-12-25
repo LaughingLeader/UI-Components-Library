@@ -159,7 +159,7 @@ Journal = UILibrary.GMJournal:New()
 ---@return number paraMapID Paragraph Map ID
 ---@return number journalNodeType Journal Node Type
 local function parseID(ID, reMerge)
-    local reMerge = reMerge or true
+    local reMerge = reMerge or false
     local zeroes = GetTrailingZeroes(ID)
     local journalNodeType = 1
 
@@ -171,7 +171,7 @@ local function parseID(ID, reMerge)
     local chapMapID = math.floor((ID - catMapID)/1000)*1000
     local paraMapID = math.floor(ID - catMapID - chapMapID)
 
-    if reMerge == true then
+    if reMerge then
         chapMapID = catMapID + chapMapID
         paraMapID = chapMapID + paraMapID
     end
@@ -233,16 +233,40 @@ end
 ---@param data table Entry data
 local function handleEntry(data)
     if type(data.ID) == "nil" or type(data.ID) ~= "number" then return end
-    local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID)
+    local catMapID, chapMapID, paraMapID, journalNodeType = parseID(data.ID, true)
     Journal.Root.entries[0] = journalNodeType
     local Pos, catPos, chapPos, paraPos = getPos(data.ID)
 
     if journalNodeType == 1 then
         data.ID = Journal.JournalData:GenerateNextID()
+        if data.Chapters then
+            for key, value in ipairs(data.Chapters) do
+                if type(value) == 'table' then
+                    local catMapID, chapMapID = parseID(value.ID, false)
+                    value.ID = data.ID + chapMapID
+                end
+                if value.Paragraphs then
+                    for k, v in ipairs(value.Paragraphs) do
+                        if type(v) == 'table' then
+                            local catMapID, chapMapID, paraMapID = parseID(v.ID, false)
+                            v.ID = data.ID + value.ID + paraMapID
+                        end
+                    end
+                end
+            end
+        end
         if Journal.JournalData[catPos] then Journal.JournalData[catPos].ID = data.ID end
         Journal.JournalData:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     elseif journalNodeType == 2 then
         data.ID = catMapID + Journal.JournalData[catPos]["Chapters"]:GenerateNextID()
+        if data.Paragraphs then
+            for key, value in ipairs(data.Paragraphs) do
+                if type(value) == 'table' then
+                    local catMapID, chapMapID, paraMapID = parseID(value.ID, false)
+                    value.ID = data.ID + paraMapID
+                end
+            end
+        end
         if Journal.JournalData[catPos]["Chapters"][chapPos] then Journal.JournalData[catPos]["Chapters"][chapPos].ID = data.ID end
         Journal.JournalData[catPos]["Chapters"]:Push({["ID"] = data.ID, ["strContent"] = data.strContent, ["isShared"] = data.isShared})
     elseif journalNodeType == 3 then
@@ -307,7 +331,7 @@ local function RegisterJournalListeners()
     --  ===========
 
     Ext.RegisterUICall(Journal.UI, "textUpdate", function (ui, call, id, updatedText)
-        local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id)
+        local catMapID, chapMapID, paraMapID, journalNodeType = parseID(id, true)
         local Pos, catPos, chapPos, paraPos = getPos(id)
 
         if journalNodeType == 1 then Journal.JournalData[catPos]["strContent"] = updatedText
@@ -382,8 +406,8 @@ function UpdateJournal(JournalData)
         if type(journalEntry) == 'table' then
             for _, Data in Spairs(journalEntry, function(t, a, b) if t[a]["ID"] and t[b]["ID"] then return t[a]["ID"] < t[b]["ID"] end end) do
                 handleEntry(Data)
-                if Data.Chapters ~= nil then buildJournal(Data.Chapters) end
-                if Data.Paragraphs ~= nil then buildJournal(Data.Paragraphs) end
+                if Data.Chapters then buildJournal(Data.Chapters) end
+                if Data.Paragraphs then buildJournal(Data.Paragraphs) end
             end
         end
     end
@@ -398,8 +422,10 @@ end
 
 --- Clears out entries from Journal UI
 function UnloadJournal()
-    for key, value in pairs(Journal.JournalData) do
-        if type(key) == "number" and type(value) == 'table' then Journal.Root.entriesMap[value.ID].onRemove() end
+    if Journal.JournalData then
+        for key, value in pairs(Journal.JournalData) do
+            if type(key) == "number" and type(value) == 'table' then Journal.Root.entriesMap[value.ID].onRemove() end
+        end
     end
 end
 
