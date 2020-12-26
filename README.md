@@ -10,12 +10,12 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
 
 ## Mods that use the UI Components Library
 
-* [***Take-Notes***](https://github.com/Shresht7/Take-Notes) -- Adds editable notebooks for story and GM modes.
+* [***Take-Notes***](https://github.com/HunterGhost27/Take-Notes) -- Adds editable notebooks for story and GM modes.
 
 ## Releases
 
 * ~~***[Steam Workshop]()***~~
-* ***[Github](https://github.com/Shresht7/UI-Components-Library)***
+* ***[Github](https://github.com/HunterGhost27/UI-Components-Library)***
 
 ## Requirements
 

@@ -9,12 +9,12 @@ A collection of [i]prebuilt reusable[/i] [b]UI components[/b] for [i]Divinity Or
 </blockquote>
 [heading]Mods that use the UI Components Library[/heading]
 [list]
-[*][url=https://github.com/Shresht7/Take-Notes][i][b]Take-Notes[/b][/i][/url] -- Adds editable notebooks for story and GM modes.
+[*][url=https://github.com/HunterGhost27/Take-Notes][i][b]Take-Notes[/b][/i][/url] -- Adds editable notebooks for story and GM modes.
 [/list]
 [heading]Releases[/heading]
 [list]
 [*]~~[i][b][url=about:///]Steam Workshop[/url][/b][/i]~~
-[*][i][b][url=https://github.com/Shresht7/UI-Components-Library]Github[/url][/b][/i]
+[*][i][b][url=https://github.com/HunterGhost27/UI-Components-Library]Github[/url][/b][/i]
 [/list]
 [heading]Requirements[/heading]
 [list]
