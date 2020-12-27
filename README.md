@@ -14,7 +14,7 @@ A collection of _prebuilt reusable_ **UI components** for _Divinity Original Sin
 
 ## Releases
 
-* ~~***[Steam Workshop]()***~~
+* ***[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2337228868)***
 * ***[Github](https://github.com/HunterGhost27/UI-Components-Library)***
 
 ## Requirements
