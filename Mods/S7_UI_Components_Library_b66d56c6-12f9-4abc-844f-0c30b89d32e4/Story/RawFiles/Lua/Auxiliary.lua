@@ -14,27 +14,6 @@ Dir = {
     ["Mod"] = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
 }
 
---  ====
---  SCAN
---  ====
-
-Scan = {["level"] = 0}
-function Scan:Encapsulate(e) return tostring(e) .. "<" .. type(e):sub(0, 3) .. ">" end
-
---- Prints detailed information about element to the console
-function Scan:Element(e)
-    if type(e) == 'table' then
-        for key, value in pairs(e) do
-            if type(value) == 'table' then
-                Ext.Print(string.rep("\t", self.level) .. self:Encapsulate(key) .. ":")
-                self.level = self.level + 1
-                Scan:Element(value)
-            else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(key), self:Encapsulate(value)) end
-        end
-    else Ext.Print(string.rep(" ", self.level) .. self:Encapsulate(e)) end
-    self.level = 0
-end
-
 --  =========
 --  INTEGRATE
 --  =========
