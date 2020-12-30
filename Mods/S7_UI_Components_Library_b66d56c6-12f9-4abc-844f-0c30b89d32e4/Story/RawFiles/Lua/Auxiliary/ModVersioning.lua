@@ -39,8 +39,9 @@ function ParseVersion(version, returnMode)
     else return major, minor, revision, build end
 end
 
---  UPDATER
---  -------
+--  ===========
+--  MOD-UPDATER
+--  ===========
 
 local prevVersion = {[1] = 0, [2] = 0, [3] = 0, [4] = 0}
 if CENTRAL[IDENTIFIER] and CENTRAL[IDENTIFIER]["Version"] then prevVersion = ParseVersion(CENTRAL[IDENTIFIER]["Version"], "table") end

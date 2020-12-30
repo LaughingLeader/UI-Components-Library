@@ -37,20 +37,18 @@ end
 
 ---@param UI UIObject
 function RegisterDebugHooks(UI)
-    if Ext.IsDeveloperMode() then
-        Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
-            local args = {...}
-            S7Debug:Print(tostring(args[1]) .. ":" .. tostring(args[2]))
-            local i = 3
-            while i <= #args do
-                if args[i+1] ~= nil then
-                    S7Debug:Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
-                    i = i + 2
-                else
-                    S7Debug:Print(tostring(args[i]))
-                    i = i + 1
-                end
+    Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
+        local args = {...}
+        S7Debug:Print(tostring(args[1]) .. ":" .. tostring(args[2]))
+        local i = 3
+        while i <= #args do
+            if args[i+1] ~= nil then
+                S7Debug:Print(tostring(args[i]) .. ":" .. tostring(args[i+1]))
+                i = i + 2
+            else
+                S7Debug:Print(tostring(args[i]))
+                i = i + 1
             end
-        end)
-    end
+        end
+    end)
 end

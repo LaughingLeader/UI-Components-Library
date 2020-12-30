@@ -100,7 +100,7 @@ function S7Debug:Print(t, config)
     if type(t) ~= 'table' then x[1] = t else x = Rematerialize(t) end
 
     if Ext.IsDeveloperMode() or config.ignoreDevMode then
-        local context = Ext.IsServer() and '(S)' or '(C)'
+        local context = Ext.IsServer() and ':S' or ':C'
         local displayString = "[" .. config.IDENTIFIER .. context .. "] - "
         displayString = displayString .. tostring(table.remove(x, 1))
         local len = string.len(displayString)
