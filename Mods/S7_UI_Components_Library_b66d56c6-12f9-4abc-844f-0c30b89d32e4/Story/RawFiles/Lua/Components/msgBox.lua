@@ -109,7 +109,7 @@ UILibrary.msgBox = {
 ---@return MsgBox object MsgBox object
 function UILibrary.msgBox:New(object)
     local object = object or {}
-    object = Integrate(object, self)
+    object = Integrate(self, object)
     return object
 end
 

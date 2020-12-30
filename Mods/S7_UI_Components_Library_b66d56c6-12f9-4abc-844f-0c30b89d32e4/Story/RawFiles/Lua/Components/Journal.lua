@@ -13,7 +13,7 @@ Ext.Require("Auxiliary.lua")
 ---@param object table|nil Object to instantiate
 local function newClass(parent, object)
     local object = object or {}
-    object = Integrate(object, parent)
+    object = Integrate(parent, object)
     return object
 end
 
@@ -136,7 +136,7 @@ UILibrary.GMJournal = {
 ---@return GMJournal object GMJournal object
 function UILibrary.GMJournal:New(object)
     local object = object or {}
-    object = Integrate(object, self)
+    object = Integrate(self, object)
     return object
 end
 
@@ -385,7 +385,7 @@ end
 --- @return GMJournal Journal
 function RenderJournal(Specs)
     if not Journal.Exists then CreateJournal(Specs) end
-    Journal = Integrate(Specs, Journal)
+    Journal = Integrate(Journal, Specs)
     Destringify(Journal.JournalData)
     Journal.JournalData.properties.Counter = 1
 

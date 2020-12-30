@@ -28,7 +28,7 @@ UILibrary.Pyramid = {
 ---@return Pyramid object Pyramid Object
 function UILibrary.Pyramid:New(object)
     local object = object or {}
-    object = Integrate(object, self)
+    object = Integrate(self, object)
     return object
 end
 
