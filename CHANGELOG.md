@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.3.2.1] --- 30th December 2020 --- **_Minor Fixes_**
+
+### CHANGED
+
+* _Organized_ files.
+
 ## [0.3.2.0] --- 27th December 2020 --- **_Initial Release_**
 
 * _Released_ the mod on the steam-workshop.

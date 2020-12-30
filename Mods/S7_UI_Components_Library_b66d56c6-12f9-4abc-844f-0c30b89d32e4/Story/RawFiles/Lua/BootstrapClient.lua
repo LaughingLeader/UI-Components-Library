@@ -11,6 +11,12 @@ Ext.Require("Components/msgBox.lua")
 Ext.Require("Components/Journal.lua")
 Ext.Require("Components/Pyramid.lua")
 
+
+--  DEVELOPER-MODE
+--  --------------
+
+if Ext.IsDeveloperMode() then Ext.Require("Development/DevMode.lua") end
+
 --  ================
 --  BUILDER FUNCTION
 --  ================
@@ -30,9 +36,3 @@ function UCLBuild(buildSpecs)
         end
     end
 end
-
---  ==========
---  DEBUG MODE
---  ==========
-
-if Ext.IsDeveloperMode() then Ext.Require("Development/DevMode.lua") end
