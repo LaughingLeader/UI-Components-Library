@@ -4,6 +4,10 @@
 
 ## [0.3.2.1] --- 30th December 2020 --- **_Minor Fixes_**
 
+### NEW
+
+* Edited _caption_ is saved when the JournalUI closes.
+
 ### CHANGED
 
 * _Organized_ files.

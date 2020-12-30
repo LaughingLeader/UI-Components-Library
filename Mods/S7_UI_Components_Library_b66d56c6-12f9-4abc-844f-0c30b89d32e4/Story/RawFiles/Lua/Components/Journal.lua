@@ -354,9 +354,14 @@ local function RegisterJournalListeners()
     end)
 
     Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
+        Journal.Component.Strings.caption = Journal.Root.caption_mc.htmlText
         Journal.UI:Hide()
     end)
-    RegisterDebugHooks(Journal.UI)
+
+    --  REGISTER DEBUG HOOKS
+    --  ====================
+
+    -- RegisterDebugHooks(Journal.UI)
 end
 
 --  ########################################################################################################################################
