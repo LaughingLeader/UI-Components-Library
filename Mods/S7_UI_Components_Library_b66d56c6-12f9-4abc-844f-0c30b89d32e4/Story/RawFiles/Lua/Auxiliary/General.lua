@@ -89,8 +89,6 @@ S7Debug = {
     ['highlight'] = "",
 }
 
-function S7Debug:Update(t) self = Integrate(self, t) end
-
 --- Debug Print
 ---@param t table Table of elements
 ---@param config table Configuration table
