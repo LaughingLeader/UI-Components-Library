@@ -10,19 +10,12 @@ package
        
       
       public var arrow_mc:MovieClip;
-      
       public var hl_mc:MovieClip;
-      
       public var text_txt:TextField;
-      
       public var base:MovieClip;
-      
       public var selectedColor:uint;
-      
       public var deSelectedColor:uint;
-      
       public var clickSound;
-      
       public var text:String;
       
       public function WEntry()

@@ -7,30 +7,18 @@ package contextMenu_fla
    
    public dynamic class MainTimeline extends MovieClip
    {
-       
-      
-      public var windowsMenu_mc:MovieClip;
-      
+      public var windowsMenu_mc:MovieClip;  
       public var events:Array;
-      
       public var layout:String;
-      
       public var curTooltip:int;
-      
       public var hasTooltip:Boolean;
-      
       public var closing:Boolean;
-      
       public const offsetX:Number = 0;
-      
       public const offsetY:Number = 0;
-      
       public var tweenTime:Number;
-      
       public var text_array:Array;
-      
       public var buttonArr:Array;
-      
+
       public function MainTimeline()
       {
          super();
@@ -132,11 +120,11 @@ package contextMenu_fla
          this.buttonArr = new Array();
       }
       
-      public function addButton(param1:Number, param2:Number, param3:Boolean, param4:String, param5:String, param6:Boolean = false, param7:Boolean = false) : *
+      public function addButton(ID:Number, actionID:Number, clickSound:Boolean, param4:String, text:String, param6:Boolean = false, param7:Boolean = false) : *
       {
          if(this.windowsMenu_mc.visible)
          {
-            this.windowsMenu_mc.addEntry(param1,param2,param3,param5,param6,param7);
+            this.windowsMenu_mc.addEntry(ID,actionID,clickSound,text,param6,param7);
          }
       }
       

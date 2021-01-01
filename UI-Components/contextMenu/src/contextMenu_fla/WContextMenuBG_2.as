@@ -12,25 +12,15 @@ package contextMenu_fla
        
       
       public var bottom_mc:MovieClip;
-      
       public var container_mc:MovieClip;
-      
       public var firstLine_mc:MovieClip;
-      
       public var mid_mc:MovieClip;
-      
       public var title_txt:TextField;
-      
       public var top_mc:MovieClip;
-      
       public const bottomOffset:uint = 10;
-      
       public const iggyDuration:Number = 0.2;
-      
       public var contextContent:MovieClip;
-      
       public var scaleTween:IggyTween;
-      
       public var listAlphaTween:IggyTween;
       
       public function WContextMenuBG_2()

@@ -11,7 +11,6 @@ package contextMenu_fla
        
       
       public var bg_mc:MovieClip;
-      
       public var list:listDisplay;
       
       public function windowsMenu_1()
@@ -25,16 +24,16 @@ package contextMenu_fla
          this.bg_mc.title_txt.htmlText = param1;
       }
       
-      public function addEntry(param1:Number, param2:Number, param3:Boolean, param4:String, param5:Boolean, param6:Boolean) : *
+      public function addEntry(ID:Number, actionID:Number, clickSound:Boolean, text:String, param5:Boolean, param6:Boolean) : *
       {
-         var _loc7_:MovieClip = this.list.getElementByNumber("id",param1);
+         var _loc7_:MovieClip = this.list.getElementByNumber("id", ID);
          if(_loc7_ == null)
          {
             _loc7_ = new WEntry();
             this.list.addElement(_loc7_,false);
             _loc7_.mouseChildren = false;
-            _loc7_.id = param1;
-            _loc7_.actionID = param2;
+            _loc7_.id = ID;
+            _loc7_.actionID = actionID;
             _loc7_.handle = 0;
             _loc7_.arrow_mc.visible = false;
             _loc7_.hl_mc.alpha = 0;
@@ -44,7 +43,7 @@ package contextMenu_fla
          }
          _loc7_.text_txt.alpha = !!param5?0.5:1;
          _loc7_.arrow_mc.alpha = !!param5?0.5:1;
-         _loc7_.clickSound = param3;
+         _loc7_.clickSound = clickSound;
          if(!param6)
          {
             _loc7_.text_txt.textColor = 10354688;
@@ -57,9 +56,9 @@ package contextMenu_fla
             _loc7_.selectedColor = 16777215;
             _loc7_.deSelectedColor = 12103073;
          }
-         _loc7_.text = param4;
+         _loc7_.text = text;
          _loc7_.disabled = param5;
-         _loc7_.text_txt.htmlText = param4;
+         _loc7_.text_txt.htmlText = text;
          _loc7_.hl_mc.height = Math.floor(_loc7_.text_txt.textHeight) + 2;
       }
       
