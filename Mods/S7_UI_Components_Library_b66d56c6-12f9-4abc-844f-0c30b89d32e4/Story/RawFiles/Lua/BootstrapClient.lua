@@ -7,6 +7,7 @@ Ext.Require("Auxiliary.lua")
 --  UI COMPONENTS
 --  -------------
 
+Ext.Require("Components/contextMenu.lua")
 Ext.Require("Components/msgBox.lua")
 Ext.Require("Components/Journal.lua")
 Ext.Require("Components/Pyramid.lua")

@@ -24,7 +24,7 @@ package contextMenu_fla
          this.bg_mc.title_txt.htmlText = param1;
       }
       
-      public function addEntry(ID:Number, actionID:Number, clickSound:Boolean, text:String, param5:Boolean, param6:Boolean) : *
+      public function addEntry(ID:Number, actionID:Number, clickSound:Boolean, text:String, isDisabled:Boolean, isLegal:Boolean) : *
       {
          var _loc7_:MovieClip = this.list.getElementByNumber("id", ID);
          if(_loc7_ == null)
@@ -38,13 +38,13 @@ package contextMenu_fla
             _loc7_.arrow_mc.visible = false;
             _loc7_.hl_mc.alpha = 0;
             _loc7_.isButton = true;
-            _loc7_.legal = param6;
+            _loc7_.legal = isLegal:
             _loc7_.text_txt.autoSize = TextFieldAutoSize.LEFT;
          }
-         _loc7_.text_txt.alpha = !!param5?0.5:1;
-         _loc7_.arrow_mc.alpha = !!param5?0.5:1;
+         _loc7_.text_txt.alpha = !!isDisabled?0.5:1;
+         _loc7_.arrow_mc.alpha = !!isDisabled?0.5:1;
          _loc7_.clickSound = clickSound;
-         if(!param6)
+         if(!isLegal:
          {
             _loc7_.text_txt.textColor = 10354688;
             _loc7_.selectedColor = 10354688;
@@ -57,7 +57,7 @@ package contextMenu_fla
             _loc7_.deSelectedColor = 12103073;
          }
          _loc7_.text = text;
-         _loc7_.disabled = param5;
+         _loc7_.disabled = isDisabled;
          _loc7_.text_txt.htmlText = text;
          _loc7_.hl_mc.height = Math.floor(_loc7_.text_txt.textHeight) + 2;
       }

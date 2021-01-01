@@ -76,6 +76,7 @@ end
 SpecsHandler = {}
 BuildSpecifications = {}
 UILibrary = {
+    ["contextMenu"] = {},
     ["msgBox"] = {},
     ["GMJournal"] = {},
     ["Pyramid"] = {}

@@ -9,6 +9,22 @@ function ValidString(str)
     else return false end
 end
 
+--  ===================
+--  DISINTEGRATE STRING
+--  ===================
+
+---Disintegrate string into pieces
+---@param str string
+---@param separator string
+function DisintegrateString(str, separator)
+    local separator = separator or " "
+    local pieces = {}
+    for split in string.gmatch(str, "[^" .. separator .. "]+") do
+        pieces[#pieces+1] = split
+    end
+    return table.unpack(pieces)
+end
+
 --  =========
 --  INTEGRATE
 --  =========

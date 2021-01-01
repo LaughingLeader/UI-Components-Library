@@ -35,6 +35,7 @@ end
 --  REGISTER DEBUG LISTENER
 --  =======================
 
+---Rework this ugly mess lmao.
 ---@param UI UIObject
 function RegisterDebugHooks(UI)
     Ext.RegisterUICall(UI, "S7_DebugHook", function(ui, call, ...)
@@ -52,3 +53,34 @@ function RegisterDebugHooks(UI)
         end
     end)
 end
+
+--  ==================
+--  CONTEXT MENU TESTS
+--  ==================
+
+ContextMenu:Register({
+    ["RootTemplate::df7a8779-f908-43ac-b0ba-cb49d16308a9"] = {
+        {
+            -- ["ID"] = 1,
+            -- ["actionID"] = 1,
+            ['clickSound'] = true,
+            ['text'] = "<font color='#3333CC'>Foo</font>",
+            ['isDisabled'] = false,
+            ['isLegal'] = true,
+            ['action'] = function()
+                Ext.Print("JUST DO IT!!!!!!!")
+            end
+        },
+        {
+        -- ["ID"] = 1,
+        -- ["actionID"] = 1,
+        ['clickSound'] = true,
+        ['text'] = "<font color='#CC3333'>Bar</font>",
+        ['isDisabled'] = false,
+        ['isLegal'] = true,
+        ['action'] = function()
+            Ext.Print("DONT DO IT###########")
+        end
+        }
+    }
+})
