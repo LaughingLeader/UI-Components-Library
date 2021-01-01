@@ -2,6 +2,12 @@
 
 ----------
 
+## [0.4.0.0] --- 1st January 2020 --- **_ContextMenu_**
+
+### NEW
+
+* _Added_ `contextMenu` Source Files. (No custom swfs, yet)
+
 ## [0.3.2.1] --- 30th December 2020 --- **_Minor Fixes_**
 
 ### NEW
