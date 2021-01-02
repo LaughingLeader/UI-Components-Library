@@ -9,19 +9,19 @@ function ValidString(str)
     else return false end
 end
 
---  ===================
---  DISINTEGRATE STRING
---  ===================
+--  ============
+--  DISINTEGRATE
+--  ============
 
----Disintegrate string into pieces
----@param str string
+---Disintegrate element into pieces
+---@param element string|table
 ---@param separator string
-function DisintegrateString(str, separator)
-    local separator = separator or " "
+function Disintegrate(element, separator)
     local pieces = {}
-    for split in string.gmatch(str, "[^" .. separator .. "]+") do
-        pieces[#pieces+1] = split
-    end
+    local separator = separator or " "
+    if type(element) ~= "string" and type(element) ~= "table" then return end
+    if type(element) == "table" then return table.unpack(element) end
+    for split in string.gmatch(element, "[^" .. separator .. "]+") do pieces[#pieces + 1] = split end
     return table.unpack(pieces)
 end
 
@@ -30,12 +30,12 @@ end
 --  =========
 
 --- Merge source and target. Existing source elements have priority.
----@param target table
+---@param target table|string
 ---@param source table
 ---@return table source
 function Integrate(target, source)
     local source = source or {}
-    if type(target) ~= "table" then return source end
+    if type(target) ~= "table" then source[#source + 1] = target; return source end
 
     for key, value in pairs(target) do
         if type(value) == "table" then

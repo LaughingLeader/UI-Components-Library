@@ -14,9 +14,9 @@ Dir = {
     ["Mod"] = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
 }
 
---  ==========  GENERAL ============
-Ext.Require("Auxiliary/General.lua")
---  ================================
+--  ==============  GENERAL ===============
+Ext.Require("Shared/Auxiliary/General.lua")
+--  =======================================
 
 --  ===============
 --  MOD INFORMATION
@@ -35,9 +35,9 @@ CENTRAL = {}    --  Holds Global Settings and Information
 CENTRAL = LoadFile("S7Central.json") or {}
 if CENTRAL[IDENTIFIER] == nil then CENTRAL[IDENTIFIER] = Rematerialize(modInfoTable) end
 
---  =========  MOD VERSIONING  ===========
-Ext.Require("Auxiliary/ModVersioning.lua")
---  ======================================
+--  =============  MOD VERSIONING  ==============
+Ext.Require("Shared/Auxiliary/ModVersioning.lua")
+--  =============================================
 
 --- Initialize CENTRAL
 ---@param ref table Reference table
@@ -68,16 +68,3 @@ function GetTrailingZeroes(n)
     end
     return count
 end
-
---  ============================
---  DECLARATION OF GLOBAL TABLES
---  ============================
-
-SpecsHandler = {}
-BuildSpecifications = {}
-UILibrary = {
-    ["contextMenu"] = {},
-    ["msgBox"] = {},
-    ["GMJournal"] = {},
-    ["Pyramid"] = {}
-}

@@ -1,9 +1,3 @@
---  =======
---  IMPORTS
---  =======
-
-Ext.Require("Auxiliary.lua")
-
 --  ============
 --  CONTEXT MENU
 --  ============
@@ -65,7 +59,7 @@ function RegisterContextMenuListeners()
             ["StatsId"] = item.StatsId,
         }
         for key, _ in pairs(ContextMenu.SubComponents) do
-            local keyType, keyValue = DisintegrateString(key, "::")
+            local keyType, keyValue = Disintegrate(key, "::")
             if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
         end
         ContextMenu.Activator = ContextMenu.Activator or itemDouble

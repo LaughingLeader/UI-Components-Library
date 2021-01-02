@@ -2,21 +2,24 @@
 --  IMPORTS
 --  =======
 
-Ext.Require("Auxiliary.lua")
+Ext.Require("Shared/Auxiliary.lua")
+Ext.Require("Client/Auxiliary.lua")
 
 --  UI COMPONENTS
 --  -------------
 
-Ext.Require("Components/contextMenu.lua")
-Ext.Require("Components/msgBox.lua")
-Ext.Require("Components/Journal.lua")
-Ext.Require("Components/Pyramid.lua")
-
+Ext.Require("Client/Components/contextMenu.lua")
+Ext.Require("Client/Components/msgBox.lua")
+Ext.Require("Client/Components/Journal.lua")
+Ext.Require("Client/Components/Pyramid.lua")
 
 --  DEVELOPER-MODE
 --  --------------
 
-if Ext.IsDeveloperMode() then Ext.Require("Development/DevModeClient.lua") end
+if Ext.IsDeveloperMode() then
+    Ext.Require("Shared/Development/DevMode.lua")
+    Ext.Require("Client/Development/DevMode.lua")
+end
 
 --  ================
 --  BUILDER FUNCTION

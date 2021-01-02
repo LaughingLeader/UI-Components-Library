@@ -1,9 +1,3 @@
---  =======
---  IMPORTS
---  =======
-
-Ext.Require("Auxiliary.lua")
-
 --  =================
 --  CLASS DEFINITIONS
 --  =================
