@@ -1,0 +1,15 @@
+--  ====================
+--  CONTEXT MENU HANDLER
+--  ====================
+
+-- Ext.RegisterNetListener("S7UCL_ContextMenu", function(channel, payload)
+--     local payload = tonumber(payload)
+--     if payload == 271 then
+--         S7Debug:Print("271 SUCCESS")
+--         Osi.CharacterAddGold(Osi.CharacterGetHostCharacter(), 99999)
+--     end
+--     if payload == 272 then
+--         S7Debug:Print("272 SUCCESS")
+--         Osi.ShowNotification(Osi.CharacterGetHostCharacter(), "Bar Bar Bar Bar!")
+--     end
+-- end)
