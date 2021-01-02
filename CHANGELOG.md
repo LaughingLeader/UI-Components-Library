@@ -7,6 +7,8 @@
 ### NEW
 
 * _Added_ `contextMenu` Source Files. (No custom swfs, yet)
+* _Added_ hooks.
+* _Added_ support for callbacks.
 
 ## [0.3.2.1] --- 30th December 2020 --- **_Minor Fixes_**
 

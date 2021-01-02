@@ -67,20 +67,16 @@ ContextMenu:Register({
             ['text'] = "<font color='#3333CC'>Foo</font>",
             ['isDisabled'] = false,
             ['isLegal'] = true,
-            ['action'] = function()
-                Ext.Print("JUST DO IT!!!!!!!")
-            end
+            ['action'] = function() Ext.Print("Foo") end
         },
         {
-        -- ["ID"] = 1,
-        -- ["actionID"] = 1,
+        -- ["ID"] = 2,
+        -- ["actionID"] = 2,
         ['clickSound'] = true,
         ['text'] = "<font color='#CC3333'>Bar</font>",
         ['isDisabled'] = false,
         ['isLegal'] = true,
-        ['action'] = function()
-            Ext.Print("DONT DO IT###########")
-        end
+        ['action'] = function() Ext.Print("Bar") end
         }
     }
 })
