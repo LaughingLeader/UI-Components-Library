@@ -36,6 +36,13 @@ function UILibrary.contextMenu:Register(e)
     end
 end
 
+--- Get Existing SubComponent for key
+---@param key string
+---@return table SubComponent
+function UILibrary.contextMenu:Get(key)
+    if self.SubComponents[key] then return self.SubComponents[key] end
+end
+
 --  =====================================
 ContextMenu = UILibrary.contextMenu:New()
 --  =====================================
@@ -79,7 +86,7 @@ function RegisterContextMenuListeners()
         local actions = ContextMenu.Actions[ContextMenu.Activator]
         for _, entry in Spairs(entries) do
             local ID = entry.ID or contextMenu.windowsMenu_mc.list.length
-            local actionID = entry.actionID or ID
+            local actionID = entry.actionID or math.floor(ID * 100)
             contextMenu.addButton(ID, actionID, entry.clickSound, "", entry.text, entry.isDisabled, entry.isLegal)
             actions[tonumber(actionID)] = entry.action
             contextMenu.addButtonsDone()
@@ -90,8 +97,10 @@ function RegisterContextMenuListeners()
 
     local UI = Ext.GetUIByType(ContextMenu.TypeID)
     Ext.RegisterUICall(UI, "buttonPressed", function(ui, call, id, actionID, handle)
+        Ext.Print(ui, call, id, actionID, handle)
         local actions = ContextMenu.Actions[ContextMenu.Activator] or {}
         if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
+        Ext.PostMessageToServer("S7UCL_ContextMenu", tostring(actionID))
     end)
 
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "close", function(ui, call, ...)
@@ -103,3 +112,19 @@ end
 --  ===============================================================
 Ext.RegisterListener("SessionLoaded", RegisterContextMenuListeners)
 --  ===============================================================
+
+local ActionIDMap = {
+    ["Use"] = 2,
+    ["Equip"] = 2,
+    ["Launch"] = 2,
+    ["Cast Skill"] = 2,
+    ["Consume"] = 2,
+    ["Open"] = 3,
+    ["Unequip"] = 17,
+    ["Examine"] = 22,
+    ["Drop Item"] = 20,
+    ["Combine With"] = 28,
+    ["Add To Wares"] = 50,
+    ["Remove From Wares"] = 51,
+    ["Add To Hotbar"] = 63,
+}

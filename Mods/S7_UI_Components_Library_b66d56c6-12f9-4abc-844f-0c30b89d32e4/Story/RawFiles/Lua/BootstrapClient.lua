@@ -37,6 +37,7 @@ function UCLBuild(buildSpecs)
     if buildSpecs then
         for UIName, Specs in pairs(buildSpecs) do
             UILibrary[UIName] = builder[UIName](Specs)
+            S7Debug:Print("Building " .. UIName .. " UI")
         end
     end
 end
