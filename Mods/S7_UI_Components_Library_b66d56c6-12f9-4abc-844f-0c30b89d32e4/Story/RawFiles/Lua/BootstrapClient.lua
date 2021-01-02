@@ -16,7 +16,7 @@ Ext.Require("Components/Pyramid.lua")
 --  DEVELOPER-MODE
 --  --------------
 
-if Ext.IsDeveloperMode() then Ext.Require("Development/DevMode.lua") end
+if Ext.IsDeveloperMode() then Ext.Require("Development/DevModeClient.lua") end
 
 --  ================
 --  BUILDER FUNCTION
