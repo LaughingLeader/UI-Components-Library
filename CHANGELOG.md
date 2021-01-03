@@ -9,6 +9,7 @@
 * _Added_ `contextMenu` Source Files. (No custom swfs, yet)
 * _Added_ hooks.
 * _Added_ support for callbacks.
+* `contextMenu` pings both Server and Client contexts. Mods can respond to them on channel `S7UCL_ContextMenu`.
 
 ## [0.3.2.1] --- 30th December 2020 --- **_Minor Fixes_**
 
