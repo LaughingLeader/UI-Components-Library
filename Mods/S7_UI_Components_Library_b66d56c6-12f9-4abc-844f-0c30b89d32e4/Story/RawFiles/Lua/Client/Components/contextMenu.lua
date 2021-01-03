@@ -5,6 +5,7 @@
 ---@class ContextMenu @ContextMenu UI Component
 ---@field TypeID number UI TypeID
 ---@field Activator number Origin
+---@field Character EclCharacter Character
 ---@field Intercept boolean Should intercept context menu
 ---@field Component table Holds information about WindowElement
 ---@field SubComponents table Array of Constituting Entries
@@ -16,6 +17,7 @@ UILibrary.contextMenu = {
     ["Component"] = {},
     ["SubComponents"] = {},
     ["Actions"] = {},
+    -- ["Character"] = {},
 }
 
 --- Initialize new ContextMenu Object
@@ -70,6 +72,7 @@ function RegisterContextMenuListeners()
             if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
         end
 
+        ContextMenu.Character = Ext.GetCharacter(partyInventoryUI:GetPlayerHandle())
         ContextMenu.Activator = ContextMenu.Activator or itemDouble
         ContextMenu.Intercept = true
     end)
@@ -102,7 +105,8 @@ function RegisterContextMenuListeners()
     Ext.RegisterUICall(UI, "buttonPressed", function(ui, call, id, actionID, handle)
         local actions = ContextMenu.Actions[ContextMenu.Activator] or {}
         if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
-        Ext.PostMessageToServer("S7UCL_ContextMenu", tostring(actionID))
+        local payload = {["CharacterGUID"] = ContextMenu.Character.MyGuid, ["actionID"] = tonumber(actionID)}
+        Ext.PostMessageToServer("S7UCL_ContextMenu", Ext.JsonStringify(payload))
     end)
 
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "close", function(ui, call, ...)

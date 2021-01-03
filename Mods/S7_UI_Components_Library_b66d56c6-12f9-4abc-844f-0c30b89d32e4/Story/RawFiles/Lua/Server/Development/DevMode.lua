@@ -3,13 +3,16 @@
 --  ====================
 
 -- Ext.RegisterNetListener("S7UCL_ContextMenu", function(channel, payload)
---     local payload = tonumber(payload)
---     if payload == 271 then
+--     local payload = Ext.JsonParse(payload)
+--     Destringify(payload)
+--     Ext.Print(Ext.JsonStringify(payload))
+--     if payload.actionID == 271 then
 --         S7Debug:Print("271 SUCCESS")
 --         Osi.CharacterAddGold(Osi.CharacterGetHostCharacter(), 99999)
 --     end
---     if payload == 272 then
+--     if payload.actionID == 272 then
 --         S7Debug:Print("272 SUCCESS")
 --         Osi.ShowNotification(Osi.CharacterGetHostCharacter(), "Bar Bar Bar Bar!")
 --     end
+--     Ext.PostMessageToClient(payload.playerHandle, "S7UCL_ContextMenu", Ext.JsonStringify(payload))
 -- end)
