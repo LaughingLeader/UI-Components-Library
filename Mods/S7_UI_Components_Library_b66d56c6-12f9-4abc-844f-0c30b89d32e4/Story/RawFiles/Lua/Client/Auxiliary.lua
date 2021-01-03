@@ -8,5 +8,5 @@ UILibrary = {
     ["contextMenu"] = {},
     ["msgBox"] = {},
     ["GMJournal"] = {},
-    ["Pyramid"] = {}
+    ["pyramid"] = {}
 }

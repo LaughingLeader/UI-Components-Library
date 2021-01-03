@@ -5,14 +5,14 @@
 ---@class ContextMenu @ContextMenu UI Component
 ---@field TypeID number UI TypeID
 ---@field Activator number Origin
----@field RegisterHooks boolean Should register hooks
+---@field Intercept boolean Should intercept context menu
 ---@field Component table Holds information about WindowElement
 ---@field SubComponents table Array of Constituting Entries
 ---@field Actions table Table of mapped functions
 UILibrary.contextMenu = {
-    ["TypeID"] = 11,
+    ["TypeID"] = 11, -- or 10
     ["Activator"] = 0,
-    ['RegisterHooks'] = false,
+    ['Intercept'] = false,
     ["Component"] = {},
     ["SubComponents"] = {},
     ["Actions"] = {},
@@ -28,7 +28,7 @@ function UILibrary.contextMenu:New(object)
 end
 
 ---Register new entry for the ContextMenu
----@param e table
+---@param e table ContextEntries
 function UILibrary.contextMenu:Register(e)
     for key, value in pairs(e) do
         self.SubComponents[key] = value
@@ -47,7 +47,6 @@ end
 ContextMenu = UILibrary.contextMenu:New()
 --  =====================================
 
-
 --  ======================
 --  INTERCEPT CONTEXT MENU
 --  ======================
@@ -61,6 +60,7 @@ function RegisterContextMenuListeners()
     local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. "partyInventory.swf")
     Ext.RegisterUICall(partyInventoryUI, "openContextMenu", function(ui, call, id, itemDouble, x, y)
         local item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+
         local targetMap = {
             ["RootTemplate"] = item.RootTemplate.Id,
             ["StatsId"] = item.StatsId,
@@ -69,35 +69,37 @@ function RegisterContextMenuListeners()
             local keyType, keyValue = Disintegrate(key, "::")
             if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
         end
+
         ContextMenu.Activator = ContextMenu.Activator or itemDouble
-        ContextMenu.RegisterHooks = true
+        ContextMenu.Intercept = true
     end)
 
-    --  REGISTER CONTEXT MENU HOOKS
-    --  ===========================
+    --  REGISTER CONTEXT MENU HOOKS ON INTERCEPT
+    --  ========================================
 
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "open", function(ui, call, ...)
-        if not ContextMenu.RegisterHooks then return end
-
+        if not ContextMenu.Intercept then return end
         local entries = ContextMenu.SubComponents[ContextMenu.Activator]
         if not entries then return end
 
+        S7Debug:Print("Intercepted ContextMenu. Registering Hooks")
         local contextMenu = ui:GetRoot()
         local actions = ContextMenu.Actions[ContextMenu.Activator]
+
         for _, entry in Spairs(entries) do
             local ID = entry.ID or contextMenu.windowsMenu_mc.list.length
             local actionID = entry.actionID or math.floor(ID * 100)
+
             contextMenu.addButton(ID, actionID, entry.clickSound, "", entry.text, entry.isDisabled, entry.isLegal)
             actions[tonumber(actionID)] = entry.action
             contextMenu.addButtonsDone()
         end
 
-        ContextMenu.RegisterHooks = false
+        ContextMenu.Intercept = false
     end, "Before")
 
     local UI = Ext.GetUIByType(ContextMenu.TypeID)
     Ext.RegisterUICall(UI, "buttonPressed", function(ui, call, id, actionID, handle)
-        Ext.Print(ui, call, id, actionID, handle)
         local actions = ContextMenu.Actions[ContextMenu.Activator] or {}
         if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
         Ext.PostMessageToServer("S7UCL_ContextMenu", tostring(actionID))
@@ -106,6 +108,8 @@ function RegisterContextMenuListeners()
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "close", function(ui, call, ...)
         ContextMenu.Activator = nil
     end)
+
+    S7Debug:Print("Registered ContextMenu Hooks")
 end
 
 
@@ -113,7 +117,11 @@ end
 Ext.RegisterListener("SessionLoaded", RegisterContextMenuListeners)
 --  ===============================================================
 
-local ActionIDMap = {
+--  ===============
+--  GAME ACTION IDs
+--  ===============
+
+--[[
     ["Use"] = 2,
     ["Equip"] = 2,
     ["Launch"] = 2,
@@ -127,4 +135,4 @@ local ActionIDMap = {
     ["Add To Wares"] = 50,
     ["Remove From Wares"] = 51,
     ["Add To Hotbar"] = 63,
-}
+]]

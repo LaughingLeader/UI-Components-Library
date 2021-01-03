@@ -7,7 +7,7 @@
 ---@field private UI UIObject
 ---@field private Root FlashObject
 ---@field public Component table
-UILibrary.Pyramid = {
+UILibrary.pyramid = {
     ["Exists"] = false,
     -- ["UI"] = {},
     -- ["Root"] = {},
@@ -20,17 +20,15 @@ UILibrary.Pyramid = {
 --- Instantiate new Pyramid
 ---@param object table|nil Object to instantiate
 ---@return Pyramid object Pyramid Object
-function UILibrary.Pyramid:New(object)
+function UILibrary.pyramid:New(object)
     local object = object or {}
     object = Integrate(self, object)
     return object
 end
 
 --  =============================
-Pyramid = UILibrary.Pyramid:New()
+Pyramid = UILibrary.pyramid:New()
 --  =============================
-
---  ###################################################################################################################################################
 
 --  ==============
 --  CREATE PYRAMID
@@ -40,7 +38,7 @@ Pyramid = UILibrary.Pyramid:New()
 ---@param Specs table Pyramid build specifications
 function CreatePyramid(Specs)
     if not Pyramid.Exists then   --  If Pyramid doesn't already exist
-        Pyramid = UILibrary.Pyramid:New(Specs)    --  Reinitialize Pyramid
+        Pyramid = UILibrary.pyramid:New(Specs)    --  Reinitialize Pyramid
         Ext.CreateUI(Pyramid.Component.Name, Dir.ModGUI .. "pyramid.swf", Pyramid.Component.Layer)
         Pyramid.UI = Ext.GetUI(Pyramid.Component.Name)
         Pyramid.Root = Pyramid.UI:GetRoot()
