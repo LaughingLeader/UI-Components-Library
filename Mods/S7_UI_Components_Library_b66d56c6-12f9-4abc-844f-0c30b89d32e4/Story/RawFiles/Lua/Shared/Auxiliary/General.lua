@@ -173,7 +173,7 @@ end
 function LoadFile(fileName, context)
     local file
     local _, fileContents = pcall(Ext.LoadFile, fileName, context)
-    if ValidString(fileContents) then file = Ext.JsonParse(fileContents) end
+    if ValidString(fileContents) and string.match(fileName, ".json") then file = Ext.JsonParse(fileContents) end
     return file, fileContents
 end
 
