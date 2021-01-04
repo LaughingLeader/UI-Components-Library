@@ -60,7 +60,7 @@ function Integrate(target, source)
             if not source[key] then source[key] = {} end
             source[key] = Integrate(value, source[key])
         elseif type(value) == "boolean" and source[key] == false then source[key] = false
-        elseif type(value) == "string" and ValidString(value) then source[key] = source[key] or value
+        elseif type(value) == "string" and not ValidString(value) then source[key] = source[key]
         else source[key] = source[key] or value end
     end
 
