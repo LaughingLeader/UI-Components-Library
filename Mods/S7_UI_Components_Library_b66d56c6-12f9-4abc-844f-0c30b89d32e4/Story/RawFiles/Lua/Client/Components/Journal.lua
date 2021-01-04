@@ -337,6 +337,13 @@ local function RegisterJournalListeners(Specs)
         end
     end)
 
+    --  ON TOGGLE EDIT
+    --  ==============
+
+    Ext.RegisterUIInvokeListener(Journal.UI, "onToggleEdit", function (ui, call)
+        Journal.Component.Strings.caption = Journal.Root.caption_mc.htmlText
+    end)
+
     --  REMOVE NODES
     --  ============
 
