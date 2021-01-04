@@ -96,12 +96,14 @@ function ParagraphList:Push(element) cf_Push(self, element) end
 
 ---@class GMJournal @GMJournal UI Component
 ---@field private Exists boolean
+---@field private Registered boolean
 ---@field private UI UIObject
 ---@field private Root FlashObject
 ---@field public Component table Holds information about the UI Component
 ---@field public SubComponent table Holds information about constituting elements
 UILibrary.GMJournal = {
     ["Exists"] = false,
+    ["Registered"] = false,
     -- ["UI"] = {},
     -- ["Root"] = {},
     ["Component"] = {
@@ -114,7 +116,8 @@ UILibrary.GMJournal = {
             ["addCategory"] = "Add New Category",
             ["addParagraph"] = "Add New Entry...",
             ["shareWithParty"] = "Share with Party"
-        }
+        },
+        ["Listeners"] = {}
     },
     ["SubComponent"] = {
         ["ToggleEditButton"] = {
@@ -284,7 +287,7 @@ end
 --  ==========================
 
 --- Registers UICall Listeners to Journal.UI Component
-local function RegisterJournalListeners()
+local function RegisterJournalListeners(Specs)
 
     --  ADD CATEGORY
     --  ============
@@ -347,15 +350,20 @@ local function RegisterJournalListeners()
         end
     end)
 
+    for key, value in pairs(Specs.Component.Listeners) do Ext.RegisterUICall(Journal.UI, key, value) end
+
     Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
         Journal.Component.Strings.caption = Journal.Root.caption_mc.htmlText
         Journal.UI:Hide()
+        UnloadJournal()
+        Journal.Exists = false
     end)
 
     --  REGISTER DEBUG HOOKS
     --  ====================
 
     -- RegisterDebugHooks(Journal.UI)
+    Journal.Registered = true
 end
 
 --  ########################################################################################################################################
@@ -368,10 +376,14 @@ end
 --- @param Specs table Journal build specifications
 function CreateJournal(Specs)
     Journal = UILibrary.GMJournal:New(Specs)
-    Ext.CreateUI(Journal.Component.Name, Dir.ModGUI .. "GMJournal.swf", Journal.Component.Layer)
     Journal.UI = Ext.GetUI(Journal.Component.Name)
+    if not Journal.UI then
+        S7Debug:Print("Creating new Journal UI: " .. Journal.Component.Name)
+        Journal.UI = Ext.CreateUI(Journal.Component.Name, Dir.ModGUI .. "GMJournal.swf", Journal.Component.Layer)
+        Journal.Registered = false
+        if not Journal.Registered then RegisterJournalListeners(Specs) end
+    else S7Debug:Print("Rendering Journal UI: " .. Specs.Component.Name) end
     Journal.Root = Journal.UI:GetRoot()
-    RegisterJournalListeners()
     Journal.Exists = true
 end
 
