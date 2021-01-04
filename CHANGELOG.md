@@ -2,6 +2,13 @@
 
 ----------
 
+## [0.4.0.0] --- 4th January 2020 --- **_Markdown_**
+
+### NEW
+
+* _Created_ function to convert _JournalData_ to _Markdown_ and vice-versa.
+* `LoadFile` now only parses json if the file-extension is `.json`.
+
 ## [0.4.0.0] --- 1st January 2020 --- **_ContextMenu_**
 
 ### NEW
