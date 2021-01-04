@@ -34,10 +34,11 @@ function UCLBuild(buildSpecs)
         ["pyramid"] = RenderPyramid
     }
 
+    local object
     if buildSpecs then
-        for UIName, Specs in pairs(buildSpecs) do
-            UILibrary[UIName] = builder[UIName](Specs)
-            S7Debug:Print("Building " .. UIName .. " UI")
-        end
+        UIName, Specs = next(buildSpecs)
+        S7Debug:Print("Building " .. UIName .. " UI")
+        object = builder[UIName](Specs)
     end
+    return object
 end

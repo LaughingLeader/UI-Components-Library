@@ -107,7 +107,6 @@ function Journalify(str, rep)
         if line:match(matchers.title) then
             local beg, fin = line:find(matchers.title)
             title = line:sub(fin + 1, -1)
-            Ext.Print("title:", fin)
         end
         if line:match(matchers.category) then
             local beg, fin = line:find(matchers.category)
@@ -115,7 +114,6 @@ function Journalify(str, rep)
             if not jData[cat] then jData[cat] = {["Chapters"] = {}} end
             jData[cat]['ID'] = cat * catInc
             jData[cat]['strContent'] = line:sub(fin + 1, -1)
-            Ext.Print("category:", fin)
         end
         if line:match(matchers.chapter) then
             local beg, fin = line:find(matchers.chapter)
@@ -123,7 +121,6 @@ function Journalify(str, rep)
             if not jData[cat]["Chapters"][chap] then jData[cat]["Chapters"][chap] = {["Paragraphs"] = {}} end
             jData[cat]["Chapters"][chap]['ID'] = jData[cat]["ID"] + chap * chapInc
             jData[cat]["Chapters"][chap]['strContent'] = line:sub(fin + 1, -1)
-            Ext.Print("chapters:", fin)
         end
         if line:match(matchers.paragraph) then
             local beg, fin = line:find(matchers.paragraph)
@@ -131,7 +128,6 @@ function Journalify(str, rep)
             if not jData[cat]["Chapters"][chap]["Paragraphs"][para] then jData[cat]["Chapters"][chap]["Paragraphs"][para] = {} end
             jData[cat]["Chapters"][chap]["Paragraphs"][para]['ID'] = jData[cat]["Chapters"][chap]["ID"] + para * paraInc
             jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(fin + 1, -1)
-            Ext.Print("paragprah:", fin)
         end
     end
 
