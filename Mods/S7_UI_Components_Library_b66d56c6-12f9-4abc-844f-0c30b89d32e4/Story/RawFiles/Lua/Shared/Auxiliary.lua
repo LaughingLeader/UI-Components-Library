@@ -85,10 +85,10 @@ function Journalify(str, rep)
     local rep = rep or {}
 
     local matchers = {
-        ["title"] = "^%s-# ",
-        ["category"] = "^%s-## ",
-        ["chapter"] = "^%s-### ",
-        ["paragraph"] = "^%s-%- ",
+        ["title"] = "^%s-#%s+",
+        ["category"] = "^%s-##%s+",
+        ["chapter"] = "^%s-###%s+",
+        ["paragraph"] = "^%s-%-%s+",
     }
 
     local replacers = {
@@ -103,30 +103,35 @@ function Journalify(str, rep)
     for line in string.gmatch(str, "(.-)\r\n") do
         for _, repl in Spairs(replacers) do for key, value in pairs(repl) do line = line:gsub(key, value) end end
 
+        
         if line:match(matchers.title) then
             local beg, fin = line:find(matchers.title)
-            title = line:sub(fin, -1)
+            title = line:sub(fin + 1, -1)
+            Ext.Print("title:", fin)
         end
         if line:match(matchers.category) then
             local beg, fin = line:find(matchers.category)
             cat = cat + 1; chap, para = 0, 0
             if not jData[cat] then jData[cat] = {["Chapters"] = {}} end
             jData[cat]['ID'] = cat * catInc
-            jData[cat]['strContent'] = line:sub(fin, -1)
+            jData[cat]['strContent'] = line:sub(fin + 1, -1)
+            Ext.Print("category:", fin)
         end
         if line:match(matchers.chapter) then
             local beg, fin = line:find(matchers.chapter)
             chap = chap + 1; para = 0
             if not jData[cat]["Chapters"][chap] then jData[cat]["Chapters"][chap] = {["Paragraphs"] = {}} end
             jData[cat]["Chapters"][chap]['ID'] = jData[cat]["ID"] + chap * chapInc
-            jData[cat]["Chapters"][chap]['strContent'] = line:sub(fin, -1)
+            jData[cat]["Chapters"][chap]['strContent'] = line:sub(fin + 1, -1)
+            Ext.Print("chapters:", fin)
         end
         if line:match(matchers.paragraph) then
             local beg, fin = line:find(matchers.paragraph)
             para = para + 1
             if not jData[cat]["Chapters"][chap]["Paragraphs"][para] then jData[cat]["Chapters"][chap]["Paragraphs"][para] = {} end
             jData[cat]["Chapters"][chap]["Paragraphs"][para]['ID'] = jData[cat]["Chapters"][chap]["ID"] + para * paraInc
-            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(fin, -1)
+            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(fin + 1, -1)
+            Ext.Print("paragprah:", fin)
         end
     end
 
@@ -150,25 +155,25 @@ function Markdownify(jData)
     local jData = Rematerialize(jData)
     local md = ""
     local title = jData.Component.Strings.caption
-    md = "#" .. tostring(title) .. "\r\n"
+    md = "# " .. tostring(title) .. "\r\n"
     md = md .. string.rep("=", string.len(md)) .. "\r\n"
 
     for _, Category in pairs(jData.JournalData) do
         if not Category.strContent then break end
-        local catTitle = "\n##" .. tostring(Category.strContent)
+        local catTitle = "\n## " .. tostring(Category.strContent)
         md = md .. catTitle  .. "\r\n"
         md = md .. string.rep("-", string.len(catTitle)) .. "\r\n"
 
         if not Category.Chapters then break end
         for _, Chapter in pairs(Category.Chapters) do
             if not Chapter.strContent then break end
-            local chapTitle = "\n###" .. tostring(Chapter.strContent)
+            local chapTitle = "\n### " .. tostring(Chapter.strContent)
             md = md .. chapTitle .. "\r\n"
 
             if not Chapter.Paragraphs then break end
             for _, Paragraph in pairs(Chapter.Paragraphs) do
                 if not Paragraph.strContent then break end
-                md = md .. "-" .. tostring(Paragraph.strContent) .. "\r\n"
+                md = md .. "- " .. tostring(Paragraph.strContent) .. "\r\n"
             end
         end
     end
