@@ -9,6 +9,24 @@ function ValidString(str)
     else return false end
 end
 
+--  ======
+--  COLORS
+--  ======
+
+Color = {
+    ["Red"] = "E03616",
+    ["Blue"] = "5998C5",
+    ["Green"] = "3F784C",
+    ["Orange"] = "C17817",
+    ["Violet"] = "58355E",
+}
+
+function Color:Red(str) return "<font color=\'#" .. self.Red .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Blue(str) return "<font color=\'#" .. self.Blue .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Green(str) return "<font color=\'#" .. self.Green .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Orange(str) return "<font color=\'#" .. self.Orange .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Violet(str) return "<font color=\'#" .. self.Violet .. "\'>" .. tostring(str) .. "</font>" end
+
 --  ============
 --  DISINTEGRATE
 --  ============
