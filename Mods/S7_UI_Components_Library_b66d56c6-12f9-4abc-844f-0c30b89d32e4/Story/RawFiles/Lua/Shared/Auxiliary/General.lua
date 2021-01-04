@@ -14,18 +14,18 @@ end
 --  ======
 
 Color = {
-    ["Red"] = "E03616",
-    ["Blue"] = "5998C5",
-    ["Green"] = "3F784C",
-    ["Orange"] = "C17817",
-    ["Violet"] = "58355E",
+    ["red"] = "E03616",
+    ["blue"] = "5998C5",
+    ["green"] = "3F784C",
+    ["orange"] = "C17817",
+    ["violet"] = "58355E",
 }
 
-function Color:Red(str) return "<font color=\'#" .. self.Red .. "\'>" .. tostring(str) .. "</font>" end
-function Color:Blue(str) return "<font color=\'#" .. self.Blue .. "\'>" .. tostring(str) .. "</font>" end
-function Color:Green(str) return "<font color=\'#" .. self.Green .. "\'>" .. tostring(str) .. "</font>" end
-function Color:Orange(str) return "<font color=\'#" .. self.Orange .. "\'>" .. tostring(str) .. "</font>" end
-function Color:Violet(str) return "<font color=\'#" .. self.Violet .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Red(str) return "<font color=\'#" .. self.red .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Blue(str) return "<font color=\'#" .. self.blue .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Green(str) return "<font color=\'#" .. self.green .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Orange(str) return "<font color=\'#" .. self.orange .. "\'>" .. tostring(str) .. "</font>" end
+function Color:Violet(str) return "<font color=\'#" .. self.violet .. "\'>" .. tostring(str) .. "</font>" end
 
 --  ============
 --  DISINTEGRATE
@@ -59,8 +59,9 @@ function Integrate(target, source)
         if type(value) == "table" then
             if not source[key] then source[key] = {} end
             source[key] = Integrate(value, source[key])
-        end
-        source[key] = source[key] or value
+        elseif type(value) == "boolean" and source[key] == false then source[key] = false
+        elseif type(value) == "string" and ValidString(value) then source[key] = source[key] or value
+        else source[key] = source[key] or value end
     end
 
     return source
