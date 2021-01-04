@@ -84,10 +84,17 @@ function Journalify(str, rep)
     local catInc, chapInc, paraInc = 1000000, 1000, 1
     local rep = rep or {}
 
+    local matchers = {
+        ["title"] = "^%s-# ",
+        ["category"] = "^%s-## ",
+        ["chapter"] = "^%s-### ",
+        ["paragraph"] = "^%s-%- ",
+    }
+
     local replacers = {
         [1] = {["%*%*%*(.-)%*%*%*"] = "<b><i>%1</i></b>"},
-        [2] = {["[^*]%*%*(.-)%*%*[^*]"] = "<b>%1</b>"},
-        [3] = {["[_*`](.-)[_*`]"] = "<i>%1</i>"},
+        [2] = {["[^%*]%*%*(.-)%*%*[^%*]"] = "<b>%1</b>"},
+        [3] = {["[_%*`](.-)[_%*`]"] = "<i>%1</i>"},
         [4] = {["||(.-)||#(%w%w%w%w%w%w)"] = "<font color=\'#%2\'>%1</font>"},
         [5] = {["(%g-)|#(%w%w%w%w%w%w)"] = "<font color=\'#%2\'>%1</font>"}
     }
@@ -95,25 +102,31 @@ function Journalify(str, rep)
 
     for line in string.gmatch(str, "(.-)\r\n") do
         for _, repl in Spairs(replacers) do for key, value in pairs(repl) do line = line:gsub(key, value) end end
-            
-        if line:match("^#[^#%--]") then title = line:sub(2, -1) end
-        if line:match("^##[^#%--]") then
+
+        if line:match(matchers.title) then
+            local beg, fin = line:find(matchers.title)
+            title = line:sub(fin, -1)
+        end
+        if line:match(matchers.category) then
+            local beg, fin = line:find(matchers.category)
             cat = cat + 1; chap, para = 0, 0
             if not jData[cat] then jData[cat] = {["Chapters"] = {}} end
             jData[cat]['ID'] = cat * catInc
-            jData[cat]['strContent'] = line:sub(3, -1)
+            jData[cat]['strContent'] = line:sub(fin, -1)
         end
-        if line:match("^###[^#%--]") then
+        if line:match(matchers.chapter) then
+            local beg, fin = line:find(matchers.chapter)
             chap = chap + 1; para = 0
             if not jData[cat]["Chapters"][chap] then jData[cat]["Chapters"][chap] = {["Paragraphs"] = {}} end
             jData[cat]["Chapters"][chap]['ID'] = jData[cat]["ID"] + chap * chapInc
-            jData[cat]["Chapters"][chap]['strContent'] = line:sub(4, -1)
+            jData[cat]["Chapters"][chap]['strContent'] = line:sub(fin, -1)
         end
-        if line:match("^-[^#%--]") then
+        if line:match(matchers.paragraph) then
+            local beg, fin = line:find(matchers.paragraph)
             para = para + 1
             if not jData[cat]["Chapters"][chap]["Paragraphs"][para] then jData[cat]["Chapters"][chap]["Paragraphs"][para] = {} end
             jData[cat]["Chapters"][chap]["Paragraphs"][para]['ID'] = jData[cat]["Chapters"][chap]["ID"] + para * paraInc
-            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(2, -1)
+            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(fin, -1)
         end
     end
 
