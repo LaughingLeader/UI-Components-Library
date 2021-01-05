@@ -120,15 +120,14 @@ Thumbs.db
 #        HUNTER-GHOST-27
 #    ########################
 
-#   VSCode Workspace
+# VSCode Workspace
 *.code-workspace
 .vscode
 Images/
 
-#   GIMP XCF
+# GIMP XCF
 *.xcf
 
-#   RECOVERY Flash Files
-UI-Components/msgBox/src/RECOVER_msgBox.fla
-UI-Components/GMJournal/src/RECOVER_GMJournal.fla
-UI-Components/GMJournal/src/RECOVER_pyramid.fla
+# Flash Files
+*.fla
+*.as
