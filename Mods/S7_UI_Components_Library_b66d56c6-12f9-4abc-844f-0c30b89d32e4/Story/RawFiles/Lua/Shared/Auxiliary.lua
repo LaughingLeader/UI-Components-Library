@@ -103,7 +103,7 @@ function Journalify(str, rep)
     for line in string.gmatch(str, "(.-)\r\n") do
         for _, repl in Spairs(replacers) do for key, value in pairs(repl) do line = line:gsub(key, value) end end
 
-        
+
         if line:match(matchers.title) then
             local beg, fin = line:find(matchers.title)
             title = line:sub(fin + 1, -1)

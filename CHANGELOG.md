@@ -9,6 +9,15 @@
 * _Created_ function to convert _JournalData_ to _Markdown_ and vice-versa.
 * `LoadFile` now only parses json if the file-extension is `.json`.
 
+### CHANGED
+
+* `S7_Journal_UI_Hide` listeners now trigger in two parts.
+* _Added_ ability to register custom-listeners.
+
+### FIXED
+
+* _Fixed_ `caption` update bug.
+
 ## [0.4.0.0] --- 1st January 2020 --- **_ContextMenu_**
 
 ### NEW
@@ -90,7 +99,7 @@
 
 ### FIXED
 
-* Buttons now throw unqiue `ExternalInterfaceCalls`. `Listeners` should be registered by client mod. `S7_msgBoxBtnClick::[ID]`
+* Buttons now throw unique `ExternalInterfaceCalls`. `Listeners` should be registered by client mod. `S7_msgBoxBtnClick::[ID]`
 * _Fixed_ incorrect position on intial msgBox creation. Called twice now for good measure.
 
 ### REMOVED

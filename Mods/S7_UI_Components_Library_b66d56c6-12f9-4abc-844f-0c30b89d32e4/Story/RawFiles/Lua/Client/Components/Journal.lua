@@ -335,13 +335,7 @@ local function RegisterJournalListeners(Specs)
         elseif journalNodeType == 2 then Journal.JournalData[catPos]["Chapters"][chapPos]["strContent"] = updatedText
         elseif journalNodeType == 3 then Journal.JournalData[catPos]["Chapters"][chapPos]["Paragraphs"][paraPos]["strContent"] = updatedText
         end
-    end)
 
-    --  ON TOGGLE EDIT
-    --  ==============
-
-    Ext.RegisterUIInvokeListener(Journal.UI, "onToggleEdit", function (ui, call)
-        Journal.Component.Strings.caption = Journal.Root.caption_mc.htmlText
     end)
 
     --  REMOVE NODES
@@ -357,14 +351,29 @@ local function RegisterJournalListeners(Specs)
         end
     end)
 
-    for key, value in pairs(Specs.Component.Listeners) do Ext.RegisterUICall(Journal.UI, key, value) end
+    --  BEFORE UI HIDE
+    --  ==============
 
     Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
         Journal.Component.Strings.caption = Journal.Root.caption_mc.htmlText
         Journal.UI:Hide()
+    end, "Before")
+
+    --  CUSTOM LISTENERS
+    --  ================
+
+    for key, responder in pairs(Specs.Component.Listeners) do
+        local when, event = Disintegrate(key, ":")
+        Ext.RegisterUICall(Journal.UI, event, responder, when)
+    end
+
+    --  AFTER UI HIDE
+    --  =============
+
+    Ext.RegisterUICall(Journal.UI, "S7_Journal_UI_Hide", function(ui, call, ...)
         UnloadJournal()
         Journal.Exists = false
-    end)
+    end, "After")
 
     --  REGISTER DEBUG HOOKS
     --  ====================
