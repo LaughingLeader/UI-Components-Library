@@ -128,6 +128,11 @@ Images/
 # GIMP XCF
 *.xcf
 
-# Flash Files
+# UI-Components
 *.fla
-*.as
+UI-Components/*
+!UI-Components/syncSWF.py
+!UI-Components/contextMenu/
+!UI-Components/msgBox/
+!UI-Components/GMJournal/
+!UI-Components/pyramid/
