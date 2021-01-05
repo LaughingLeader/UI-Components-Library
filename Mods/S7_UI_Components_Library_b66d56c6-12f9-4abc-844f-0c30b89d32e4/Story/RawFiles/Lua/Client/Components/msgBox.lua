@@ -7,7 +7,7 @@
 ---@field private UI UIObject
 ---@field private Root FlashObject
 ---@field public Component table Holds information about the UI Component
----@field public SubComponent table Holds information about constituting elements
+---@field public SubComponents table Holds information about constituting elements
 UILibrary.msgBox = {
     ["Exists"] = false,
     -- ["UI"] = {},
@@ -30,12 +30,12 @@ UILibrary.msgBox = {
     --  --------------
     --  Sub Components
     --  --------------
-    ["SubComponent"] = {
+    ["SubComponents"] = {
         --  TITLE
         --  -----
         ["Title"] = {
             ["Name"] = "Title", --  Sub-Component Name
-            ["TitleText"] = "", --  Default Value
+            ["TitleText"] = "TITLE", --  Default Value
             ["Order"] = 1,  --  Default Order: At Top
             ["SpaceReserved"] = false, -- Space will be reserved even if sub-component is Invisible
             ["Visible"] = false --  Visibility of Title Component
@@ -44,7 +44,7 @@ UILibrary.msgBox = {
         --  ----
         ["Text"] = {
             ["Name"] = "Text", --  Sub-Component Name
-            ["Text"] = "", --  Default Value
+            ["Text"] = "Lorem ipsum dolor sit amet", --  Default Value
             ["Type"] = 1, -- Type of Sub-Component
             ["Order"] = 2, -- Default Order: Below Title
             ["SpaceReserved"] = false, -- Space will be reserved even if sub-component is Invisible
@@ -120,9 +120,10 @@ MsgBox = UILibrary.msgBox:New()
 --- Create new MsgBox UI Component
 --- @param Specs table MsgBox build specifications
 function CreateMsgBox(Specs)
+    Ext.Print(Ext.JsonStringify(Rematerialize(Specs)))
     MsgBox = UILibrary.msgBox:New(Specs)    --  Reinitialize MsgBox
-    Ext.CreateUI(MsgBox.Component.Name, Dir.ModGUI .. "msgBox.swf", MsgBox.Component.Layer)
-    MsgBox.UI = Ext.GetUI(MsgBox.Component.Name)
+    Ext.Print(Ext.JsonStringify(Rematerialize(MsgBox)))
+    MsgBox.UI = Ext.GetUI(MsgBox.Component.Name) or Ext.CreateUI(MsgBox.Component.Name, Dir.ModGUI .. "msgBox.swf", MsgBox.Component.Layer)
     MsgBox.Root = MsgBox.UI:GetRoot()
 
     --  REGISTER CLOSE BUTTON LISTENER
@@ -163,7 +164,7 @@ function RenderMsgBox(Specs)
 
     local order = {}    --  Holds the order of flex-components
     local push = 0  --  If two subcomponents have the same order, push tracks the positional shift of succeeding elements
-    for subCompName, subComp in pairs(MsgBox.SubComponent) do
+    for subCompName, subComp in pairs(MsgBox.SubComponents) do
         if subComp.Order ~= nil and subComp.Visible or subComp.ReserveSpace then -- If Order Specified + SubComponent Visible or SpaceReserved
             if order[subComp.Order] ~= nil then --  If Order Index already mapped
                 push = push + 1 --  Increase push by 1
@@ -224,7 +225,7 @@ function RenderMsgBox(Specs)
 
     if MsgBox.Component.Order ~= "NoOrder" then
         for _, element in ipairs(order) do
-            if MsgBox.SubComponent[element].Visible or MsgBox.SubComponent[element].SpaceReserved then
+            if MsgBox.SubComponents[element].Visible or MsgBox.SubComponents[element].SpaceReserved then
                 if element == "Title" then
                     MsgBox.Root.popup_mc.title_txt.y = flexPos
                     flexPos = flexPos + subComponentHeights["Title"] + MsgBox.Component.Padding
@@ -235,7 +236,7 @@ function RenderMsgBox(Specs)
                     MsgBox.Root.popup_mc.input_mc.y = flexPos
                     flexPos = flexPos + subComponentHeights["InputText"] + MsgBox.Component.Padding
                 elseif element == "Buttons" then
-                    if MsgBox.SubComponent.Buttons.AlwaysAtBottom then
+                    if MsgBox.SubComponents.Buttons.AlwaysAtBottom then
                         MsgBox.Root.popup_mc.setBtnPos(flexEnd - MsgBox.Root.popup_mc.btnList.height)
                     else
                         MsgBox.Root.popup_mc.setBtnPos(flexPos)
@@ -282,7 +283,7 @@ SpecsHandler["MsgBox"] = {
     --  SUBCOMPONENTS
     --  =============
 
-    ["SubComponent"] = function (SubComponent)
+    ["SubComponents"] = function (SubComponent)
 
         --  TITLE
         --  =====
