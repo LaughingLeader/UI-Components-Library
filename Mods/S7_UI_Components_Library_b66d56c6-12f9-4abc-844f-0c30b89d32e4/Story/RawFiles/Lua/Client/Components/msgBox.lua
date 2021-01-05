@@ -10,6 +10,7 @@
 ---@field public SubComponents table Holds information about constituting elements
 UILibrary.msgBox = {
     ["Exists"] = false,
+    ["Registered"] = false,
     -- ["UI"] = {},
     -- ["Root"]= {},
 
@@ -113,49 +114,8 @@ MsgBox = UILibrary.msgBox:New()
 
 --  ###################################################################################################################################################
 
---  ==================
---  CREATE MESSAGE-BOX
---  ==================
-
---- Create new MsgBox UI Component
---- @param Specs table MsgBox build specifications
-function CreateMsgBox(Specs)
-    Ext.Print(Ext.JsonStringify(Rematerialize(Specs)))
-    MsgBox = UILibrary.msgBox:New(Specs)    --  Reinitialize MsgBox
-    Ext.Print(Ext.JsonStringify(Rematerialize(MsgBox)))
-    MsgBox.UI = Ext.GetUI(MsgBox.Component.Name) or Ext.CreateUI(MsgBox.Component.Name, Dir.ModGUI .. "msgBox.swf", MsgBox.Component.Layer)
-    MsgBox.Root = MsgBox.UI:GetRoot()
-
-    --  REGISTER CLOSE BUTTON LISTENER
-    --  ------------------------------
-
-    Ext.RegisterUICall(MsgBox.UI, "S7HideUI", function(ui, call, ...)
-        MsgBox.UI:Invoke("hideWin")    --  Hide or Destroy ??
-        CloseMsgBox()
-    end)
-
-    MsgBox.Exists = true    --  Set MsgBox existance to true
-    RenderMsgBox(Specs) --  Rerender MsgBox
-end
-
---  ==================
---  RENDER MESSAGE-BOX
---  ==================
-
---- Render MsgBox UI
---- @param Specs table MsgBox build specifications
---- @return MsgBox MsgBox
-function RenderMsgBox(Specs)
-    --  Create if MsgBox doesn't already exist
-    if not MsgBox.Exists then CreateMsgBox(Specs) end
-
-    --  -------------
-    --  SPECS HANDLER
-    --  -------------
-
-    for key, handler in pairs(SpecsHandler["MsgBox"]) do handler(MsgBox[key]) end
-
-    --  -------------------
+local function positionElements()
+        --  -------------------
     --  REPOSITION ELEMENTS
     --  -------------------
 
@@ -185,18 +145,23 @@ function RenderMsgBox(Specs)
     else MsgBox.Root.setY(330) end
 
 
+    local buttonHeight = 0
+    for key, value in ipairs(MsgBox.SubComponents.Buttons.Btns) do
+        buttonHeight = buttonHeight + 40
+    end
+
     --  Heights Table
     --  -------------
 
     local textHeight = 0
-    textHeight = MsgBox.Root.popup_mc.text_mc.text_txt.height >= MsgBox.Root.popup_mc.text_mc.text_txt.textHeight and MsgBox.Root.popup_mc.text_mc.text_txt.textHeight or MsgBox.Root.popup_mc.text_mc.text_txt.height
+    textHeight = MsgBox.Root.popup_mc.text_mc.text_txt.height >= MsgBox.Root.popup_mc.text_mc.text_txt.textHeight and MsgBox.Root.popup_mc.text_mc.text_txt.textHeight + 40 or MsgBox.Root.popup_mc.text_mc.text_txt.height
 
     local subComponentHeights = {
         ["Popup"] = MsgBox.Root.popup_mc.height,
         ["Title"] = MsgBox.Root.popup_mc.title_txt.height,
         ["Text"] = textHeight,
         ["InputText"] = MsgBox.Root.popup_mc.input_mc.height,
-        ["Buttons"] = MsgBox.Root.popup_mc.cButtons_mc.height or 0
+        ["Buttons"] = buttonHeight or 0
     }
 
     --  Total Height of Ordered Components
@@ -224,7 +189,7 @@ function RenderMsgBox(Specs)
     end
 
     if MsgBox.Component.Order ~= "NoOrder" then
-        for _, element in ipairs(order) do
+        for _, element in Spairs(order) do
             if MsgBox.SubComponents[element].Visible or MsgBox.SubComponents[element].SpaceReserved then
                 if element == "Title" then
                     MsgBox.Root.popup_mc.title_txt.y = flexPos
@@ -237,7 +202,7 @@ function RenderMsgBox(Specs)
                     flexPos = flexPos + subComponentHeights["InputText"] + MsgBox.Component.Padding
                 elseif element == "Buttons" then
                     if MsgBox.SubComponents.Buttons.AlwaysAtBottom then
-                        MsgBox.Root.popup_mc.setBtnPos(flexEnd - MsgBox.Root.popup_mc.btnList.height)
+                        MsgBox.Root.popup_mc.setBtnPos(flexEnd - buttonHeight)
                     else
                         MsgBox.Root.popup_mc.setBtnPos(flexPos)
                         flexPos = flexPos + subComponentHeights["Buttons"] + MsgBox.Component.Padding
@@ -246,6 +211,58 @@ function RenderMsgBox(Specs)
             end
         end
     end
+end
+
+--  ==================
+--  CREATE MESSAGE-BOX
+--  ==================
+
+--- Create new MsgBox UI Component
+--- @param Specs table MsgBox build specifications
+function CreateMsgBox(Specs)
+    Ext.Print(Ext.JsonStringify(Rematerialize(Specs)))
+    MsgBox = UILibrary.msgBox:New(Specs)    --  Reinitialize MsgBox
+    Ext.Print(Ext.JsonStringify(Rematerialize(MsgBox)))
+    MsgBox.UI = Ext.GetUI(MsgBox.Component.Name) or Ext.CreateUI(MsgBox.Component.Name, Dir.ModGUI .. "msgBox.swf", MsgBox.Component.Layer)
+    MsgBox.Root = MsgBox.UI:GetRoot()
+
+    --  REGISTER CLOSE BUTTON LISTENER
+    --  ------------------------------
+
+    if not MsgBox.Registered then
+        Ext.RegisterUICall(MsgBox.UI, "S7HideUI", function(ui, call, ...)
+            MsgBox.UI:Invoke("hideWin")    --  Hide or Destroy ??
+            CloseMsgBox()
+        end)
+        MsgBox.Registered = true
+    end
+
+    MsgBox.Exists = true    --  Set MsgBox existance to true
+    RenderMsgBox(Specs) --  Rerender MsgBox
+end
+
+--  ==================
+--  RENDER MESSAGE-BOX
+--  ==================
+
+--- Render MsgBox UI
+--- @param Specs table MsgBox build specifications
+--- @return MsgBox MsgBox
+function RenderMsgBox(Specs)
+    --  Create if MsgBox doesn't already exist
+    if not MsgBox.Exists then CreateMsgBox(Specs) end
+
+    --  -------------
+    --  SPECS HANDLER
+    --  -------------
+
+    for key, handler in pairs(SpecsHandler["MsgBox"]) do handler(MsgBox[key]) end
+
+    --  -----------------
+    --  POSITION ELEMENTS
+    --  -----------------
+    
+    positionElements()
 
     --  ----------------
     --  SHOW MESSAGE BOX
@@ -326,8 +343,8 @@ SpecsHandler["MsgBox"] = {
             if SubComponent.Buttons.Btns ~= nil then
                 for id, btn in ipairs(SubComponent.Buttons.Btns) do
                     if btn.Type == "Blue" then MsgBox.UI:Invoke("addBlueButton", id, btn.Label)
-                    elseif btn.Type == "Yes" then MsgBox.UI:Invoke("addYesButton", id)
-                    elseif btn.Type == "No" then MsgBox.UI:Invoke("addNoButton", id)
+                    elseif btn.Type == "Yes" then MsgBox.UI:Invoke("addYesButton", id, btn.Label)
+                    elseif btn.Type == "No" then MsgBox.UI:Invoke("addNoButton", id, btn.Label)
                     else MsgBox.UI:Invoke("addButton", id, btn.Label, "", "")
                     end
                 end
