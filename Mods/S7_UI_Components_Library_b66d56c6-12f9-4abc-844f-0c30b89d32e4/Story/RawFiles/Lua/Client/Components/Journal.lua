@@ -363,7 +363,9 @@ local function RegisterJournalListeners(Specs)
     --  ================
 
     for key, responder in pairs(Specs.Component.Listeners) do
-        local when, event = Disintegrate(key, ":")
+        local when, event
+        if string.match(key, ":") then when, event = Disintegrate(key, ":")
+        else event = key end
         Ext.RegisterUICall(Journal.UI, event, responder, when)
     end
 
