@@ -27,7 +27,7 @@ end
 
 --- Delegates UI build task
 ---@param buildSpecs table Build specifications
-function UCLBuild(buildSpecs)
+function Render(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
         ["GMJournal"] = RenderJournal,
