@@ -18,6 +18,10 @@
 
 * _Fixed_ `caption` update bug.
 
+### COMMENTS
+
+* Got tired of writing `Changelogs` lol.
+
 ## [0.4.0.0] --- 1st January 2020 --- **_ContextMenu_**
 
 ### NEW
