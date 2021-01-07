@@ -109,7 +109,7 @@ function RegisterContextMenuListeners()
         if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
 
         local payload = {["CharacterGUID"] = ContextMenu.Character.MyGuid, ["Activator"] = ContextMenu.Activator, ["actionID"] = tonumber(actionID)}
-        Ext.PostMessageToServer("S7UCL_ContextMenu", Ext.JsonStringify(payload))
+        Ext.PostMessageToServer("S7UCL::ContextMenu", Ext.JsonStringify(payload))
     end)
 
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "close", function(ui, call, ...)

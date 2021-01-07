@@ -2,7 +2,7 @@
 --  CONTEXT MENU HANDLER
 --  ====================
 
--- Ext.RegisterNetListener("S7UCL_ContextMenu", function(channel, payload)
+-- Ext.RegisterNetListener("S7UCL::ContextMenu", function(channel, payload)
 --     local payload = Ext.JsonParse(payload)
 --     Destringify(payload)
 --     Ext.Print(Ext.JsonStringify(payload))
@@ -14,5 +14,5 @@
 --         S7Debug:Print("272 SUCCESS")
 --         Osi.ShowNotification(Osi.CharacterGetHostCharacter(), "Bar Bar Bar Bar!")
 --     end
---     Ext.PostMessageToClient(payload.playerHandle, "S7UCL_ContextMenu", Ext.JsonStringify(payload))
+--     Ext.PostMessageToClient(payload.playerHandle, "S7UCL::ContextMenu", Ext.JsonStringify(payload))
 -- end)
