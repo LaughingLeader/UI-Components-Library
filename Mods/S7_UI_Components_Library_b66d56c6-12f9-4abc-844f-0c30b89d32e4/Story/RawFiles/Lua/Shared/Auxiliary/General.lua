@@ -86,6 +86,7 @@ end
 --- Destringifies keys that should be numbers
 ---@param t table
 function Destringify(t)
+    if type(t) ~= 'table' then return end
 	for key, value in pairs(t) do
         if type(value) == "table" then Destringify(value) end
 		if type(key) ~= "number" then
