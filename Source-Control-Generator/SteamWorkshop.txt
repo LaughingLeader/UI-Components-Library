@@ -1,4 +1,4 @@
-A collection of [i]prebuilt reusable[/i] [b]UI components[/b] for [i]Divinity Original Sin 2: Definitive Edition[/i] mods.
+A collection of [i]prebuilt reusable[/i] [b]UI components[/b] for my other mods.
 [b]NOTE:[/b] This is a mod-resource intended to be used by other mods. You only need this if some other mod needs it as a dependency.
 
 [h1]Mods that use the UI Components Library[/h1]
@@ -21,8 +21,9 @@ The mod is a repository of [i]prebuilt reusable[/i] [b]UI-Components[/b] intende
 
 The mod currently contains:
 [b]MessageBox[/b]: An improved version of the [i]message-box[/i]. Has support to display more than 256 characters without crashing the game. Provides the option for larger backgrounds.
-[img]https://i.imgur.com/sw4UCSh.png[/img]
 [img]https://i.imgur.com/Kf0SJLZ.png[/img]
+[b]ContextMenu[/b]: Allows modification of the *context-menu* with custom [i]labels[/i] and [i]actions[/i].
+[img]https://i.imgur.com/NKOkXNC.png[/img]
 [b]GMJournal[/b]: A modified GMJournal intended to be used for story-mode journals, in-game manuals and in-game changelogs etc.
 [img]https://imgur.com/tHcOoGF.png[/img]
 
