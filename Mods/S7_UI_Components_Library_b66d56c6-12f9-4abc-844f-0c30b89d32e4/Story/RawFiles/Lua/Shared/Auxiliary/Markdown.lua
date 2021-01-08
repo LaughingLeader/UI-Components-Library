@@ -16,49 +16,42 @@ function Journalify(str, rep)
     local rep = rep or {}
 
     local matchers = {
-        ["title"] = "^%s-#%s+",
-        ["category"] = "^%s-##%s+",
-        ["chapter"] = "^%s-###%s+",
-        ["paragraph"] = "^%s-%-%s+",
+        ["title"] = "^%s-#%s+(.*)$",
+        ["category"] = "^%s-##%s+(.*)$",
+        ["chapter"] = "^%s-###%s+(.*)$",
+        ["paragraph"] = "^%s-%-%s+(.*)$",
     }
 
     local replacers = {
-        [1] = {["%*%*%*(.-)%*%*%*"] = Color:Red(" <b><i>%1</i></b> ")},
-        [2] = {["[^%*]%*%*(.-)%*%*[^%*]"] = Color:Orange(" <b>%1</b> ")},
-        [3] = {["[_%*](.-)[_%*]"] = Color:Air(" <i>%1</i> ")},
+        [1] = {["%*%*%*(.-)%*%*%*"] = Color:Red(" %1 ")},
+        [2] = {["%*%*(.-)%*%*"] = Color:Orange(" %1 ")},
+        [3] = {["[_%*](.-)[_%*]"] = Color:Air(" %1 ")},
         [4] = {["`(.-)`"] = Color:Green("%1")},
-        [5] = {["<break>"] = Color:Rogue(string.rep("Ʃ", 67))}
+        [5] = {["==="] = string.rep("Ʃ", 10)}
     }
     for _, v in Spairs(rep) do table.insert(replacers, v) end
 
     for line in string.gmatch(str, "(.-)\r\n") do
         for _, repl in Spairs(replacers) do for key, value in pairs(repl) do line = line:gsub(key, value) end end
 
-
-        if line:match(matchers.title) then
-            local beg, fin = line:find(matchers.title)
-            title = line:sub(fin + 1, -1)
-        end
+        if line:match(matchers.title) then title = line:match(matchers.title) end
         if line:match(matchers.category) then
-            local beg, fin = line:find(matchers.category)
             cat = cat + 1; chap, para = 0, 0
             if not jData[cat] then jData[cat] = {["Chapters"] = {}} end
             jData[cat]['ID'] = cat * catInc
-            jData[cat]['strContent'] = line:sub(fin + 1, -1)
+            jData[cat]['strContent'] = line:match(matchers.category)
         end
         if line:match(matchers.chapter) then
-            local beg, fin = line:find(matchers.chapter)
             chap = chap + 1; para = 0
             if not jData[cat]["Chapters"][chap] then jData[cat]["Chapters"][chap] = {["Paragraphs"] = {}} end
             jData[cat]["Chapters"][chap]['ID'] = jData[cat]["ID"] + chap * chapInc
-            jData[cat]["Chapters"][chap]['strContent'] = line:sub(fin + 1, -1)
+            jData[cat]["Chapters"][chap]['strContent'] = line:match(matchers.chapter)
         end
         if line:match(matchers.paragraph) then
-            local beg, fin = line:find(matchers.paragraph)
             para = para + 1
             if not jData[cat]["Chapters"][chap]["Paragraphs"][para] then jData[cat]["Chapters"][chap]["Paragraphs"][para] = {} end
             jData[cat]["Chapters"][chap]["Paragraphs"][para]['ID'] = jData[cat]["Chapters"][chap]["ID"] + para * paraInc
-            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:sub(fin + 1, -1)
+            jData[cat]["Chapters"][chap]["Paragraphs"][para]['strContent'] = line:match(matchers.paragraph)
         end
     end
 
@@ -104,12 +97,5 @@ function Markdownify(jData)
             end
         end
     end
-
-    local replacers = {
-        [1] = {["%*%*%*%1%*%*%*"] = "<b><i>(.-)</i></b>"},
-        [2] = {["%*%*%1%*%*"] = "<b>(.-)</b>"},
-        [3] = {["_%1_"] = "<i>(.-)</i>"},
-    }
-    for _, repl in Spairs(replacers) do for key, value in pairs(repl) do md = md:gsub(value, key) end end
     return md
 end
