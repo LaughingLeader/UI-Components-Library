@@ -14,12 +14,14 @@ Dir = {
     ["Mod"] = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
 }
 
---  ==============  AUXILIARY ===================
+--  ==================
+--  IMPORT AUXILIARIES
+--  ==================
+
 Ext.Require("Shared/Auxiliary/Colors.lua")
 Ext.Require("Shared/Auxiliary/General.lua")
 Ext.Require("Shared/Auxiliary/Networker.lua")
 Ext.Require("Shared/Auxiliary/Notifications.lua")
---  =============================================
 
 --  ===============
 --  MOD INFORMATION

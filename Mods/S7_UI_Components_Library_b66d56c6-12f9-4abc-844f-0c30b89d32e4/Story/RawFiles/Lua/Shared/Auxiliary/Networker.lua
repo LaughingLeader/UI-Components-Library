@@ -38,8 +38,6 @@ function UserInformation:ReSync()
         _, self.Clients.profileID.DisplayName = Osi.CharacterGetDisplayName(self.Clients.profileID.CurrentCharacter)
         Ext.PostMessageToUser(user, 'S7_UserInformationSync', Ext.JsonStringify(self.Clients.profileID))
     end
-
-    S7Debug:Print("ReSync UserInformation")
 end
 
 Ext.RegisterNetListener('S7_UserInformationSync', function (channel, payload)

@@ -3,31 +3,29 @@
 --  ======
 
 Color = {
-    ["black"] = "000000",
-    ["red"] = "E03616",
-    ["blue"] = "5998C5",
-    ["green"] = "3F784C",
-    ["yellow"] = "FFFF00",
-    ["orange"] = "C17817",
-    ["violet"] = "58355E",
-    ["gold"] = "C7A758",
-    ["white"] = "FFFFFF",
-    ["air"] = "7478DC",
-    ["earth"] = "AA895B",
-    ["fire"] = "C76537",
-    ["necromancy"] = "9A5085",
-    ["polymorph"] = "FFB811",
-    ["ranger"] = "5A9646",
-    ["rogue"] = "566C6C",
-    ["source"] = "6EB09D",
-    ["summoning"] = "9440B3",
-    ["warrior"] = "A11919",
-    ["water"] = "579CCA",
+    ["black"] = "#000000",
+    ["red"] = "#E03616",
+    ["blue"] = "#5998C5",
+    ["green"] = "#3F784C",
+    ["yellow"] = "#FFFF00",
+    ["orange"] = "#C17817",
+    ["violet"] = "#58355E",
+    ["gold"] = "#C7A758",
+    ["white"] = "#FFFFFF",
+    ["air"] = "#7478DC",
+    ["earth"] = "#AA895B",
+    ["fire"] = "#C76537",
+    ["necromancy"] = "#9A5085",
+    ["polymorph"] = "#FFB811",
+    ["ranger"] = "#5A9646",
+    ["rogue"] = "#566C6C",
+    ["source"] = "#6EB09D",
+    ["summoning"] = "#9440B3",
+    ["warrior"] = "#A11919",
+    ["water"] = "#579CCA",
 }
 
-local function addFontTags(color, str)
-    return "<font color=\'#" .. color .. "\'>" .. tostring(str) .. "</font>"
-end
+local function addFontTags(color, str) return "<font color=\'" .. color .. "\'>" .. tostring(str) .. "</font>" end
 
 function Color:Red(str) return addFontTags(self.red, str) end
 function Color:Blue(str) return addFontTags(self.blue, str) end
