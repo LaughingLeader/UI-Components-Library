@@ -27,7 +27,7 @@ function Journalify(str, rep)
         [2] = {["[^%*]%*%*(.-)%*%*[^%*]"] = Color:Orange(" <b>%1</b> ")},
         [3] = {["[_%*](.-)[_%*]"] = Color:Air(" <i>%1</i> ")},
         [4] = {["`(.-)`"] = Color:Green("%1")},
-        [5] = {["<break>"] = Color:Rogue(string.rep("-", 67))}
+        [5] = {["<break>"] = Color:Rogue(string.rep("Ʃ", 67))}
     }
     for _, v in Spairs(rep) do table.insert(replacers, v) end
 
