@@ -126,7 +126,8 @@ function S7Debug:Print(t, config)
         if ValidString(config.highlight) then config.printFunction(string.rep(config.highlight, len)) end
     end
 end
-function S7Debug:FPrint(t, config) self:Print(t, Integrate({['ignoreDevMode'] = true}, config)) end
+
+function S7Debug:FPrint(t, config)self:Print(t, Integrate({['ignoreDevMode'] = true}, config)) end
 function S7Debug:HFPrint(t, config) self:Print(t, Integrate({['ignoreDevMode'] = true, ['highlight'] = '='}, config)) end
 
 function S7Debug:Warn(t, config) self:Print(t, Integrate({['printFunction'] = Ext.PrintWarning}, config)) end
@@ -136,6 +137,7 @@ function S7Debug:HFWarn(t, config) self:Print(t, Integrate({['printFunction'] = 
 function S7Debug:Error(t, config) self:Print(t, Integrate({['printFunction'] = Ext.PrintError}, config)) end
 function S7Debug:FError(t, config) self:Print(t, Integrate({['printFunction'] = Ext.PrintError, ['ignoreDevMode'] = true}, config)) end
 function S7Debug:HFError(t, config) self:Print(t, Integrate({['printFunction'] = Ext.PrintError, ['ignoreDevMode'] = true, ['highlight'] = '*'}, config)) end
+
 
 --  ==============
 --  SORT-&-ITERATE
