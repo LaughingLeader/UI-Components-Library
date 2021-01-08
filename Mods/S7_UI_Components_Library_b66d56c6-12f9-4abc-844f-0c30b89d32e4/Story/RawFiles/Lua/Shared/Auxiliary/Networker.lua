@@ -45,8 +45,10 @@ Ext.RegisterNetListener('S7_UserInformationSync', function (channel, payload)
     Integrate(UserInformation, info)
 end)
 
-Ext.RegisterOsirisListener('GameStarted', 2, 'after', function () UserInformation:ReSync() end)
-Ext.RegisterOsirisListener('UserConnected', 3, 'after', function () UserInformation:ReSync() end)
-Ext.RegisterOsirisListener('UserDisconnected', 3, 'after', function () UserInformation:ReSync() end)
-Ext.RegisterOsirisListener('CharacterReservedUserIDChanged', 3, 'after', function () UserInformation:ReSync() end)
-Ext.RegisterOsirisListener('UserEvent', 2, 'after', function () UserInformation:ReSync() end)
+if Ext.IsServer() then
+    Ext.RegisterOsirisListener('GameStarted', 2, 'after', function () UserInformation:ReSync() end)
+    Ext.RegisterOsirisListener('UserConnected', 3, 'after', function () UserInformation:ReSync() end)
+    Ext.RegisterOsirisListener('UserDisconnected', 3, 'after', function () UserInformation:ReSync() end)
+    Ext.RegisterOsirisListener('CharacterReservedUserIDChanged', 3, 'after', function () UserInformation:ReSync() end)
+    Ext.RegisterOsirisListener('UserEvent', 2, 'after', function () UserInformation:ReSync() end)
+end
