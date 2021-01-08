@@ -7,7 +7,7 @@
 ---@param command string
 Ext.RegisterConsoleCommand(IDENTIFIER, function(cmd, command, ...)
     local buildSpecs = LoadFile(Dir.Mod .. "Story/RawFiles/Lua/Client/Development/DebugSpecs.json", "data") or {}
-    if command == "BuildSampleUI" then Render(buildSpecs) end
+    if command == "S7UCLBuildSample" then Render(buildSpecs) end
 end)
 
 --  =======================
