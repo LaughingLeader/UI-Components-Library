@@ -21,7 +21,6 @@ Dir = {
 Ext.Require("Shared/Auxiliary/Colors.lua")
 Ext.Require("Shared/Auxiliary/General.lua")
 Ext.Require("Shared/Auxiliary/Networker.lua")
-Ext.Require("Shared/Auxiliary/Notifications.lua")
 
 --  ===============
 --  MOD INFORMATION

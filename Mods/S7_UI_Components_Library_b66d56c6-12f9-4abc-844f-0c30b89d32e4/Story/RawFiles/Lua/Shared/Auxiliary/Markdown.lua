@@ -27,12 +27,11 @@ function Journalify(str, rep)
         [2] = {["[^%*]%*%*(.-)%*%*[^%*]"] = Color:Orange(" <b>%1</b> ")},
         [3] = {["[_%*](.-)[_%*]"] = Color:Air(" <i>%1</i> ")},
         [4] = {["`(.-)`"] = Color:Green("%1")},
-        [5] = {["<break>"] = Color:Rogue(string.rep("-", 60))}
+        [5] = {["<break>"] = Color:Rogue(string.rep("-", 67))}
     }
     for _, v in Spairs(rep) do table.insert(replacers, v) end
 
     for line in string.gmatch(str, "(.-)\r\n") do
-        Ext.Print(Ext.JsonStringify(line))
         for _, repl in Spairs(replacers) do for key, value in pairs(repl) do line = line:gsub(key, value) end end
 
 
