@@ -396,11 +396,11 @@ function CreateJournal(Specs)
     Journal = UILibrary.GMJournal:New(Specs)
     Journal.UI = Ext.GetUI(Journal.Component.Name)
     if not Journal.UI then
-        S7Debug:Print("Creating new Journal UI: " .. Journal.Component.Name)
+        Debug:Print("Creating new Journal UI: " .. Journal.Component.Name)
         Journal.UI = Ext.CreateUI(Journal.Component.Name, Dir.ModGUI .. "GMJournal.swf", Journal.Component.Layer)
         Journal.Registered = false
         if not Journal.Registered then RegisterJournalListeners(Specs) end
-    else S7Debug:Print("Rendering Journal UI: " .. Specs.Component.Name) end
+    else Debug:Print("Rendering Journal UI: " .. Specs.Component.Name) end
     Journal.Root = Journal.UI:GetRoot()
     Journal.Exists = true
 end

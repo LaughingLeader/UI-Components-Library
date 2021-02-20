@@ -54,7 +54,7 @@ ContextMenu = UILibrary.contextMenu:New()
 --  ======================
 
 function RegisterContextMenuListeners()
-    S7Debug:Print("Registering ContextMenu Listeners")
+    Debug:Print("Registering ContextMenu Listeners")
 
     --  SET PARTY INVENTORY ACTIVATOR
     --  =============================
@@ -85,7 +85,7 @@ function RegisterContextMenuListeners()
         local entries = ContextMenu.SubComponents[ContextMenu.Activator]
         if not entries then return end
 
-        S7Debug:Print("Intercepted ContextMenu. Registering Hooks")
+        Debug:Print("Intercepted ContextMenu. Registering Hooks")
         local contextMenu = ui:GetRoot()
         local actions = ContextMenu.Actions[ContextMenu.Activator]
 
@@ -103,7 +103,7 @@ function RegisterContextMenuListeners()
 
     local UI = Ext.GetUIByType(ContextMenu.TypeID)
     Ext.RegisterUICall(UI, "buttonPressed", function(ui, call, id, actionID, handle)
-        S7Debug:Print("ContextMenuAction: " .. tostring(actionID))
+        Debug:Print("ContextMenuAction: " .. tostring(actionID))
 
         local actions = ContextMenu.Actions[ContextMenu.Activator] or {}
         if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
@@ -116,7 +116,7 @@ function RegisterContextMenuListeners()
         ContextMenu.Activator = nil
     end)
 
-    S7Debug:Print("Registered ContextMenu Hooks")
+    Debug:Print("Registered ContextMenu Hooks")
 end
 
 

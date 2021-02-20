@@ -1,0 +1,10 @@
+{
+  "ProjectName": "S7_UI_Components_Library",
+  "ProjectUUID": "b66d56c6-12f9-4abc-844f-0c30b89d32e4",
+  "ScriptExtenderVersion": 52,
+  "SEFeatureFlags": [
+    "OsirisExtensions",
+    "Lua"
+  ],
+  "ProjectDirectory": "S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4"
+}
