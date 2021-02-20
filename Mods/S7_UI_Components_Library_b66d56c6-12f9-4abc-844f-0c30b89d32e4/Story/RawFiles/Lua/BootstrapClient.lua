@@ -17,7 +17,7 @@ UILibrary = {
 
 Ext.Require("Client/Components/contextMenu.lua")
 Ext.Require("Client/Components/msgBox.lua")
-Ext.Require("Client/Components/Journal.lua")
+Ext.Require("Client/Components/GMJournal.lua")
 
 --  ================
 --  BUILDER FUNCTION
