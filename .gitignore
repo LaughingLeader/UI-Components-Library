@@ -120,15 +120,17 @@ Thumbs.db
 #        HUNTER-GHOST-27
 #    ########################
 
-# VSCode Workspace
+# VSCode Stuff
 *.code-workspace
 .vscode
+
+# Documentation Stuff
 Images/
 
-# GIMP XCF
+# GIMP Stuff
 *.xcf
 
-# UI-Components
+# UI-Components Stuff
 *.fla
 UI-Components/*
 !UI-Components/syncSWF.py
