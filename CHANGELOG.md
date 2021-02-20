@@ -2,6 +2,16 @@
 
 ----------
 
+## [0.4.1.0] --- 20th February 2021 --- **_AuxFunctions Init_**
+
+### NEW
+
+* _Initialized_ AuxFunctions.
+
+### REMOVED
+
+* _Removed_ `Pyramid` UI Component.
+
 ## [0.4.0.0] --- 4th January 2020 --- **_Markdown_**
 
 ### NEW

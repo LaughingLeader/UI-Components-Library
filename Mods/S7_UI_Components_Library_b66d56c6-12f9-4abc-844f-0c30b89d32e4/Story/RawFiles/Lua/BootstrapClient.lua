@@ -12,14 +12,12 @@ BuildSpecifications = {}
 UILibrary = {
     ["contextMenu"] = {},
     ["msgBox"] = {},
-    ["GMJournal"] = {},
-    ["pyramid"] = {}
+    ["GMJournal"] = {}
 }
 
 Ext.Require("Client/Components/contextMenu.lua")
 Ext.Require("Client/Components/msgBox.lua")
 Ext.Require("Client/Components/Journal.lua")
-Ext.Require("Client/Components/Pyramid.lua")
 
 --  ================
 --  BUILDER FUNCTION
@@ -31,7 +29,6 @@ function Render(buildSpecs)
     local builder = {
         ["msgBox"] = RenderMsgBox,
         ["GMJournal"] = RenderJournal,
-        ["pyramid"] = RenderPyramid
     }
 
     local object
