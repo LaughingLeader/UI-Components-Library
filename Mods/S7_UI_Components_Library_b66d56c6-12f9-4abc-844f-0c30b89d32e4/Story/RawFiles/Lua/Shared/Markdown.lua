@@ -25,7 +25,7 @@ function Journalify(str, rep)
     local replacers = {
         [1] = {["%*%*%*(.-)%*%*%*"] = Color:Red(" %1 ")},
         [2] = {["%*%*(.-)%*%*"] = Color:Orange(" %1 ")},
-        [3] = {["[_%*](.-)[_%*]"] = Color:Air(" %1 ")},
+        [3] = {["[%*](.-)[%*]"] = Color:Air(" %1 ")},
         [4] = {["`(.-)`"] = Color:Green("%1")},
         [5] = {["==="] = string.rep("Ʃ", 10)}
     }
