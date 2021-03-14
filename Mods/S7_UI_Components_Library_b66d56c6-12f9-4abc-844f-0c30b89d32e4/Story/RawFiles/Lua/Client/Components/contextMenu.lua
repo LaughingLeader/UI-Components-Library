@@ -4,12 +4,13 @@
 
 ---@class ContextMenu @ContextMenu UI Component
 ---@field TypeID number UI TypeID
----@field Activator number Origin
+---@field Activator number|string Origin
+---@field Item EclItem Item
 ---@field Character EclCharacter Character
 ---@field Intercept boolean Should intercept context menu
 ---@field Component table Holds information about WindowElement
----@field SubComponents table Array of Constituting Entries
----@field Actions table Table of mapped functions
+---@field SubComponents table Array of constituting entries
+---@field Actions table Table of functions to execute
 UILibrary.contextMenu = {
     ["TypeID"] = 11, -- or 10
     ["Activator"] = 0,
@@ -17,6 +18,7 @@ UILibrary.contextMenu = {
     ["Component"] = {},
     ["SubComponents"] = {},
     ["Actions"] = {},
+    -- ["Item"] = {},
     -- ["Character"] = {},
 }
 
@@ -38,11 +40,11 @@ function UILibrary.contextMenu:Register(e)
     end
 end
 
---- Get Existing SubComponent for key
----@param key string
+--- Get Existing SubComponent for activator
+---@param activator string
 ---@return table SubComponent
-function UILibrary.contextMenu:Get(key)
-    if self.SubComponents[key] then return self.SubComponents[key] end
+function UILibrary.contextMenu:Get(activator)
+    if self.SubComponents[activator] then return self.SubComponents[activator] end
 end
 
 --  =====================================
@@ -61,11 +63,11 @@ function RegisterContextMenuListeners()
 
     local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. "partyInventory.swf")
     Ext.RegisterUICall(partyInventoryUI, "openContextMenu", function(ui, call, id, itemDouble, x, y)
-        local item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+        ContextMenu.Item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
 
         local targetMap = {
-            ["RootTemplate"] = item.RootTemplate.Id,
-            ["StatsId"] = item.StatsId,
+            ["RootTemplate"] = ContextMenu.Item.RootTemplate.Id,
+            ["StatsId"] = ContextMenu.Item.StatsId,
         }
         for key, _ in pairs(ContextMenu.SubComponents) do
             local keyType, keyValue = Disintegrate(key, "::")
@@ -101,14 +103,23 @@ function RegisterContextMenuListeners()
         ContextMenu.Intercept = false
     end, "Before")
 
+    --  BUTTON PRESS
+    --  ============
+
     local UI = Ext.GetUIByType(ContextMenu.TypeID)
     Ext.RegisterUICall(UI, "buttonPressed", function(ui, call, id, actionID, handle)
-        Debug:Print("ContextMenuAction: " .. tostring(actionID))
+        Debug:Print("ContextMenu Action: " .. tostring(actionID))
 
+        local actionID = tonumber(actionID)
         local actions = ContextMenu.Actions[ContextMenu.Activator] or {}
-        if actions[tonumber(actionID)] then actions[tonumber(actionID)]() end
+        if actions[actionID] then actions[actionID]() end
 
-        local payload = {["CharacterGUID"] = ContextMenu.Character.MyGuid, ["Activator"] = ContextMenu.Activator, ["actionID"] = tonumber(actionID)}
+        local payload = {
+            ["CharacterGUID"] = ContextMenu.Character.MyGuid,
+            ["Activator"] = ContextMenu.Activator,
+            ["actionID"] = actionID,
+            ["ItemNetID"] = ContextMenu.Item.NetID
+        }
         Ext.PostMessageToServer("S7UCL::ContextMenu", Ext.JsonStringify(payload))
     end)
 
@@ -116,7 +127,7 @@ function RegisterContextMenuListeners()
         ContextMenu.Activator = nil
     end)
 
-    Debug:Print("Registered ContextMenu Hooks")
+    Debug:Print("Registered ContextMenu Listeners")
 end
 
 
