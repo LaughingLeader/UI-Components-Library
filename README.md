@@ -10,6 +10,7 @@ A collection of _prebuilt reusable_ **UI components** for my _Divinity Original 
 
 ## Mods that use the UI Components Library
 
+* [***Quick Sell***](https://steamcommunity.com/sharedfiles/filedetails/?id=2424023999) by **Focus** -- Sell items directly from your inventory.
 * [***Take-Notes***](https://github.com/HunterGhost27/Take-Notes) -- Adds editable notebooks for story and GM modes.
 
 ## Releases

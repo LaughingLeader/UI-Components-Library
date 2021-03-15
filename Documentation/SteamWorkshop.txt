@@ -1,8 +1,9 @@
-A collection of [i]prebuilt reusable[/i] [b]UI components[/b] for my other mods.
+A collection of [i]prebuilt reusable[/i] [b]UI components[/b] for other mods.
 [b]NOTE:[/b] This is a mod-resource intended to be used by other mods. You only need this if some other mod needs it as a dependency.
 
 [h1]Mods that use the UI Components Library[/h1]
 [list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2424023999][i][b]Quick Sell[/b][/i][/url] by [b]Focus[/b] -- Sell items directly from your inventory.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2337247947][i][b]Take-Notes[/b][/i][/url] -- Adds editable notebooks for story and GM modes.
 [/list]
 [h1]Releases[/h1]
