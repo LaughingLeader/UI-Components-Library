@@ -123,13 +123,12 @@ function RegisterContextMenuListeners()
         Ext.PostMessageToServer("S7UCL::ContextMenu", Ext.JsonStringify(payload))
     end)
 
-    Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, "close", function(ui, call, ...)
+    Ext.RegisterUITypeCall(ContextMenu.TypeID, "menuClosed", function()
         ContextMenu.Activator = nil
     end)
 
     Debug:Print("Registered ContextMenu Listeners")
 end
-
 
 --  ===============================================================
 Ext.RegisterListener("SessionLoaded", RegisterContextMenuListeners)
