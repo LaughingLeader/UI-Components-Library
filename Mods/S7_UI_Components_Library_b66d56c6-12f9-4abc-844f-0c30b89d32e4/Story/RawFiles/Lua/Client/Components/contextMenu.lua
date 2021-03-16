@@ -55,29 +55,52 @@ ContextMenu = UILibrary.contextMenu:New()
 --  INTERCEPT CONTEXT MENU
 --  ======================
 
+function PreInterceptSetup(ui, call, itemDouble, x, y)
+    ContextMenu.Item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+    if not ContextMenu.Item then return end
+
+    local targetMap = {
+        ["RootTemplate"] = ContextMenu.Item.RootTemplate.Id,
+        ["StatsId"] = ContextMenu.Item.StatsId,
+    }
+    for key, _ in pairs(ContextMenu.SubComponents) do
+        local keyType, keyValue = Disintegrate(key, "::")
+        if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
+    end
+
+    ContextMenu.Character = Ext.GetCharacter(ui:GetPlayerHandle())
+    ContextMenu.Activator = ContextMenu.Activator or itemDouble
+    ContextMenu.Intercept = true
+end
+
 function RegisterContextMenuListeners()
     Debug:Print("Registering ContextMenu Listeners")
 
-    --  SET PARTY INVENTORY ACTIVATOR
-    --  =============================
+    --  SETUP PARTY INVENTORY
+    --  =====================
 
     local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. "partyInventory.swf")
     Ext.RegisterUICall(partyInventoryUI, "openContextMenu", function(ui, call, id, itemDouble, x, y)
-        ContextMenu.Item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
-
-        local targetMap = {
-            ["RootTemplate"] = ContextMenu.Item.RootTemplate.Id,
-            ["StatsId"] = ContextMenu.Item.StatsId,
-        }
-        for key, _ in pairs(ContextMenu.SubComponents) do
-            local keyType, keyValue = Disintegrate(key, "::")
-            if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
-        end
-
-        ContextMenu.Character = Ext.GetCharacter(partyInventoryUI:GetPlayerHandle())
-        ContextMenu.Activator = ContextMenu.Activator or itemDouble
-        ContextMenu.Intercept = true
+        PreInterceptSetup(ui, call, itemDouble, x, y)
     end)
+
+    --  SETUP CONTAINER INVENTORY
+    --  =========================
+
+    local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. "containerInventory.swf")
+    Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', PreInterceptSetup)
+
+    --  SETUP CHARACTER SHEET
+    --  =====================
+
+    local characterSheetUI = Ext.GetBuiltinUI(Dir.GameGUI .. "characterSheet.swf")
+    Ext.RegisterUICall(characterSheetUI, "openContextMenu", PreInterceptSetup)
+
+    --  SETUP UI CRAFT
+    --  ==============
+
+    local uiCraftUI = Ext.GetBuiltinUI(Dir.GameGUI .. "uiCraft.swf")
+    Ext.RegisterUICall(uiCraftUI, "openContextMenu", PreInterceptSetup)
 
     --  REGISTER CONTEXT MENU HOOKS ON INTERCEPT
     --  ========================================
