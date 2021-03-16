@@ -9,9 +9,9 @@ local spammers = {
     ['removeLabel'] = true
 }
 
---  ------------------
-LIVE_UI_REPORTS = true
---  ------------------
+--  -------------------
+LIVE_UI_REPORTS = false
+--  -------------------
 
 Ext.RegisterListener("UIObjectCreated", function (...)
     if not LIVE_UI_REPORTS then return end
