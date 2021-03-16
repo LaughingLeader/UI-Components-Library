@@ -2,6 +2,13 @@
 
 ---
 
+## [0.4.1.2] --- 16th March 2021 --- **_Improve Context-Menu_**
+
+### NEW
+
+- _Added_ context-menu support for `containerInventory`, `uiCraft` and `characterSheet`.
+- _Added_ `LiveUIReports` and a console command to toggle it.
+
 ## [0.4.1.1] --- 15th March 2021 --- **_ItemNetID_**
 
 ### CHANGED
