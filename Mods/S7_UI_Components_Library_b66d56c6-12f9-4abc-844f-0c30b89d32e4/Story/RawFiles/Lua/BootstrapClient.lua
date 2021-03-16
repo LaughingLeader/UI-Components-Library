@@ -39,3 +39,9 @@ function Render(buildSpecs)
     end
     return object
 end
+
+--  ===============
+--  LIVE UI REPORTS
+--  ===============
+
+if Ext.IsDeveloperMode() then Ext.Require('Client/LiveUIReport.lua') end
