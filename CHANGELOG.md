@@ -7,6 +7,15 @@
 ### NEW
 
 - _Created_ an ugly, opinionated and unscalable solution to the activator conflict resolution problem (#30).
+- _Added_ developer console command to print the state of ContextMenu object for inspection.
+
+### CHANGED
+
+- ContextMenu code _Cleanup_ and _Refactor_.
+
+### REMOVED
+
+- _Removed_ `actions` table from ContextMenu. Was redundant and unneeded. Responding with Net-Listeners offers more flexibility.
 
 ## [0.4.1.2] --- 16th March 2021 --- **_Improve Context-Menu_**
 
