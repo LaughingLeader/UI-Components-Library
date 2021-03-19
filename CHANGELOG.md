@@ -2,6 +2,12 @@
 
 ---
 
+## [0.4.1.3] --- 19th March 2021 --- **_Activator Conflict Resolution_**
+
+### NEW
+
+- _Created_ an ugly, opinionated and unscalable solution to the activator conflict resolution problem (#30).
+
 ## [0.4.1.2] --- 16th March 2021 --- **_Improve Context-Menu_**
 
 ### NEW

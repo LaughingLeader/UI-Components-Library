@@ -59,13 +59,21 @@ function PreInterceptSetup(ui, call, itemDouble, x, y)
     ContextMenu.Item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
     if not ContextMenu.Item then return end
 
-    local targetMap = {
-        ["RootTemplate"] = ContextMenu.Item.RootTemplate.Id,
-        ["StatsId"] = ContextMenu.Item.StatsId,
-    }
-    for activator, _ in pairs(ContextMenu.SubComponents) do
-        local keyType, keyValue = Disintegrate(activator, "::")
-        if targetMap[keyType] == keyValue then ContextMenu.Activator = activator end
+    local statsActivator = 'StatsId::' .. ContextMenu.Item.StatsId
+    local templateActivator = 'RootTemplate::' .. ContextMenu.Item.RootTemplate.Id
+
+    if ContextMenu.SubComponents[statsActivator] then
+        ContextMenu.Activator = statsActivator
+    end
+
+    if ContextMenu.SubComponents[templateActivator] then
+        if ContextMenu.SubComponents[statsActivator] then
+            for _, ctx in Spairs(ContextMenu.SubComponents[statsActivator]) do
+                table.insert(ContextMenu.SubComponents[templateActivator], ctx)
+            end
+        end
+        ContextMenu.Activator = templateActivator
+        Scan(ContextMenu.SubComponents[ContextMenu.Activator])
     end
 
     ContextMenu.Character = Ext.GetCharacter(ui:GetPlayerHandle())
