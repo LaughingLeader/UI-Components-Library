@@ -34,9 +34,9 @@ end
 ---Register new entry for the ContextMenu
 ---@param e table ContextEntries
 function UILibrary.contextMenu:Register(e)
-    for key, value in pairs(e) do
-        self.SubComponents[key] = value
-        self.Actions[key] = {}
+    for activator, value in pairs(e) do
+        self.SubComponents[activator] = value
+        self.Actions[activator] = {}
     end
 end
 
@@ -63,9 +63,9 @@ function PreInterceptSetup(ui, call, itemDouble, x, y)
         ["RootTemplate"] = ContextMenu.Item.RootTemplate.Id,
         ["StatsId"] = ContextMenu.Item.StatsId,
     }
-    for key, _ in pairs(ContextMenu.SubComponents) do
-        local keyType, keyValue = Disintegrate(key, "::")
-        if targetMap[keyType] == keyValue then ContextMenu.Activator = key end
+    for activator, _ in pairs(ContextMenu.SubComponents) do
+        local keyType, keyValue = Disintegrate(activator, "::")
+        if targetMap[keyType] == keyValue then ContextMenu.Activator = activator end
     end
 
     ContextMenu.Character = Ext.GetCharacter(ui:GetPlayerHandle())
@@ -176,3 +176,27 @@ Ext.RegisterListener("SessionLoaded", RegisterContextMenuListeners)
     ["Remove From Wares"] = 51,
     ["Add To Hotbar"] = 63,
 ]]
+
+--  =====================
+--  SNAPSHOT CONTEXT MENU
+--  =====================
+
+if Ext.IsDeveloperMode() then
+    ConsoleCommander:Register({
+        Name = 'SnapshotContextMenu',
+        Description = 'Prints the current state of the ContextMenu Object',
+        Context = 'Client',
+        Action = function ()
+            local filter = {
+                TypeID = ContextMenu.TypeID,
+                Activator = ContextMenu.Activator,
+                Intercept = ContextMenu.Intercept,
+                SubComponent = ContextMenu.SubComponents[ContextMenu.Activator],
+                CharacterGUID = ContextMenu.Character.MyGuid,
+            }
+            Scan(filter)
+            filter['SubComponents'] = ContextMenu.SubComponents
+            SaveFile('S7Debug/ContextMenu.yaml', Yamlify(Rematerialize(filter)))
+        end
+    })
+end
