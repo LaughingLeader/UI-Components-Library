@@ -11,11 +11,11 @@
 ---@field text string|ResolverFunction ContextMenu label text
 ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
-    actionID = 0,
     clickSound = true,
     isDisabled = false,
     isLegal = true,
-    text = "null"
+    text = "null",
+    --actionID = 0,
 }
 
 ---Create new ContextEntry
@@ -24,6 +24,7 @@ ContextEntry = {
 function ContextEntry:New(object)
     local object = object or {}
     object = Integrate(self, object)
+    if not ValidInputTable(object, { 'actionID' }) then Debug:FError('Invalid ActionID') end
     return object
 end
 
@@ -83,7 +84,19 @@ end
 function UILibrary.contextMenu:Register(e)
     ForEach(e, function (activator, ctxEntry)
         if type(ctxEntry) ~= 'table' then return end
-        self.SubComponents[activator] = ctxEntry
+        if not self.SubComponents[activator] then self.SubComponents[activator] = {} end
+        ForEach(ctxEntry, function (_, entry) table.insert(self.SubComponents[activator], ContextEntry:New(entry)) end)
+    end)
+end
+
+---Quick register options. Skips straight to registration
+---@param e table<activator, ContextEntry[]> ContextEntries
+function UILibrary.contextMenu:QuickRegister(e)
+    ForEach(e, function (activator, ctxEntry)
+        if type(ctxEntry) ~= 'table' then return end
+        local ctxMenu = self:Get(activator) or {}
+        ForEach(ctxEntry, function (_, entry) table.insert(ctxMenu, ContextEntry:New(entry)) end)
+        self:Register({[activator] = ctxMenu})
     end)
 end
 
