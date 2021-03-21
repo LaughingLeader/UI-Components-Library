@@ -10,14 +10,18 @@ Ext.Require('Auxiliary.lua')
 SpecsHandler = {}
 BuildSpecifications = {}
 UILibrary = {
-    ["contextMenu"] = {},
-    ["msgBox"] = {},
-    ["GMJournal"] = {}
+    ['contextMenu'] = {},
+    ['enemyHealthBar'] = {},
+    ['GMJournal'] = {},
+    ['msgBox'] = {},
+    ['tooltip'] = {},
 }
 
-Ext.Require("Client/Components/contextMenu.lua")
-Ext.Require("Client/Components/msgBox.lua")
-Ext.Require("Client/Components/GMJournal.lua")
+Ext.Require('Client/Components/contextMenu.lua')
+Ext.Require('Client/Components/enemyHealthBar.lua')
+Ext.Require('Client/Components/GMJournal.lua')
+Ext.Require('Client/Components/msgBox.lua')
+Ext.Require('Client/Components/tooltip.lua')
 
 --  ================
 --  BUILDER FUNCTION
@@ -27,8 +31,8 @@ Ext.Require("Client/Components/GMJournal.lua")
 ---@param buildSpecs table Build specifications
 function Render(buildSpecs)
     local builder = {
-        ["msgBox"] = RenderMsgBox,
-        ["GMJournal"] = RenderJournal,
+        ['msgBox'] = RenderMsgBox,
+        ['GMJournal'] = RenderJournal,
     }
 
     local object

@@ -2,6 +2,19 @@
 
 ---
 
+## [0.4.2.0] --- 21st March 2021 --- **_Game World Context Menus_**
+
+### NEW
+
+- _Added_ support for game-world context-menus! (with a lot of duct-tape).
+- _Created_ `enemyHealthBar.lua` component.
+- _Created_ `tooltip.lua` component.
+
+### CHANGED
+
+- _Refactored_ net-channels as global variables.
+- _Extracted_ `ContextMenuResponders` into a separate file.
+
 ## [0.4.1.3] --- 19th March 2021 --- **_Activator Conflict Resolution_**
 
 ### NEW

@@ -23,10 +23,19 @@ Ext.Require('AuxFunctions/Index.lua')
 --  ===========
 
 Dir = {
-    ["GameGUI"] = "Public/Game/GUI/", --  GameUI Directory
-    ["GameMasterGUI"] = "Public/Game/GUI/GM/", -- GameMasterUI Directory
-    ["ModGUI"] = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/", -- UI-Components-Library UI Directory
-    ["Mod"] = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
+    GameGUI = "Public/Game/GUI/", --  GameUI Directory
+    GameMasterGUI = "Public/Game/GUI/GM/", -- GameMasterUI Directory
+    ModGUI = "Public/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/GUI/", -- UI-Components-Library UI Directory
+    Mod = "Mods/S7_UI_Components_Library_b66d56c6-12f9-4abc-844f-0c30b89d32e4/" -- UI-Components-Library Mod Directory
+}
+
+--  ============
+--  NET CHANNELS
+--  ============
+
+Channel = {
+    ContextMenu = 'S7UCL::ContextMenu',
+    GameWorldTarget = 'S7UCL::GameWorldTarget'
 }
 
 --  =======================
@@ -45,5 +54,5 @@ function GetTrailingZeroes(n)
 end
 
 -- ========= MARKDOWN ============
-Ext.Require("Shared/Markdown.lua")
+Ext.Require('Shared/Markdown.lua')
 -- ===============================

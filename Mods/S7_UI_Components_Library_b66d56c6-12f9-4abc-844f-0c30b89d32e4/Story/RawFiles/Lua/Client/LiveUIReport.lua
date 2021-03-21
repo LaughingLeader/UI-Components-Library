@@ -4,7 +4,6 @@
 
 local spammers = {
     ['updateStatuses'] = true,
-    ['addTooltip'] = true,
     ['update'] = true,
     ['removeLabel'] = true
 }
@@ -20,13 +19,13 @@ end)
 
 Ext.RegisterListener("UIInvoke", function (ui, call, ...)
     if not LIVE_UI_REPORTS then return end
-    if spammers[call] then return end   --  Prevent Spam
+    if spammers[call] then return end   --  Prevent spam
     Ext.Print("UIInvoke:", ui:GetTypeId(), call, ...)
 end)
 
 Ext.RegisterListener("UICall", function (ui, call, ...)
     if not LIVE_UI_REPORTS then return end
-    if spammers[call] then return end   --  Prevent Spam
+    if spammers[call] then return end   --  Prevent spam
     Ext.Print("UICall:", ui:GetTypeId(), call, ...)
 end)
 
@@ -40,8 +39,13 @@ end)
 --  --------------------------------
 
 ConsoleCommander:Register({
+
+    --  ---------------------------------------------
+    --  !S7_UI_Components_Library ToggleLiveUIReports
+    --  ---------------------------------------------
+
     Name = "ToggleLiveUIReports",
-    Description = "Toggles UI Reports",
+    Description = "Displays a live feed of UI changes in the debug-console. (spam alert)",
     Context = "Client",
     Action = function() LIVE_UI_REPORTS = not LIVE_UI_REPORTS end
 })
