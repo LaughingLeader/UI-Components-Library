@@ -9,6 +9,7 @@
 - _Added_ support for game-world context-menus! (with a lot of duct-tape).
 - _Created_ `enemyHealthBar.lua` component.
 - _Created_ `tooltip.lua` component.
+- Context-Menu entries now accept `Resolver Functions` that return dynamically generated values for context-menus during run-time.
 
 ### CHANGED
 

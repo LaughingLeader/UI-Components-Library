@@ -3,12 +3,29 @@
 --  ============
 
 ---@class ContextEntry @ContextEntries for ContextMenu
----@field ID number AFAIK only affects positon in FlashArray. (Optional) Auto-generated based on length of array
----@field actionID number This number is thrown on button-press and subsequently broadcasted on S7UCL::ContextMenu net-channel
----@field clickSound boolean Probably controls whether mouseClick produces a sound
----@field isDisabled boolean If true, the button is greyed out and cannot be pressed
----@field isLegal boolean If false, button is red and indicates an act of crime
----@field text string ContextMenu label text
+---@field ID number|ResolverFunction AFAIK only affects positon in FlashArray. (Optional) Auto-generated based on length of array
+---@field actionID number|ResolverFunction This number is thrown on button-press and subsequently broadcasted on S7UCL::ContextMenu net-channel
+---@field clickSound boolean|ResolverFunction Probably controls whether mouseClick produces a sound
+---@field isDisabled boolean|ResolverFunction If true, the button is greyed out and cannot be pressed
+---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
+---@field text string|ResolverFunction ContextMenu label text
+ContextEntry = {
+    ID = function(r) return r.Root.windowsMenu_mc.list.length end,
+    actionID = 0,
+    clickSound = true,
+    isDisabled = false,
+    isLegal = true,
+    text = "null"
+}
+
+---Create new ContextEntry
+---@param object ContextEntry
+---@return ContextEntry
+function ContextEntry:New(object)
+    local object = object or {}
+    object = Integrate(self, object)
+    return object
+end
 
 ---@alias activator string `ActivatorType::ActivatorValue`. e.g. StatsId::LOOT_Paper_Sheet_A
 
@@ -64,9 +81,10 @@ end
 ---Register new activator entry for the ContextMenu
 ---@param e table<activator, ContextEntry[]> ContextEntries
 function UILibrary.contextMenu:Register(e)
-    for activator, ctxEntry in pairs(e) do
+    ForEach(e, function (activator, ctxEntry)
+        if type(ctxEntry) ~= 'table' then return end
         self.SubComponents[activator] = ctxEntry
-    end
+    end)
 end
 
 --  =====================================
@@ -158,7 +176,7 @@ local function RegisterContextMenuListeners()
         ContextMenu.MouseTarget = text
         if not IsValid(text) then return end
 
-        local character = Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf'):GetPlayerHandle() or UserInformation.CurrentCharacter
+        local character = UserInformation.CurrentCharacter or Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf'):GetPlayerHandle()
         ContextMenu.Character = Ext.GetCharacter(character)
         if not ContextMenu.Character then return end
 
@@ -204,15 +222,33 @@ local function RegisterContextMenuListeners()
         if not ctxEntries then return end
 
         Debug:Print("Intercepted ContextMenu. Registering Hooks")
-        ContextMenu:GetUI(ui)
+        ContextMenu:GetUI(ui)   --  Fetch UI details
 
-        for _, entry in Spairs(ctxEntries) do
-            local ID = entry.ID or ContextMenu.Root.windowsMenu_mc.list.length   --  Defaults to auto-generated ID if entry.ID is not provided
-            local actionID = entry.actionID or math.floor(ID * 100) --  Assigns actionID
+        local resolverArguments = {
+            ['Item'] = ContextMenu.Item,
+            ['Character'] = ContextMenu.Character,
+            ['Activator'] = ContextMenu.Activator,
+            ['MouseTarget'] = ContextMenu.MouseTarget,
+            ['UI'] = ContextMenu.UI,
+            ['Root'] = ContextMenu.Root,
+            ['TypeID'] = ContextMenu.TypeID,
+            ['SubComponent'] = ctxEntries
+        }
 
-            ContextMenu.Root.addButton(ID, actionID, entry.clickSound, "", entry.text, entry.isDisabled, entry.isLegal)
+        ForEach(ctxEntries, function (_, entry)
+            if type(entry) ~= 'table' then return end
+
+            --  Resolved entry
+            local resolved = Map(entry, function (key, value)
+                if key == 'New' then return key, nil
+                elseif type(value) == 'function' then return key, value(resolverArguments)
+                else return key, value end
+            end)
+
+            --  Create buttons
+            ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
             ContextMenu.Root.addButtonsDone()
-        end
+        end)
 
         ContextMenu.Intercept = false   --  Done intercepting
     end, "Before")
