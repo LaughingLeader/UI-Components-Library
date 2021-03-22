@@ -25,8 +25,8 @@ ContextEntry = {
 ---@return ContextEntry
 function ContextEntry:New(object)
     local object = object or {}
-    object = Integrate(self, object)
     if not ValidInputTable(object, {'actionID'}) then Debug:FError('Invalid ActionID') end
+    object = Integrate(self, object)
     object.New = nil -- Remove constructor from the object.
     return object
 end
@@ -90,6 +90,7 @@ end
 function UILibrary.contextMenu:Add(ctxMenu, ctxEntries)
     if type(ctxEntries) ~= 'table' then return end
     ForEach(ctxEntries, function (_, entry)
+        if type(entry) ~= 'table' then return end
         if IsValid(Pinpoint(entry.actionID, ctxMenu)) then return end
         table.insert(ctxMenu, ContextEntry:New(entry))
     end)
@@ -269,9 +270,8 @@ local function RegisterContextMenuListeners()
 
             --  Resolved entry
             local resolved = Map(entry, function (key, value)
-                if key == 'New' then return key, nil
-                elseif type(value) == 'function' then return key, value(resolverArguments)
-                else return key, value end
+                if key == 'New' then return key, nil end
+                return key, Resolve(value, resolverArguments)
             end)
 
             if resolved.restrictTo ~= nil and resolved.restrictTo ~= ContextMenu.TargetType then return end
