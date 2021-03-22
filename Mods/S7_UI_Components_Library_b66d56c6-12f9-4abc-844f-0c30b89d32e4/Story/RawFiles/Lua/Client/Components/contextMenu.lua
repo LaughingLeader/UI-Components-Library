@@ -286,10 +286,11 @@ local function RegisterContextMenuListeners()
         local actionID = tonumber(actionID)
 
         local payload = {
-            ["CharacterGUID"] = ContextMenu.Character.MyGuid,
-            ["Activator"] = ContextMenu.Activator,
-            ["actionID"] = actionID,
-            ["ItemNetID"] = ContextMenu.Item.NetID
+            ['CharacterGUID'] = ContextMenu.Character.MyGuid,
+            ['Activator'] = ContextMenu.Activator,
+            ['actionID'] = actionID,
+            ['MouseTarget'] = ContextMenu.MouseTarget,
+            ['ItemNetID'] = ContextMenu.Item.NetID
         }
         Ext.PostMessageToServer(Channel.ContextMenu, Ext.JsonStringify(payload))   --  Post ContextAction Payload to Server. Bounces back to Client
     end)
