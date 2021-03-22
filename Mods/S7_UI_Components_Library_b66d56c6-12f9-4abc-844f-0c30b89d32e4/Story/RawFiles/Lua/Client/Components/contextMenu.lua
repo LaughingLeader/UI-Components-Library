@@ -9,7 +9,7 @@
 ---@field isDisabled boolean|ResolverFunction If true, the button is greyed out and cannot be pressed
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
----@field restrictTo nil|string If not nil, restrict entries to Character or Item.
+---@field restrictTo nil|string|ResolverFunction If not nil, restrict entries to Character or Item.
 ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
     clickSound = true,
@@ -266,7 +266,6 @@ local function RegisterContextMenuListeners()
 
         ForEach(ctxEntries, function (_, entry)
             if type(entry) ~= 'table' then return end
-            if entry.restrictTo ~= nil and entry.restrictTo ~= ContextMenu.TargetType then return end
 
             --  Resolved entry
             local resolved = Map(entry, function (key, value)
@@ -275,6 +274,7 @@ local function RegisterContextMenuListeners()
                 else return key, value end
             end)
 
+            if resolved.restrictTo ~= nil and resolved.restrictTo ~= ContextMenu.TargetType then return end
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
