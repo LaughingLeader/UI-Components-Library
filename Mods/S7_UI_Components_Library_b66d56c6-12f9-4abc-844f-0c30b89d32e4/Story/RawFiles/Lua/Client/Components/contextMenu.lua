@@ -85,7 +85,9 @@ function UILibrary.contextMenu:Register(e)
     ForEach(e, function (activator, ctxEntry)
         if type(ctxEntry) ~= 'table' then return end
         if not self.SubComponents[activator] then self.SubComponents[activator] = {} end
-        ForEach(ctxEntry, function (_, entry) table.insert(self.SubComponents[activator], ContextEntry:New(entry)) end)
+        ForEach(ctxEntry, function (_, entry)
+            table.insert(self.SubComponents[activator], ContextEntry:New(entry))
+        end)
     end)
 end
 
@@ -124,9 +126,10 @@ local function determineActivator(statsActivator, templateActivator)
     if ContextMenu.SubComponents[templateActivator] then
         -- If statsActivator was also registered then inherit ContextEntries. RootTemplate has higher specificity
         if ContextMenu.SubComponents[statsActivator] then
-            for _, ctx in Spairs(ContextMenu.SubComponents[statsActivator]) do
-                table.insert(ContextMenu.SubComponents[templateActivator], ctx)
-            end
+            ForEach(ContextMenu.SubComponents[statsActivator], function (_, ctx)
+                if IsValid(Pinpoint(ctx.actionID, ContextMenu.SubComponents[templateActivator])) then return end
+                table.insert(ContextMenu.SubComponents[templateActivator], ContextEntry:New(ctx))
+            end)
         end
         ContextMenu.Activator = templateActivator   --  Set Activator
     end

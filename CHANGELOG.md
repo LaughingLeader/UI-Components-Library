@@ -16,6 +16,10 @@
 - _Refactored_ net-channels as global variables.
 - _Extracted_ `ContextMenuResponders` into a separate file.
 
+## FIXED
+
+- _Fixed_ Context-Entry duplication on inheritance bug [#31](https://github.com/HunterGhost27/UI-Components-Library/issues/31)
+
 ## [0.4.1.3] --- 19th March 2021 --- **_Activator Conflict Resolution_**
 
 ### NEW
