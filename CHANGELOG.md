@@ -11,7 +11,7 @@
 - _Created_ `tooltip.lua` component.
 - Context-Menu entries now accept `Resolver Functions` that return dynamically generated values for context-menus during run-time.
 - _Created_ `ContextMenu:Add()` to handle table insertion properly. Can handle multiple entries at once.
-- _Add_ `TargetType` and `restrictTo` options.
+- _Added_ `TargetType` and `restrictTo` options.
 
 ### CHANGED
 
@@ -19,7 +19,7 @@
 - _Extracted_ `ContextMenuResponders` into a separate file.
 - _Renamed_ `ContextMenu.Item` to `ContextMenu.Target` as both Items and Characters are now possible.
 
-## FIXED
+### FIXED
 
 - _Fixed_ Context-Entry duplication on inheritance bug [#31](https://github.com/HunterGhost27/UI-Components-Library/issues/31)
 
