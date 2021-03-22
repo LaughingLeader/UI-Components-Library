@@ -25,6 +25,7 @@ function ContextEntry:New(object)
     local object = object or {}
     object = Integrate(self, object)
     if not ValidInputTable(object, { 'actionID' }) then Debug:FError('Invalid ActionID') end
+    object.New = nil -- Remove constructor from the object.
     return object
 end
 
