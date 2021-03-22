@@ -17,6 +17,7 @@
 
 - _Refactored_ net-channels as global variables.
 - _Extracted_ `ContextMenuResponders` into a separate file.
+- _Renamed_ `ContextMenu.Item` to `ContextMenu.Target` as both Items and Characters are now possible.
 
 ## FIXED
 

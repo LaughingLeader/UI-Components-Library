@@ -9,7 +9,7 @@
 ---@field isDisabled boolean|ResolverFunction If true, the button is greyed out and cannot be pressed
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
----@field restrictTo nil|string If not nil, restrict entries to Characters or Items.
+---@field restrictTo nil|string If not nil, restrict entries to Character or Item.
 ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
     clickSound = true,
@@ -26,7 +26,7 @@ ContextEntry = {
 function ContextEntry:New(object)
     local object = object or {}
     object = Integrate(self, object)
-    if not ValidInputTable(object, { 'actionID' }) then Debug:FError('Invalid ActionID') end
+    if not ValidInputTable(object, {'actionID'}) then Debug:FError('Invalid ActionID') end
     object.New = nil -- Remove constructor from the object.
     return object
 end
@@ -36,7 +36,7 @@ end
 ---@class ContextMenu @ContextMenu UI Component
 ---@field TypeID number UI TypeID. 11 or 10. Most listeners work for 11
 ---@field Activator activator ActivatorType::ActivatorValue. Ties activation and ContextEntries together
----@field Item EclItem Item that was right-clicked (can also be a game-world character)
+---@field Target EclItem|EclCharacter Item that was right-clicked (can also be a game-world character)
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
 ---@field MouseTarget string DisplayName of the mouse-target
 ---@field TargetType string Character or Item
@@ -56,7 +56,7 @@ UILibrary.contextMenu = {
     UI = {},
     Root = {},
     Character = {},
-    Item = {},
+    Target = {},
 }
 
 --- Initialize new ContextMenu object
@@ -156,12 +156,12 @@ end
 ---@param x number
 ---@param y number
 local function preInterceptSetup(ui, call, itemDouble, x, y)
-    ContextMenu.Item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
-    if not ContextMenu.Item then return end
+    ContextMenu.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
+    if not ContextMenu.Target then return end
     ContextMenu.TargetType = 'Item'
 
-    local statsActivator = 'StatsId::' .. ContextMenu.Item.StatsId  ---@type activator
-    local templateActivator = 'RootTemplate::' .. ContextMenu.Item.RootTemplate.Id  ---@type activator
+    local statsActivator = 'StatsId::' .. ContextMenu.Target.StatsId  ---@type activator
+    local templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id  ---@type activator
 
     determineActivator(statsActivator, templateActivator)   --  Set Activator
 
@@ -230,7 +230,7 @@ local function RegisterContextMenuListeners()
         local payload = Ext.JsonParse(payload) or {}
         if not IsValid(payload) then return end
         ContextMenu.TargetType = payload.Type
-        ContextMenu.Item = ContextMenu.TargetType == 'Character' and Ext.GetCharacter(payload.GUID) or Ext.GetItem(payload.GUID) --  Game-world target (item or character)
+        ContextMenu.Target = ContextMenu.TargetType == 'Character' and Ext.GetCharacter(payload.GUID) or Ext.GetItem(payload.GUID) --  Game-world target (item or character)
 
         local statsActivator = 'StatsId::' .. payload.StatsId  ---@type activator
         local templateActivator = 'RootTemplate::' .. payload.RootTemplate ---@type activator
@@ -253,7 +253,7 @@ local function RegisterContextMenuListeners()
         ContextMenu:GetUI(ui)   --  Fetch UI details
 
         local resolverArguments = {
-            ['Item'] = ContextMenu.Item,
+            ['Target'] = ContextMenu.Target,
             ['Character'] = ContextMenu.Character,
             ['Activator'] = ContextMenu.Activator,
             ['MouseTarget'] = ContextMenu.MouseTarget,
@@ -291,7 +291,9 @@ local function RegisterContextMenuListeners()
     Ext.RegisterUICall(ContextMenu.UI, 'buttonPressed', function(ui, call, id, actionID, handle)
         Debug:Print("ContextMenu Action: " .. tostring(actionID))
 
+        local itemNetID
         local actionID = tonumber(actionID)
+        if ContextMenu.Target then itemNetID = ContextMenu.Target.NetID end
 
         local payload = {
             ['CharacterGUID'] = ContextMenu.Character.MyGuid,
@@ -299,7 +301,7 @@ local function RegisterContextMenuListeners()
             ['actionID'] = actionID,
             ['MouseTarget'] = ContextMenu.MouseTarget,
             ['TargetType'] = ContextMenu.TargetType,
-            ['ItemNetID'] = ContextMenu.Item.NetID
+            ['ItemNetID'] = itemNetID
         }
         Ext.PostMessageToServer(Channel.ContextMenu, Ext.JsonStringify(payload))   --  Post ContextAction Payload to Server. Bounces back to Client
     end)
@@ -310,7 +312,7 @@ local function RegisterContextMenuListeners()
     Ext.RegisterUITypeCall(ContextMenu.TypeID, 'menuClosed', function()
         ContextMenu.Activator = nil
         ContextMenu.MouseTarget = nil
-        ContextMenu.Item = nil
+        ContextMenu.Target = nil
     end)
 
     Debug:Print("ContextMenu Listener Registration Completed")
