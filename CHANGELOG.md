@@ -14,6 +14,7 @@
 - _Added_ `TargetType` and `restrictUI` options.
 - _Created_ `Any::[Type]` activators for `Item` and `Characters`.
 - _Added_ `isUnavailable` option for context-entry.
+- _Added_ `range` attribute to context-entry. Option is only available within range.
 
 ### CHANGED
 

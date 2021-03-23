@@ -10,6 +10,7 @@
 ---@field isUnavailable boolean|ResolverFunction If true, the button will not show up at all. Useful for exceptions
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
+---@field range number|ResolverFunction ContextMenu range within which the option is available
 ---@field restrictUI nil|table|ResolverFunction If not nil, then ctxEntries will not show up for UITypes in this array. (-1 for game-world)
 ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
@@ -18,6 +19,7 @@ ContextEntry = {
     isUnavailable = false,
     isLegal = true,
     text = "null",
+    range = 0,
     --actionID = 0,
     --restrictUI = {},
 }
@@ -42,6 +44,8 @@ end
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
 ---@field Origin number Origin of the CtxMenu. UI TypeID.
 ---@field MouseTarget string DisplayName of the mouse-target
+---@field MouseTargetDistance number Distance between player and mouse-target
+---@field SearchRadius number MaxDistance to search
 ---@field TargetType string Character or Item
 ---@field Intercept boolean Should intercept ContextMenu
 ---@field Component table Holds information about WindowElement
@@ -56,6 +60,8 @@ UILibrary.contextMenu = {
     ContextEntries = {},
     Origin = -1,
     MouseTarget = "",
+    MouseTargetDistance = 0,
+    SearchRadius = 20,
     TargetType = "Item",
     UI = {},
     Root = {},
@@ -240,7 +246,7 @@ local function RegisterContextMenuListeners()
             ['Target'] = ContextMenu.MouseTarget,
             ['TargetType'] = ContextMenu.TargetType,
             ['Position'] = ContextMenu.Character.WorldPos,
-            ['SearchRadius'] = 20
+            ['SearchRadius'] = ContextMenu.SearchRadius
         }
         Ext.PostMessageToServer(Channel.GameWorldTarget, Ext.JsonStringify(payload))
     end
@@ -253,12 +259,23 @@ local function RegisterContextMenuListeners()
         requestInfoAboutMouseTarget(text, 'Item')
     end, 'Before')
 
+    ---Calculates distance between two objects
+    ---@param sourcePos number[]
+    ---@param targetPos number[]
+    ---@return number
+    local function calculateDistance(sourcePos, targetPos)
+        local x2, y2, z2 = table.unpack(sourcePos)
+        local x1, y1, z1 = table.unpack(targetPos)
+        return math.floor(math.sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2))
+    end
+
     Ext.RegisterNetListener(Channel.GameWorldTarget, function (channel, payload)
         local payload = Ext.JsonParse(payload) or {}
         if not IsValid(payload) then return end
 
         ContextMenu.TargetType = payload.Type
         ContextMenu.Target = ContextMenu.TargetType == 'Character' and Ext.GetCharacter(payload.GUID) or Ext.GetItem(payload.GUID) --  Game-world target (item or character)
+        ContextMenu.MouseTargetDistance = calculateDistance(ContextMenu.Character.WorldPos, ContextMenu.Target.WorldPos)
 
         local statsActivator = 'StatsId::' .. payload.StatsId  ---@type activator
         local templateActivator = 'RootTemplate::' .. payload.RootTemplate ---@type activator
@@ -286,11 +303,13 @@ local function RegisterContextMenuListeners()
             ['Character'] = ContextMenu.Character,
             ['Activator'] = ContextMenu.Activator,
             ['MouseTarget'] = ContextMenu.MouseTarget,
+            ['MouseTargetDistance'] = ContextMenu.MouseTargetDistance,
+            ['SearchRadius'] = ContextMenu.SearchRadius,
             ['TargetType'] = ContextMenu.TargetType,
             ['UI'] = ContextMenu.UI,
             ['Root'] = ContextMenu.Root,
             ['TypeID'] = ContextMenu.TypeID,
-            ['SubComponent'] = ctxEntries
+            ['ctxEntries'] = ctxEntries
         }
 
         --  Adding ctxEntries
@@ -305,6 +324,7 @@ local function RegisterContextMenuListeners()
 
             if resolved.isUnavailable then return end -- if isUnavailable is true then return
             if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
+            if resolved.range < ContextMenu.MouseTargetDistance then return end
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
@@ -330,6 +350,8 @@ local function RegisterContextMenuListeners()
             ['Activator'] = ContextMenu.Activator,
             ['actionID'] = actionID,
             ['MouseTarget'] = ContextMenu.MouseTarget,
+            ['MouseTargetDistance'] = ContextMenu.MouseTargetDistance,
+            ['SearchRadius'] = ContextMenu.SearchRadius,
             ['TargetType'] = ContextMenu.TargetType,
             ['ItemNetID'] = itemNetID
         }
@@ -342,6 +364,7 @@ local function RegisterContextMenuListeners()
     Ext.RegisterUITypeCall(ContextMenu.TypeID, 'menuClosed', function()
         ContextMenu.Activator = nil
         ContextMenu.MouseTarget = nil
+        ContextMenu.MouseTargetDistance = 0
         ContextMenu.Target = nil
     end)
 
