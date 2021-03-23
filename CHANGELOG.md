@@ -13,6 +13,7 @@
 - _Created_ `ContextMenu:Add()` to handle table insertion properly. Can handle multiple entries at once.
 - _Added_ `TargetType` and `restrictUI` options.
 - _Created_ `Any::[Type]` activators for `Item` and `Characters`.
+- _Added_ `isUnavailable` option for context-entry.
 
 ### CHANGED
 

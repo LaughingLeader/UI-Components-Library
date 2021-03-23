@@ -7,6 +7,7 @@
 ---@field actionID number|ResolverFunction This number is thrown on button-press and subsequently broadcasted on S7UCL::ContextMenu net-channel
 ---@field clickSound boolean|ResolverFunction Probably controls whether mouseClick produces a sound
 ---@field isDisabled boolean|ResolverFunction If true, the button is greyed out and cannot be pressed
+---@field isUnavailable boolean|ResolverFunction If true, the button will not show up at all. Useful for exceptions
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
 ---@field restrictUI nil|table|ResolverFunction If not nil, then ctxEntries will not show up for UITypes in this array. (-1 for game-world)
@@ -14,6 +15,7 @@ ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
     clickSound = true,
     isDisabled = false,
+    isUnavailable = false,
     isLegal = true,
     text = "null",
     --actionID = 0,
@@ -301,6 +303,7 @@ local function RegisterContextMenuListeners()
                 return key, Resolve(value, resolverArguments)
             end)
 
+            if resolved.isUnavailable then return end -- if isUnavailable is true then return
             if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
 
             --  Create buttons
