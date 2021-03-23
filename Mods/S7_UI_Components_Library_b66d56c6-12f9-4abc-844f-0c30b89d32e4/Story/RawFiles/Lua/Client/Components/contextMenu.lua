@@ -128,18 +128,31 @@ ContextMenu = UILibrary.contextMenu:New()
 --  DETERMINE ACTIVATOR
 --  ===================
 
+--  TODO: Refactor this ugly mess into something more maintainable.
 ---Determine activator
 ---@param statsActivator activator
 ---@param templateActivator activator
-local function determineActivator(statsActivator, templateActivator)
+local function determineActivator(targetType, statsActivator, templateActivator)
+    local targetType = targetType or "Item"
+    local anyActivator = 'Any::' .. targetType
+    ContextMenu.Activator = anyActivator
+
     -- Check if statsActivator ContextEntries have been registered already
     if ContextMenu.SubComponents[statsActivator] then
+        -- If anyActivators have also been registered then inherit ContextEntries. statsActivator has higher specificity than anyActivator
+        if ContextMenu.SubComponents[anyActivator] then
+            ContextMenu:Add(ContextMenu.SubComponents[statsActivator], ContextMenu.SubComponents[anyActivator])
+        end
         ContextMenu.Activator = statsActivator  --  Set Activator
     end
 
     -- Check if templateActivator ContextEntries have been registered already
     if ContextMenu.SubComponents[templateActivator] then
-        -- If statsActivator was also registered then inherit ContextEntries. RootTemplate has higher specificity
+        -- If anyActivators have also been registered then inherit ContextEntries. statsActivator has higher specificity than anyActivator
+        if ContextMenu.SubComponents[anyActivator] then
+            ContextMenu:Add(ContextMenu.SubComponents[templateActivator], ContextMenu.SubComponents[anyActivator])
+        end
+        -- If statsActivator was also registered then inherit ContextEntries. RootTemplate has higher specificity than statsActivator
         if ContextMenu.SubComponents[statsActivator] then
             ContextMenu:Add(ContextMenu.SubComponents[templateActivator], ContextMenu.SubComponents[statsActivator])
         end
@@ -164,7 +177,7 @@ local function preInterceptSetup(ui, call, itemDouble, x, y)
     local statsActivator = 'StatsId::' .. ContextMenu.Target.StatsId  ---@type activator
     local templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id  ---@type activator
 
-    determineActivator(statsActivator, templateActivator)   --  Set Activator
+    determineActivator(ContextMenu.TargetType, statsActivator, templateActivator)   --  Set Activator
 
     ContextMenu.Character = Ext.GetCharacter(ui:GetPlayerHandle())  --  Set Character
     ContextMenu.Intercept = IsValid(ContextMenu.Activator)          --  Go for Intercept if Activator IsValid
@@ -236,7 +249,7 @@ local function RegisterContextMenuListeners()
         local statsActivator = 'StatsId::' .. payload.StatsId  ---@type activator
         local templateActivator = 'RootTemplate::' .. payload.RootTemplate ---@type activator
 
-        determineActivator(statsActivator, templateActivator)   --  Set Activator
+        determineActivator(ContextMenu.TargetType, statsActivator, templateActivator)   --  Set Activator
 
         ContextMenu.Intercept = IsValid(ContextMenu.Activator)    -- Go for Intercept if Activator IsValid
     end)
