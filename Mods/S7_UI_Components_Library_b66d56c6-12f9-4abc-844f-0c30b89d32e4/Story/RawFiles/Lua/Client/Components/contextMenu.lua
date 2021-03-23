@@ -38,7 +38,7 @@ end
 ---@field Activator activator ActivatorType::ActivatorValue. Ties activation and ContextEntries together
 ---@field Target EclItem|EclCharacter Item that was right-clicked (can also be a game-world character)
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
----@field Origin number Origin of the CtxMenu. UIType ID.
+---@field Origin number Origin of the CtxMenu. UI TypeID.
 ---@field MouseTarget string DisplayName of the mouse-target
 ---@field TargetType string Character or Item
 ---@field Intercept boolean Should intercept ContextMenu
@@ -173,7 +173,8 @@ end
 ---@param y number
 ---@param origin UIObject Origin UI
 local function preInterceptSetup(ui, call, itemDouble, x, y, origin)
-    ContextMenu.Origin = origin:GetTypeId() or ContextMenu.Origin
+    ContextMenu.Origin = origin:GetTypeId() or ContextMenu.Origin   -- TypeID of the Origin UI element
+
     ContextMenu.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
     if not ContextMenu.Target then return end
     ContextMenu.TargetType = 'Item'
@@ -253,6 +254,7 @@ local function RegisterContextMenuListeners()
     Ext.RegisterNetListener(Channel.GameWorldTarget, function (channel, payload)
         local payload = Ext.JsonParse(payload) or {}
         if not IsValid(payload) then return end
+
         ContextMenu.TargetType = payload.Type
         ContextMenu.Target = ContextMenu.TargetType == 'Character' and Ext.GetCharacter(payload.GUID) or Ext.GetItem(payload.GUID) --  Game-world target (item or character)
 
@@ -276,6 +278,7 @@ local function RegisterContextMenuListeners()
         Debug:Print("Intercepted ContextMenu. Registering Hooks")
         ContextMenu:GetUI(ui)   --  Fetch UI details
 
+        --  These will be passed into Resolver functions below
         local resolverArguments = {
             ['Target'] = ContextMenu.Target,
             ['Character'] = ContextMenu.Character,
@@ -288,16 +291,17 @@ local function RegisterContextMenuListeners()
             ['SubComponent'] = ctxEntries
         }
 
+        --  Adding ctxEntries
         ForEach(ctxEntries, function (_, entry)
             if type(entry) ~= 'table' then return end
 
-            --  Resolved entry
+            --  Resolve ctxEntry
             local resolved = Map(entry, function (key, value)
                 if key == 'New' then return key, nil end
                 return key, Resolve(value, resolverArguments)
             end)
 
-            if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end
+            if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
@@ -373,8 +377,8 @@ Ext.RegisterListener('SessionLoaded', RegisterContextMenuListeners)
 ---Print a snapshot of ContextMenu's current state to the debug-console and (optionally) save it in Osiris Data/S7Debug
 ---@param fileName string|nil if specified, will save the results in a .yaml file in `Osiris Data/S7Debug/`
 local function SnapshotContextMenu(fileName)
-    local ctxInfo = Rematerialize(ContextMenu)
-    ctxInfo['SubComponents'] = nil  --  Too long to be useful in the debug-console
+    local ctxInfo = Rematerialize(ContextMenu) -- Drops non-stringifiable elements
+    ctxInfo['SubComponents'] = nil  --  Too big to be useful in the debug-console
 
     --  Pretty print snapshot
     Write:SetHeader('ContextMenu:')
@@ -384,8 +388,9 @@ local function SnapshotContextMenu(fileName)
     Write:NewLine(ctxInfo['SubComponent'])
     Debug:Print(Write:Display())
 
-    ctxInfo['SubComponents'] = ContextMenu.SubComponents    --  Readd subcomponents for printing
+    ctxInfo['SubComponents'] = ContextMenu.SubComponents    --  Re-add subcomponents for printing
 
+    --  Save to external yaml file if fileName was specified
     if IsValid(fileName) then
         SaveFile('S7Debug/' .. fileName .. '.yaml', Yamlify(ctxInfo))
     end
