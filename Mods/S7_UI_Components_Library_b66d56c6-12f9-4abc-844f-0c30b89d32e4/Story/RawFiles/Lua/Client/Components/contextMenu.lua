@@ -9,7 +9,7 @@
 ---@field isDisabled boolean|ResolverFunction If true, the button is greyed out and cannot be pressed
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
----@field restrictTo nil|string|ResolverFunction If not nil, restrict entries to Character or Item.
+---@field restrictUI nil|table|ResolverFunction If not nil, then ctxEntries will not show up for UITypes in this array. (-1 for game-world)
 ContextEntry = {
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
     clickSound = true,
@@ -17,7 +17,7 @@ ContextEntry = {
     isLegal = true,
     text = "null",
     --actionID = 0,
-    --restrictTo = "",
+    --restrictUI = {},
 }
 
 ---Create new ContextEntry
@@ -38,6 +38,7 @@ end
 ---@field Activator activator ActivatorType::ActivatorValue. Ties activation and ContextEntries together
 ---@field Target EclItem|EclCharacter Item that was right-clicked (can also be a game-world character)
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
+---@field Origin number Origin of the CtxMenu. UIType ID.
 ---@field MouseTarget string DisplayName of the mouse-target
 ---@field TargetType string Character or Item
 ---@field Intercept boolean Should intercept ContextMenu
@@ -51,6 +52,7 @@ UILibrary.contextMenu = {
     Intercept = false,
     Component = {},
     SubComponents = {},
+    Origin = -1,
     MouseTarget = "",
     TargetType = "Item",
     UI = {},
@@ -169,7 +171,9 @@ end
 ---@param itemDouble number
 ---@param x number
 ---@param y number
-local function preInterceptSetup(ui, call, itemDouble, x, y)
+---@param origin UIObject Origin UI
+local function preInterceptSetup(ui, call, itemDouble, x, y, origin)
+    ContextMenu.Origin = origin:GetTypeId() or ContextMenu.Origin
     ContextMenu.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
     if not ContextMenu.Target then return end
     ContextMenu.TargetType = 'Item'
@@ -193,20 +197,26 @@ local function RegisterContextMenuListeners()
     --  Setup Party Inventory UI
     local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory.swf')
     Ext.RegisterUICall(partyInventoryUI, 'openContextMenu', function(ui, call, id, itemDouble, x, y)
-        preInterceptSetup(ui, call, itemDouble, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, partyInventoryUI)
     end)
 
     --  Setup Container Inventory UI
     local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
-    Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', preInterceptSetup)
+    Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
+    end)
 
     --  Setup Character Sheet UI
     local characterSheetUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf')
-    Ext.RegisterUICall(characterSheetUI, 'openContextMenu', preInterceptSetup)
+    Ext.RegisterUICall(characterSheetUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, characterSheetUI)
+    end)
 
     --  Setup Crafting UI
     local uiCraftUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'uiCraft.swf')
-    Ext.RegisterUICall(uiCraftUI, 'openContextMenu', preInterceptSetup)
+    Ext.RegisterUICall(uiCraftUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, uiCraftUI)
+    end)
 
     --  Setup Game World
     --  ----------------
@@ -215,7 +225,7 @@ local function RegisterContextMenuListeners()
     ---@param text string DisplayName from enemyHealthBar.swf or tooltip.swf
     ---@param type string Character|Item
     local function requestInfoAboutMouseTarget(text, type)
-        ContextMenu.MouseTarget, ContextMenu.TargetType = text, type
+        ContextMenu.MouseTarget, ContextMenu.TargetType, ContextMenu.Origin = text, type, -1
         if not IsValid(text) then return end
 
         local character = UserInformation.CurrentCharacter or Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf'):GetPlayerHandle()
@@ -287,7 +297,7 @@ local function RegisterContextMenuListeners()
                 return key, Resolve(value, resolverArguments)
             end)
 
-            if resolved.restrictTo ~= nil and resolved.restrictTo ~= ContextMenu.TargetType then return end
+            if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
