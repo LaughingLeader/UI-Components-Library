@@ -45,7 +45,7 @@ end
 ---@field TargetType string Character or Item
 ---@field Intercept boolean Should intercept ContextMenu
 ---@field Component table Holds information about WindowElement
----@field SubComponents table<activator, ContextEntry[]> Array of constituting ContextEntries
+---@field ContextEntries table<activator, ContextEntry[]> Array of constituting ContextEntries
 ---@field UI UIObject UIObject
 ---@field Root table UIObject root
 UILibrary.contextMenu = {
@@ -53,7 +53,7 @@ UILibrary.contextMenu = {
     Activator = "",
     Intercept = false,
     Component = {},
-    SubComponents = {},
+    ContextEntries = {},
     Origin = -1,
     MouseTarget = "",
     TargetType = "Item",
@@ -83,8 +83,8 @@ end
 ---@param activator activator
 ---@return table<activator, ContextEntry[]>|nil ContextEntries
 function UILibrary.contextMenu:Get(activator)
-    if self.SubComponents[activator] then
-        return self.SubComponents[activator]
+    if self.ContextEntries[activator] then
+        return self.ContextEntries[activator]
     end
 end
 
@@ -102,22 +102,22 @@ end
 
 ---Register new activator entry for the ContextMenu
 ---@param e table<activator, ContextEntry[]> ContextEntries
-function UILibrary.contextMenu:Register(e)
+function UILibrary.contextMenu:Update(e)
     ForEach(e, function (activator, ctxEntries)
         if type(ctxEntries) ~= 'table' then return end
-        if not self.SubComponents[activator] then self.SubComponents[activator] = {} end
-        self:Add(self.SubComponents[activator], ctxEntries)
+        if not self.ContextEntries[activator] then self.ContextEntries[activator] = {} end
+        self:Add(self.ContextEntries[activator], ctxEntries)
     end)
 end
 
 ---Quick register options. Skips straight to registration
 ---@param e table<activator, ContextEntry[]> ContextEntries
-function UILibrary.contextMenu:QuickRegister(e)
+function UILibrary.contextMenu:Register(e)
     ForEach(e, function (activator, ctxEntries)
         if type(ctxEntries) ~= 'table' then return end
         local ctxMenu = self:Get(activator) or {}
         self:Add(ctxMenu, ctxEntries)
-        self:Register({[activator] = ctxMenu})
+        self:Update({[activator] = ctxMenu})
     end)
 end
 
@@ -142,23 +142,23 @@ local function determineActivator(targetType, statsActivator, templateActivator)
     ContextMenu.Activator = anyActivator
 
     -- Check if statsActivator ContextEntries have been registered already
-    if ContextMenu.SubComponents[statsActivator] then
+    if ContextMenu.ContextEntries[statsActivator] then
         -- If anyActivators have also been registered then inherit ContextEntries. statsActivator has higher specificity than anyActivator
-        if ContextMenu.SubComponents[anyActivator] then
-            ContextMenu:Add(ContextMenu.SubComponents[statsActivator], ContextMenu.SubComponents[anyActivator])
+        if ContextMenu.ContextEntries[anyActivator] then
+            ContextMenu:Add(ContextMenu.ContextEntries[statsActivator], ContextMenu.ContextEntries[anyActivator])
         end
         ContextMenu.Activator = statsActivator  --  Set Activator
     end
 
     -- Check if templateActivator ContextEntries have been registered already
-    if ContextMenu.SubComponents[templateActivator] then
+    if ContextMenu.ContextEntries[templateActivator] then
         -- If anyActivators have also been registered then inherit ContextEntries. statsActivator has higher specificity than anyActivator
-        if ContextMenu.SubComponents[anyActivator] then
-            ContextMenu:Add(ContextMenu.SubComponents[templateActivator], ContextMenu.SubComponents[anyActivator])
+        if ContextMenu.ContextEntries[anyActivator] then
+            ContextMenu:Add(ContextMenu.ContextEntries[templateActivator], ContextMenu.ContextEntries[anyActivator])
         end
         -- If statsActivator was also registered then inherit ContextEntries. RootTemplate has higher specificity than statsActivator
-        if ContextMenu.SubComponents[statsActivator] then
-            ContextMenu:Add(ContextMenu.SubComponents[templateActivator], ContextMenu.SubComponents[statsActivator])
+        if ContextMenu.ContextEntries[statsActivator] then
+            ContextMenu:Add(ContextMenu.ContextEntries[templateActivator], ContextMenu.ContextEntries[statsActivator])
         end
         ContextMenu.Activator = templateActivator   --  Set Activator
     end
@@ -274,7 +274,7 @@ local function RegisterContextMenuListeners()
     Ext.RegisterUITypeInvokeListener(ContextMenu.TypeID, 'open', function(ui, call, ...)
         if not ContextMenu.Intercept then return end    --  If Intercept was denied then return
 
-        local ctxEntries = ContextMenu.SubComponents[ContextMenu.Activator]    --  Get ContextEntries
+        local ctxEntries = ContextMenu.ContextEntries[ContextMenu.Activator]    --  Get ContextEntries
         if not ctxEntries then return end
 
         Debug:Print("Intercepted ContextMenu. Registering Hooks")
@@ -381,17 +381,17 @@ Ext.RegisterListener('SessionLoaded', RegisterContextMenuListeners)
 ---@param fileName string|nil if specified, will save the results in a .yaml file in `Osiris Data/S7Debug/`
 local function SnapshotContextMenu(fileName)
     local ctxInfo = Rematerialize(ContextMenu) -- Drops non-stringifiable elements
-    ctxInfo['SubComponents'] = nil  --  Too big to be useful in the debug-console
+    ctxInfo['ContextEntries'] = nil  --  Too big to be useful in the debug-console
 
     --  Pretty print snapshot
     Write:SetHeader('ContextMenu:')
     Write:Tabulate(ctxInfo)
-    ctxInfo['SubComponent'] = Yamlify(ContextMenu.SubComponents[ContextMenu.Activator])
-    Write:NewLine('SubComponent:\n')
-    Write:NewLine(ctxInfo['SubComponent'])
+    ctxInfo['ContextEntry'] = Yamlify(ContextMenu.ContextEntries[ContextMenu.Activator])
+    Write:NewLine('ContextEntry:\n')
+    Write:NewLine(ctxInfo['ContextEntry'])
     Debug:Print(Write:Display())
 
-    ctxInfo['SubComponents'] = ContextMenu.SubComponents    --  Re-add subcomponents for printing
+    ctxInfo['ContextEntries'] = ContextMenu.ContextEntries    --  Re-add ContextEntries for printing
 
     --  Save to external yaml file if fileName was specified
     if IsValid(fileName) then
