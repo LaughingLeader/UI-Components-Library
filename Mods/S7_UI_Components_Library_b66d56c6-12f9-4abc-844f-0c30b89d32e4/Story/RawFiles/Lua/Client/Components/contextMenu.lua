@@ -11,8 +11,9 @@
 ---@field isLegal boolean|ResolverFunction If false, button is red and indicates an act of crime
 ---@field text string|ResolverFunction ContextMenu label text
 ---@field range number|ResolverFunction ContextMenu range within which the option is available
----@field restrictUI nil|table|ResolverFunction If not nil, then ctxEntries will not show up for UITypes in this array. (-1 for game-world)
+---@field restrictUI nil|table|ResolverFunction If not nil, then ctxEntries will not show up for UI TypeIDs in this array. (-1 for game-world)
 ContextEntry = {
+    --actionID = 0,
     ID = function(r) return r.Root.windowsMenu_mc.list.length end,
     clickSound = true,
     isDisabled = false,
@@ -20,7 +21,6 @@ ContextEntry = {
     isLegal = true,
     text = "null",
     range = 0,
-    --actionID = 0,
     --restrictUI = {},
 }
 
@@ -38,7 +38,7 @@ end
 ---@alias activator string `ActivatorType::ActivatorValue`. e.g. StatsId::LOOT_Paper_Sheet_A
 
 ---@class ContextMenu @ContextMenu UI Component
----@field TypeID number UI TypeID. 11 or 10. Most listeners work for 11
+---@field TypeID number UI TypeID. Generally 11, sometimes 10.
 ---@field Activator activator ActivatorType::ActivatorValue. Ties activation and ContextEntries together
 ---@field Target EclItem|EclCharacter Item that was right-clicked (can also be a game-world character)
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
@@ -170,6 +170,16 @@ local function determineActivator(targetType, statsActivator, templateActivator)
     end
 end
 
+---Calculates distance between two objects
+---@param sourcePos number[]
+---@param targetPos number[]
+---@return number
+local function calculateDistance(sourcePos, targetPos)
+    local x2, y2, z2 = table.unpack(sourcePos)
+    local x1, y1, z1 = table.unpack(targetPos)
+    return math.floor(math.sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2))
+end
+
 --  PREPARE INTERCEPT
 --  =================
 
@@ -186,6 +196,8 @@ local function preInterceptSetup(ui, call, itemDouble, x, y, origin)
     ContextMenu.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
     if not ContextMenu.Target then return end
     ContextMenu.TargetType = 'Item'
+    ContextMenu.MouseTarget = nil
+    ContextMenu.MouseTargetDistance = 0
 
     local statsActivator = 'StatsId::' .. ContextMenu.Target.StatsId  ---@type activator
     local templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id  ---@type activator
@@ -259,16 +271,6 @@ local function RegisterContextMenuListeners()
         requestInfoAboutMouseTarget(text, 'Item')
     end, 'Before')
 
-    ---Calculates distance between two objects
-    ---@param sourcePos number[]
-    ---@param targetPos number[]
-    ---@return number
-    local function calculateDistance(sourcePos, targetPos)
-        local x2, y2, z2 = table.unpack(sourcePos)
-        local x1, y1, z1 = table.unpack(targetPos)
-        return math.floor(math.sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2))
-    end
-
     Ext.RegisterNetListener(Channel.GameWorldTarget, function (channel, payload)
         local payload = Ext.JsonParse(payload) or {}
         if not IsValid(payload) then return end
@@ -324,7 +326,7 @@ local function RegisterContextMenuListeners()
 
             if resolved.isUnavailable then return end -- if isUnavailable is true then return
             if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
-            if resolved.range < ContextMenu.MouseTargetDistance then return end
+            if ContextMenu.Origin == -1 and resolved.range < ContextMenu.MouseTargetDistance then return end
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
@@ -362,10 +364,11 @@ local function RegisterContextMenuListeners()
     --  ==========
 
     Ext.RegisterUITypeCall(ContextMenu.TypeID, 'menuClosed', function()
-        ContextMenu.Activator = nil
-        ContextMenu.MouseTarget = nil
         ContextMenu.MouseTargetDistance = 0
+        ContextMenu.MouseTarget = nil
         ContextMenu.Target = nil
+        ContextMenu.Origin = nil
+        ContextMenu.Activator = nil
     end)
 
     Debug:Print("ContextMenu Listener Registration Completed")
