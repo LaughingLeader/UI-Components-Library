@@ -1,7 +1,7 @@
 --  NOTES
 
--- InputDeviceID 0 Mouse
--- InputDeviceID 1 Keyboard
+-- InputDeviceID 0 Keyboard
+-- InputDeviceID 1 Mouse
 
 -- MOUSE
 -- =====
@@ -19,6 +19,7 @@
 -- (ESC) => 223 press, 241 press
 
 ---@class InputEvent @Input Event
+---@field Name string
 ---@field AcceleratedRepeat boolean
 ---@field EventId number
 ---@field Hold number
@@ -29,45 +30,25 @@
 ---@field Repeat boolean
 ---@field ValueChange boolean
 InputEvent = {
-    ["AcceleratedRepeat"] = false,
-    ["EventId"] = -1,
-    ["Hold"] = false,
-    ["InputDeviceId"] = 0,
-    ["InputPlayerIndex"] = 0,
-    ["Press"] = false,
-    ["Release"] = false,
-    ["Repeat"] = false,
-    ["ValueChange"] = false
+    ['Name'] = "",
+    ['AcceleratedRepeat'] = false,
+    ['EventId'] = -1,
+    ['Hold'] = false,
+    ['InputDeviceId'] = 0,
+    ['InputPlayerIndex'] = 0,
+    ['Press'] = false,
+    ['Release'] = false,
+    ['Repeat'] = false,
+    ['ValueChange'] = false
 }
 
----Create a new InputEvent
----@param object InputEvent|table|nil
----@return InputEvent object
-function InputEvent:Create(object)
-    local object = object or {}
-    object = Integrate(self, object)
-    return object
-end
+---@type table<number, InputEvent>
+UILibrary.inputEvents = {}
 
----@class InputEventHandler
----@field InputDeviceID number 0 for mouse, 1 for keyboard
-UILibrary.inputEvents = {
-    InputDeviceID = 0,
-    EventStack = {},
-    Maps = {}
-}
+InputEvents = UILibrary.inputEvents
 
-function UILibrary.inputEvents:New(object)
-    local object = object or {}
-    object = Integrate(self, object)
-    return object
-end
-
---  =====================================
-InputEvents = UILibrary.inputEvents:New()
---  =====================================
-
--- Listen for InputEvents
--- Record current EventStack
--- If EventStack matches something in Map
--- Broadcast Event to Server and Client
+Ext.RegisterListener('InputEvent', function (...)
+    local args = {...}
+    Ext.PrintWarning(Ext.JsonStringify(args))
+    InputEvents[args[1].EventId] = args[1]
+end)
