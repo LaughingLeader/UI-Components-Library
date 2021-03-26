@@ -55,7 +55,12 @@ end
 UILibrary.inputEvents = {
     List = {},
     Alias = {
-        ['LSHIFT'] = 232
+        ['LCLICK'] = 1,
+        ['RCLICK'] = 2,
+        ['MCLICK'] = 3,
+        ['LSHIFT'] = 232,
+        ['SPACE'] = 260,
+        ['ENTER'] = 230,
     },
 }
 
@@ -66,6 +71,15 @@ function UILibrary.inputEvents:New(object)
     local object = object or {}
     object = Integrate(self, object)
     return object
+end
+
+---Get InputEvent object for key
+---@param key string|number KeyAlias or EventId
+---@return InputEvent
+function UILibrary.inputEvents:Get(key)
+    local idx = type(key) == 'string' and self.Alias[key] or key
+    if not self.List[idx] then return end
+    return self.List[idx]
 end
 
 ---Check if a key is currently pressed
