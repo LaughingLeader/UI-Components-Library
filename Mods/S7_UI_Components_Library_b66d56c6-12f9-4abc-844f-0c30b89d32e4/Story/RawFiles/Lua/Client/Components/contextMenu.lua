@@ -311,7 +311,8 @@ local function RegisterContextMenuListeners()
             ['UI'] = ContextMenu.UI,
             ['Root'] = ContextMenu.Root,
             ['TypeID'] = ContextMenu.TypeID,
-            ['ctxEntries'] = ctxEntries
+            ['ctxEntries'] = ctxEntries,
+            ['InputEvents'] = InputEvents
         }
 
         --  Adding ctxEntries
