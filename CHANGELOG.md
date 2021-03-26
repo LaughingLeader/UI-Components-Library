@@ -2,6 +2,12 @@
 
 ---
 
+## [0.4.3.0] --- 26th March 2021 --- **_InputEvents for fun and profit_**
+
+### NEW
+
+- _Created_ `InputEvent.lua` to track **InputEvents**.
+
 ## [0.4.2.0] --- 21st March 2021 --- **_Game World Context Menus_**
 
 ### NEW
