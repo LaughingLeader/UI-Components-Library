@@ -7,6 +7,11 @@
 ### NEW
 
 - _Created_ `InputEvent.lua` to track **InputEvents**.
+- _Added_ `InputEvents` as a resolver argument to Context-Menu entries.
+
+### FIXED
+
+- _Fixed_ `Pinpoint()` infinite loop bug. Hung up the game if two mods wanted to update the same activator.
 
 ## [0.4.2.0] --- 21st March 2021 --- **_Game World Context Menus_**
 
