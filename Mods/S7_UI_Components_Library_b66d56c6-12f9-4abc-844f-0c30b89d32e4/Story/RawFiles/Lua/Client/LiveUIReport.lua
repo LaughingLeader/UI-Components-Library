@@ -32,7 +32,7 @@ end)
 Ext.RegisterListener("InputEvent", function (...)
     if not LIVE_UI_REPORTS then return end
     local args = {...}
-    Ext.Print("InputEvent:", Ext.JsonStringify(args[1]))
+    Ext.Print("InputEvent:", Ext.JsonStringify(Rematerialize(args[1])))
 end)
 
 --  TOGGLE UI REPORT CONSOLE COMMAND
