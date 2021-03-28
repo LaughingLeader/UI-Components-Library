@@ -26,13 +26,18 @@ PartyInventory = UILibrary.partyInventory:New()
 --  ===========================================
 
 Ext.RegisterUITypeCall(116, 'slotOver', function(ui, call, itemDouble)
-    PartyInventory.MousedOverItem = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+    local item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+    if not item then return end
+    PartyInventory.MousedOverItem = item
 end, 'After')
 
 Ext.RegisterUITypeCall(116, 'slotOut', function(ui, call, itemDouble)
     PartyInventory.MousedOverItem = nil
 end, 'After')
 
-Ext.RegisterUITypeCall(116, 'doubleClickItem', function(ui, call, itemHandle)
-    PartyInventory.DoubleClickedItem = Ext.GetItem(Ext.DoubleToHandle(itemHandle))
+Ext.RegisterUITypeCall(116, 'doubleClickItem', function(ui, call, itemDouble)
+    local item = Ext.GetItem(Ext.DoubleToHandle(itemDouble))
+    if not item then return end
+    PartyInventory.DoubleClickedItem = item
+    ContainerInventory.Container = item
 end, 'Before')
