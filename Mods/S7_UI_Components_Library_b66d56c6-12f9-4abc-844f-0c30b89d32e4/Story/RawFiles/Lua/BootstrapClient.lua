@@ -10,19 +10,23 @@ Ext.Require('Auxiliary.lua')
 SpecsHandler = {}
 BuildSpecifications = {}
 UILibrary = {
+    ['containerInventory'] = {},
     ['contextMenu'] = {},
     ['enemyHealthBar'] = {},
     ['GMJournal'] = {},
     ['msgBox'] = {},
+    ['partyInventory'] = {},
     ['tooltip'] = {},
     ['inputEvents'] = {},
 }
 
+Ext.Require('Client/Components/containerInventory.lua')
 Ext.Require('Client/Components/contextMenu.lua')
 Ext.Require('Client/Components/enemyHealthBar.lua')
 Ext.Require('Client/Components/GMJournal.lua')
 Ext.Require('Client/Components/msgBox.lua')
 Ext.Require('Client/Components/tooltip.lua')
+Ext.Require('Client/Components/partyInventory.lua')
 
 Ext.Require('Client/InputEvents.lua')
 
