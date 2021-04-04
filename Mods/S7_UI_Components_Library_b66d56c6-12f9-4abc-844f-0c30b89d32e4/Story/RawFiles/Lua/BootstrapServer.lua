@@ -8,3 +8,4 @@ Ext.Require('Auxiliary.lua')
 --  ==========
 
 Ext.Require('Server/ContextMenu.lua')
+Ext.Require('Server/hotBar.lua')
