@@ -58,29 +58,48 @@ function UILibrary.hotBar:Show(index)
     end)
 end
 
-function UILibrary.hotBar:NextHotBar(index)
-    Ext.Print('NextHotBar')
-    if HotBar.CurrentHotBarIndex + 1 > HotBar.LastHotBarIndex then index = 1 end
-    return index
+---Tracks moving to the next HotBar
+---@param self HotBar
+function UILibrary.hotBar:NextHotBar()
+    if HotBar.CurrentHotBarIndex + 1 > HotBar.LastHotBarIndex then HotBar.CurrentHotBarIndex = 1
+    else HotBar.CurrentHotBarIndex = HotBar.CurrentHotBarIndex + 1 end
 end
 
-function UILibrary.hotBar:PrevHotBar(index)
-    Ext.Print('PrevHotBar')
-    if HotBar.CurrentHotBarIndex - 1 < 1 then index = HotBar.LastHotBarIndex end
-    return index
+---Tracks moving to the previous HotBar
+---@param self HotBar
+function UILibrary.hotBar:PrevHotBar()
+    if HotBar.CurrentHotBarIndex - 1 < 1 then HotBar.CurrentHotBarIndex = HotBar.LastHotBarIndex
+    else HotBar.CurrentHotBarIndex = HotBar.CurrentHotBarIndex - 1 end
 end
 
 --  ===========================
 HotBar = UILibrary.hotBar:New()
 --  ===========================
 
+--  ====
+--  INIT
+--  ====
+
+Ext.RegisterListener('SessionLoaded', function()
+    HotBar.UI = Ext.GetUIByType(HotBar.TypeID)
+    HotBar.Root = HotBar.UI:GetRoot()
+end)
+
+--  ==================
+--  SET CURRENT HOTBAR
+--  ==================
+
 Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'setCurrentHotbar', function(ui, call, index)
     local index = tonumber(index)
     if not index then return end
-    if index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex) then index = HotBar:NextHotBar(index)
-    else  index = HotBar:PrevHotBar(index) end
-    HotBar.CurrentHotBarIndex = index
+    if index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex) then HotBar:NextHotBar()
+    else  HotBar:PrevHotBar() end
+    HotBar.Root.setCurrentHotbar(HotBar.CurrentHotBarIndex)
 end)
+
+--  ============
+--  SLOTS UPDATE
+--  ============
 
 Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'updateSlots', function(ui, call)
     local character = UserInformation.CurrentCharacter
@@ -96,9 +115,4 @@ Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
     for i, row in pairs(payload) do
         HotBarRow:New(row, i + 1)
     end
-end)
-
-Ext.RegisterListener('SessionLoaded', function()
-    HotBar.UI = Ext.GetUIByType(HotBar.TypeID)
-    HotBar.Root = HotBar.UI:GetRoot()
 end)
