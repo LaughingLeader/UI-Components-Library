@@ -20,9 +20,7 @@ function HotBarRow:New(row, rowNo)
     local object = {}
     object.Contents = Integrate(self, row)
     object.Prev = HotBar.Row[rowNo - 1]
-    object.Prev.Next = object
     object.Next = HotBar.Row[rowNo]
-    object.Next.Prev = object
     HotBar.Row[rowNo] = object
     return HotBar.Row[rowNo]
 end
@@ -52,19 +50,23 @@ function UILibrary.hotBar:New(object)
     return object
 end
 
-function UILibrary.hotBar:Show()
+function UILibrary.hotBar:Show(index)
+    local index = tonumber(index)
+    if not index then return end
     ForEach(self.Row, function(idx, row)
-        Debug:HFPrint(row.Contents)
+        Ext.PrintWarning(idx, index, row.Contents[1], row.Contents[2], row.Contents[3])
     end)
 end
 
 function UILibrary.hotBar:NextHotBar(index)
     Ext.Print('NextHotBar')
+    if HotBar.CurrentHotBarIndex + 1 > HotBar.LastHotBarIndex then index = 1 end
     return index
 end
 
 function UILibrary.hotBar:PrevHotBar(index)
     Ext.Print('PrevHotBar')
+    if HotBar.CurrentHotBarIndex - 1 < 1 then index = HotBar.LastHotBarIndex end
     return index
 end
 
@@ -75,9 +77,8 @@ HotBar = UILibrary.hotBar:New()
 Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'setCurrentHotbar', function(ui, call, index)
     local index = tonumber(index)
     if not index then return end
-    Ext.Print(HotBar.CurrentHotBarIndex, HotBar.LastHotBarIndex)
-    if index > HotBar.CurrentHotBarIndex and index < HotBar.LastHotBarIndex then index = HotBar:NextHotBar(index)
-    elseif index < HotBar.CurrentHotBarIndex and index > 1 then  index = HotBar:PrevHotBar(index) end
+    if index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex) then index = HotBar:NextHotBar(index)
+    else  index = HotBar:PrevHotBar(index) end
     HotBar.CurrentHotBarIndex = index
 end)
 
@@ -92,7 +93,9 @@ Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
     Destringify(payload)
     if not IsValid(payload) then return end
 
-    for i, row in pairs(payload) do HotBarRow:New(row, i + 1) end
+    for i, row in pairs(payload) do
+        HotBarRow:New(row, i + 1)
+    end
 end)
 
 Ext.RegisterListener('SessionLoaded', function()
