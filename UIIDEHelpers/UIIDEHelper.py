@@ -29,8 +29,7 @@ for dirPath, dirNames, files in os.walk(os.path.dirname(__file__)):
         if fileName != 'MainTimeline.as':
             continue
 
-        # Package Name. Used to determine Lua ClassName. ---@class UIRoot_[package]: FlashObject
-        package = ''
+        package = ''    # Package Name. Used to determine Lua ClassName
         vars = []  # Public properties of the FlashObject
         functions = []  # Public methods of the FlashObject
 
@@ -59,7 +58,6 @@ for dirPath, dirNames, files in os.walk(os.path.dirname(__file__)):
 
                 #   Extract public methods of FlashObject
                 for y in re.findall(r'public function (\w+)\((.*)\)[: (\w+)]?', line.strip()):
-                    print(y[2])
 
                     #   Extract function params
                     params = []
