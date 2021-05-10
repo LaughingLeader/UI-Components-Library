@@ -2,37 +2,17 @@
 --  PLAYER HOTBAR
 --  =============
 
----@class HotBarRow @HotBar Row
----@field Contents table<number, string> HotBar row contents
----@field Next HotBarRow Reference to the next HotBar Row
----@field Prev HotBarRow Reference to the prev HotBar Row
-HotBarRow = {
-    Contents = {},
-    -- Next = {},
-    -- Prev = {}
-}
-
----Create a new HotBar row and records it in the HotBar class
----@param row HotBarRow|table|nil
----@param rowNo number Position of HotBar row in cyclic queue
----@return HotBarRow object
-function HotBarRow:New(row, rowNo)
-    local object = {}
-    object.Contents = Integrate(self, row)
-    object.Prev = HotBar.Row[rowNo - 1]
-    object.Next = HotBar.Row[rowNo]
-    HotBar.Row[rowNo] = object
-    return HotBar.Row[rowNo]
-end
+---@type table<number, string>
+HotBarRow = {}
 
 ---@class HotBar @HotBar UI
 ---@field UI UIObject UI
----@field Root FlashObject UI Root
+---@field Root UIRoot_hotBar UI Root
 ---@field TypeID number UI TypeID
 ---@field maxSlots number Maximum number of slots
 ---@field CurrentHotBarIndex number Index of the currently selected HotBar
 ---@field LastHotBarIndex number Index of the last HotBar
----@field Row table<number, HotBarRow> Cyclic Queue of HotBarRows
+---@field Row table<number, table> Cyclic Queue of HotBarRows
 UILibrary.hotBar = {
     TypeID = 40,
     maxSlots = 29, -- According to hotBar.swf
@@ -48,14 +28,6 @@ function UILibrary.hotBar:New(object)
     local object = object or {}
     object = Integrate(self, object)
     return object
-end
-
-function UILibrary.hotBar:Show(index)
-    local index = tonumber(index)
-    if not index then return end
-    ForEach(self.Row, function(idx, row)
-        Ext.PrintWarning(idx, index, row.Contents[1], row.Contents[2], row.Contents[3])
-    end)
 end
 
 ---Tracks moving to the next HotBar
@@ -91,10 +63,16 @@ end)
 
 Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'setCurrentHotbar', function(ui, call, index)
     local index = tonumber(index)
-    if not index then return end
-    if index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex) then HotBar:NextHotBar()
-    else  HotBar:PrevHotBar() end
-    HotBar.Root.setCurrentHotbar(HotBar.CurrentHotBarIndex)
+    if not index or index == HotBar.CurrentHotBarIndex then return end
+
+    local movedForward = index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex)
+    if movedForward then HotBar:NextHotBar() else HotBar:PrevHotBar() end
+    if HotBar.CurrentHotBarIndex <= 5 then return end
+
+    Timer:Delay(20, function()
+        HotBar.Root.setCurrentHotbar(HotBar.CurrentHotBarIndex)
+        Ext.PostMessageToServer('S7UCL::UpdateHotBar', Ext.JsonStringify(HotBar.CurrentHotBarIndex))
+    end)
 end)
 
 --  ============
@@ -104,7 +82,13 @@ end)
 Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'updateSlots', function(ui, call)
     local character = UserInformation.CurrentCharacter
     if not character then return end
-    Ext.PostMessageToServer('S7UCL::HotBarUpdate', 'UPDATE:' .. character)
+
+    local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
+    local payload = {
+        characterGUID = character,
+        offset = offset
+    }
+    Ext.PostMessageToServer('S7UCL::HotBarUpdate', Ext.JsonStringify(payload))
 end, 'After')
 
 Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
@@ -112,7 +96,6 @@ Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
     Destringify(payload)
     if not IsValid(payload) then return end
 
-    for i, row in pairs(payload) do
-        HotBarRow:New(row, i + 1)
-    end
+    local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
+    for i, row in pairs(payload) do HotBar.Row[offset + i] = row end
 end)
