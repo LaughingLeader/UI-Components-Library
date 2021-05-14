@@ -48,54 +48,54 @@ end
 HotBar = UILibrary.hotBar:New()
 --  ===========================
 
---  ====
---  INIT
---  ====
+-- --  ====
+-- --  INIT
+-- --  ====
 
-Ext.RegisterListener('SessionLoaded', function()
-    HotBar.UI = Ext.GetUIByType(HotBar.TypeID)
-    HotBar.Root = HotBar.UI:GetRoot()
-end)
+-- Ext.RegisterListener('SessionLoaded', function()
+--     HotBar.UI = Ext.GetUIByType(HotBar.TypeID)
+--     HotBar.Root = HotBar.UI:GetRoot()
+-- end)
 
---  ==================
---  SET CURRENT HOTBAR
---  ==================
+-- --  ==================
+-- --  SET CURRENT HOTBAR
+-- --  ==================
 
-Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'setCurrentHotbar', function(ui, call, index)
-    local index = tonumber(index)
-    if not index or index == HotBar.CurrentHotBarIndex then return end
+-- Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'setCurrentHotbar', function(ui, call, index)
+--     local index = tonumber(index)
+--     if not index or index == HotBar.CurrentHotBarIndex then return end
 
-    local movedForward = index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex)
-    if movedForward then HotBar:NextHotBar() else HotBar:PrevHotBar() end
-    if HotBar.CurrentHotBarIndex <= 5 then return end
+--     local movedForward = index == (HotBar.CurrentHotBarIndex % 5) + 1 or (index == 1 and HotBar.CurrentHotBarIndex == HotBar.LastHotBarIndex)
+--     if movedForward then HotBar:NextHotBar() else HotBar:PrevHotBar() end
+--     if HotBar.CurrentHotBarIndex <= 5 then return end
 
-    Timer:Delay(20, function()
-        HotBar.Root.setCurrentHotbar(HotBar.CurrentHotBarIndex)
-        Ext.PostMessageToServer('S7UCL::UpdateHotBar', Ext.JsonStringify(HotBar.CurrentHotBarIndex))
-    end)
-end)
+--     Timer:Delay(20, function()
+--         HotBar.Root.setCurrentHotbar(HotBar.CurrentHotBarIndex)
+--         Ext.PostMessageToServer('S7UCL::UpdateHotBar', Ext.JsonStringify(HotBar.CurrentHotBarIndex))
+--     end)
+-- end)
 
---  ============
---  SLOTS UPDATE
---  ============
+-- --  ============
+-- --  SLOTS UPDATE
+-- --  ============
 
-Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'updateSlots', function(ui, call)
-    local character = UserInformation.CurrentCharacter
-    if not character then return end
+-- Ext.RegisterUITypeInvokeListener(HotBar.TypeID, 'updateSlots', function(ui, call)
+--     local character = UserInformation.CurrentCharacter
+--     if not character then return end
 
-    local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
-    local payload = {
-        characterGUID = character,
-        offset = offset
-    }
-    Ext.PostMessageToServer('S7UCL::HotBarUpdate', Ext.JsonStringify(payload))
-end, 'After')
+--     local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
+--     local payload = {
+--         characterGUID = character,
+--         offset = offset
+--     }
+--     Ext.PostMessageToServer('S7UCL::HotBarUpdate', Ext.JsonStringify(payload))
+-- end, 'After')
 
-Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
-    local payload = Ext.JsonParse(payload) or {}
-    Destringify(payload)
-    if not IsValid(payload) then return end
+-- Ext.RegisterNetListener('S7UCL::HotBarUpdate', function(channel, payload)
+--     local payload = Ext.JsonParse(payload) or {}
+--     Destringify(payload)
+--     if not IsValid(payload) then return end
 
-    local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
-    for i, row in pairs(payload) do HotBar.Row[offset + i] = row end
-end)
+--     local offset = HotBar.CurrentHotBarIndex > 5 and HotBar.CurrentHotBarIndex - 5 or 0
+--     for i, row in pairs(payload) do HotBar.Row[offset + i] = row end
+-- end)
