@@ -51,7 +51,7 @@ end
 ---@field Component table Holds information about WindowElement
 ---@field ContextEntries table<activator, ContextEntry[]> Array of constituting ContextEntries
 ---@field UI UIObject UIObject
----@field Root table UIObject root
+---@field Root UIRoot_contextMenu UIObject root
 UILibrary.contextMenu = {
     TypeID = 11, -- or 10
     Activator = "",
@@ -82,7 +82,7 @@ end
 ---@param ui UIObject UIObject from one of the listeners
 function UILibrary.contextMenu:GetUI(ui)
     self.UI = ui or Ext.GetUIByType(self.TypeID) or Ext.GetBuiltinUI(Dir.GameGUI .. 'contextMenu.swf')
-    self.Root = self.UI:GetRoot()
+    self.Root = self.UI:GetRoot()   ---@type UIRoot_contextMenu
 end
 
 --- Get Existing ContextEntries for given activator
@@ -221,9 +221,20 @@ local function RegisterContextMenuListeners()
         preInterceptSetup(ui, call, itemDouble, x, y, partyInventoryUI)
     end)
 
+    --  Setup Party Inventory UI (Controller)
+    local partyInventory_c_UI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory_c.swf')
+    Ext.RegisterUICall(partyInventory_c_UI, 'showActionMenuItem', function(ui, call, itemDouble, ownerDouble, itemIndex, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, partyInventory_c_UI)
+    end)
+
     --  Setup Container Inventory UI
     local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
     Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
+        preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
+    end)
+
+    -- Setup Container Inventory UI (Controller)
+    Ext.RegisterUICall(containerInventoryUI, 'showActionMenuItem', function(ui, call, itemDouble, HLSlot, x, y)
         preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
     end)
 
