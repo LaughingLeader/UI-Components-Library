@@ -7,8 +7,10 @@ Ext.Require('Auxiliary.lua')
 --  UI COMPONENTS
 --  -------------
 
+---TODO: Consolidate these tables
 SpecsHandler = {}
 BuildSpecifications = {}
+
 UILibrary = {
     ['containerInventory'] = {},
     ['contextMenu'] = {},
@@ -19,6 +21,7 @@ UILibrary = {
     ['partyInventory'] = {},
     ['tooltip'] = {},
     ['inputEvents'] = {},
+    ['TypeIDs'] = {}
 }
 
 Ext.Require('Client/TypeIDs.lua')
@@ -28,7 +31,7 @@ Ext.Require('Client/Components/contextMenu.lua')
 Ext.Require('Client/Components/contextMenuC.lua')
 Ext.Require('Client/Components/enemyHealthBar.lua')
 Ext.Require('Client/Components/GMJournal.lua')
-Ext.Require('Client/Components/hotBar.lua')
+-- Ext.Require('Client/Components/hotBar.lua')
 Ext.Require('Client/Components/msgBox.lua')
 Ext.Require('Client/Components/tooltip.lua')
 Ext.Require('Client/Components/partyInventory.lua')
@@ -39,6 +42,7 @@ Ext.Require('Client/InputEvents.lua')
 --  BUILDER FUNCTION
 --  ================
 
+---TODO: Revamp Render method
 --- Delegates UI build task
 ---@param buildSpecs table Build specifications
 function Render(buildSpecs)

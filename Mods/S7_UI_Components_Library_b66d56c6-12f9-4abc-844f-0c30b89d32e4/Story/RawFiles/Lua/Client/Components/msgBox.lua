@@ -2,6 +2,8 @@
 --  MsgBox
 --  ======
 
+---TODO: SCRAP AND REWORK
+
 ---@class MsgBox @UILibrary msgBox
 ---@field private Exists boolean
 ---@field private UI UIObject

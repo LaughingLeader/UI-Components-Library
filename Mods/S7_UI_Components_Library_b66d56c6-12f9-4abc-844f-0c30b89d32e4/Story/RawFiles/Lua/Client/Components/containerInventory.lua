@@ -4,10 +4,12 @@
 
 ---@class ContainerInventory @Container Inventory UI
 ---@field TypeID number UI TypeID
+---@field UIPath string UI Directory
 ---@field Container EclItem OpenedContainer
 ---@field MousedOverItem EclItem MousedOver Item
 UILibrary.containerInventory = {
-    TypeID = 9,
+    TypeID = 9 or UILibrary.TypeID.containerInventory,
+    UIPath = Dir.GameGUI .. 'containerInventory.swf'
     -- Container = {},
     -- MousedOverItem = {},
 }

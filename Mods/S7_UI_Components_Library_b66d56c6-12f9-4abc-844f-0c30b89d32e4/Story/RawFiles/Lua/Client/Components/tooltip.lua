@@ -4,8 +4,10 @@
 
 ---@class Tooltip @Tooltip UI
 ---@field TypeID number UI TypeID
+---@field UIPath string UI Directory
 UILibrary.tooltip = {
-    TypeID = 44
+    TypeID = 44 or UILibrary.TypeID.tooltip,
+    UIPath = Dir.GameGUI .. 'tooltip.swf'
 }
 
 ---Instantiate new Tooltip object

@@ -52,7 +52,7 @@ end
 ---@field UI UIObject UIObject
 ---@field Root UIRoot_contextMenu UIObject root
 UILibrary.contextMenu = {
-    TypeID = 11, -- or 10
+    TypeID = 11 or UILibrary.TypeID.contextMenu, -- or 10
     Activator = "",
     Intercept = false,
     Component = {},
@@ -175,10 +175,8 @@ end
 ---@param ui UIObject
 ---@param call string External Interface Call
 ---@param itemDouble number
----@param x number
----@param y number
 ---@param origin UIObject Origin UI
-function UILibrary.contextMenu:prepareUIIntercept(ui, call, itemDouble, x, y, origin)
+function UILibrary.contextMenu:prepareUIIntercept(ui, call, itemDouble, origin)
     self.Origin = origin:GetTypeId() or self.Origin   -- TypeID of the Origin UI element
 
     self.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
@@ -227,23 +225,23 @@ end
 --  ==================
 
 ---Pre-Intercept Setup
-function UILibrary.contextMenu:preIntercept()
+function UILibrary.contextMenu:prepareIntercepts()
     --  Setup Party Inventory UI
     local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory.swf')
     Ext.RegisterUICall(partyInventoryUI, 'openContextMenu', function(ui, call, id, itemDouble, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, partyInventoryUI)
+        self:prepareUIIntercept(ui, call, itemDouble, partyInventoryUI)
     end)
 
     --  Setup Container Inventory UI
     local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
     Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, containerInventoryUI)
+        self:prepareUIIntercept(ui, call, itemDouble, containerInventoryUI)
     end)
 
     --  Setup Character Sheet UI
     local characterSheetUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf')
     Ext.RegisterUICall(characterSheetUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, characterSheetUI)
+        self:prepareUIIntercept(ui, call, itemDouble, characterSheetUI)
     end)
 
     -- --  Setup Crafting UI
@@ -260,7 +258,7 @@ end
 function UILibrary.contextMenu:RegisterContextMenuListeners()
     Debug:Print("Registering ContextMenu Listeners")
 
-    self:preIntercept()
+    self:prepareIntercept()
 
     --  REGISTER CONTEXT MENU HOOKS ON INTERCEPT
     --  ========================================
@@ -305,11 +303,10 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
             --  Create buttons
             self.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
             self.Root.addButtonsDone()
-            Ext.PrintWarning('3')
         end)
 
         self.Intercept = false   --  Done intercepting
-    end, "Before")
+    end, 'Before')
 
     --  BUTTON PRESS
     --  ============
@@ -382,6 +379,8 @@ ContextMenu = UILibrary.contextMenu:New()
 Ext.RegisterListener('SessionLoaded', function() if not CONTROLLER_MODE then ContextMenu:RegisterContextMenuListeners() end end)
 --  ============================================================================================================================
 
+--  ##############################################################################################################################################
+
 --  =====================
 --  SNAPSHOT CONTEXT MENU
 --  =====================
@@ -397,7 +396,7 @@ if Ext.IsDeveloperMode() then
         Description = 'Prints the current state of the ContextMenu object',
         Context = 'Client',
         Params = {[1] = 'fileName: string|nil - Will save results in Osiris Data/S7Debug/[fileName].yaml if specified'},
-        Action = function() ContextMenu:Snapshot() end
+        Action = function() if CONTROLLER_MODE then ContextMenuC:Snapshot() else ContextMenu:Snapshot() end end
     })
 end
 

@@ -8,6 +8,13 @@
 
 - _Created_ `InputEvent.lua` to track **InputEvents**.
 - _Added_ `InputEvents` as a resolver argument to Context-Menu entries.
+- _Added_ `TypeIDs.lua` for reference.
+- _Created_ `CONTROLLER_MODE` global.
+- _Added_ Controller support for `ContextMenu`
+
+### CHANGED
+
+- Major _Refactor_ of `ContextMenu` component to allow inheritance.
 
 ### FIXED
 

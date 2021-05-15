@@ -4,8 +4,10 @@
 
 ---@class EnemyHealthBar @Enemy Health Bar UI
 ---@field TypeID number UI TypeID
+---@field UIPath string UI Directory
 UILibrary.enemyHealthBar = {
-    TypeID = 42
+    TypeID = 42 or UILibrary.TypeID.enemyHealthBar,
+    UIPath = Dir.GameGUI .. 'enemyHealthBar.swf'
 }
 
 ---Instantiate new Enemy Health Bar object

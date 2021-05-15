@@ -2,33 +2,28 @@
 --  CONTEXT MENU (CONTROLLER)
 --  =========================
 
---- Inherit from base ContextMenu
+--- Inherit and extend base ContextMenu
 ContextMenuC = ContextMenu:New({
-    TypeID = 96,
+    TypeID = 96 or UILibrary.TypeID.contextMenu_c,
     UIPath = Dir.GameGUI .. 'contextMenu_c.swf'
 })
 
----Override preIntercept function for Controllers
-function ContextMenuC:preIntercept()
-    --  Setup Party Inventory UI
-    local partyInventory_UI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory_c.swf')
+---Override prepareIntercepts function for Controllers
+function ContextMenuC:prepareIntercepts()
+    --  Prepare Party Inventory UI Intercept
+    local partyInventory_UI = Ext.GetBuiltinUI(PartyInventoryC.UIPath)
     Ext.RegisterUICall(partyInventory_UI, 'showActionMenuItem', function(ui, call, itemDouble, ownerDouble, itemIndex, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, partyInventory_UI)
+        self:prepareUIIntercept(ui, call, itemDouble, partyInventory_UI)
     end)
 
-    --  Setup Container Inventory UI
-    local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
+    --  Prepare Container Inventory UI Intercept
+    local containerInventoryUI = Ext.GetUIByType(ContainerInventory.TypeID) or Ext.GetBuiltinUI(ContainerInventory.UIPath)
     Ext.RegisterUICall(containerInventoryUI, 'showActionMenuItem', function(ui, call, itemDouble, HLSlot, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, containerInventoryUI)
+        self:prepareUIIntercept(ui, call, itemDouble, containerInventoryUI)
     end)
 
-    --  Setup Equipment Panel UI
-    local equipmentPanelUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'equipmentPanel_c.swf')
-    Ext.RegisterUITypeCall(equipmentPanelUI, 'showActionMenuItem', function(ui, call, itemDouble, pos, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, equipmentPanelUI)
-    end)
-
-    Ext.RegisterUITypeInvokeListener(5, 'updateOHs', function (ui, call, ...) self:prepareGameWorldIntercept() end, 'Before')
+    --  Prepare GameWorld Intercept
+    Ext.RegisterUITypeInvokeListener(UILibrary.TypeID.overhead, 'updateOHs', function (ui, call, ...) self:prepareGameWorldIntercept() end, 'Before')
 end
 
 -- ===========================================================================================================================

@@ -9,12 +9,14 @@ HotBarRow = {}
 ---@field UI UIObject UI
 ---@field Root UIRoot_hotBar UI Root
 ---@field TypeID number UI TypeID
+---@field UIPath string UI Directory
 ---@field maxSlots number Maximum number of slots
 ---@field CurrentHotBarIndex number Index of the currently selected HotBar
 ---@field LastHotBarIndex number Index of the last HotBar
 ---@field Row table<number, table> Cyclic Queue of HotBarRows
 UILibrary.hotBar = {
-    TypeID = 40,
+    TypeID = 40 or UILibrary.TypeID.hotBar,
+    UIPath = Dir.GameGUI .. 'hotBar.swf',
     maxSlots = 29, -- According to hotBar.swf
     CurrentHotBarIndex = 1,
     LastHotBarIndex = 10,

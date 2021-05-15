@@ -1,3 +1,5 @@
+---Table to map SWFs to TypeID. Used mostly as a reference.
+---Credits to @LaughingLeader and @Focus
 UILibrary.TypeID = {
     actionProgression = 0,
     characterCreation = 3,
@@ -33,6 +35,7 @@ UILibrary.TypeID = {
     msgBox_c = 75,
     partyManagement_c = 82,
     craftPanel_c = 84,
+    contextMenu_c = 96, -- also 12
     fullScreenHUD = 100,
     uiCraft = 102,
     examine = 104,
@@ -42,6 +45,7 @@ UILibrary.TypeID = {
     reward_c = 137,
     partyInventory_c = 142,
 }
+--TODO: Instead of a given value, track an array of possible typeIDs. Determine the actual TypeID using a getter function.
 
 CONTROLLER_MODE = false
 Ext.RegisterListener('UIObjectCreated', function (ui)
