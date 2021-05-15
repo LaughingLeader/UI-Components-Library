@@ -227,13 +227,13 @@ end
 ---Pre-Intercept Setup
 function UILibrary.contextMenu:prepareIntercepts()
     --  Setup Party Inventory UI
-    local partyInventoryUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory.swf')
+    local partyInventoryUI = Ext.GetBuiltinUI(PartyInventory.UIPath)
     Ext.RegisterUICall(partyInventoryUI, 'openContextMenu', function(ui, call, id, itemDouble, x, y)
         self:prepareUIIntercept(ui, call, itemDouble, partyInventoryUI)
     end)
 
     --  Setup Container Inventory UI
-    local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
+    local containerInventoryUI = Ext.GetUIByType(ContainerInventory.TypeID) or Ext.GetBuiltinUI(ContainerInventory.UIPath)
     Ext.RegisterUICall(containerInventoryUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
         self:prepareUIIntercept(ui, call, itemDouble, containerInventoryUI)
     end)
@@ -258,7 +258,7 @@ end
 function UILibrary.contextMenu:RegisterContextMenuListeners()
     Debug:Print("Registering ContextMenu Listeners")
 
-    self:prepareIntercept()
+    self:prepareIntercepts()
 
     --  REGISTER CONTEXT MENU HOOKS ON INTERCEPT
     --  ========================================
@@ -269,7 +269,7 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
         local ctxEntries = self.ContextEntries[self.Activator] or ContextMenu.ContextEntries[self.Activator]    --  Get ContextEntries. (if ContextMenuC then fallback and retrieve base ContextEntries)
         if not ctxEntries then return end
 
-        Debug:Print("Intercepted ContextMenu. Registering Hooks")
+        Debug:Print("Intercepted ContextMenu" .. CONTROLLER_MODE and '(Controller)' or '' .. ". Registering Hooks")
         self:GetUI(ui)   --  Fetch UI details
 
         --  These will be passed into Resolver functions below
@@ -298,7 +298,7 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
 
             if resolved.isUnavailable then return end -- if isUnavailable is true then return
             if resolved.restrictUI ~= nil and IsValid(Pinpoint(self.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
-            if self.Origin == -1 and resolved.range > self.TargetDistance then return end
+            if self.Origin == -1 and resolved.range < self.TargetDistance then return end
 
             --  Create buttons
             self.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
@@ -340,7 +340,7 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
         self.Activator = nil
     end)
 
-    Debug:Print("ContextMenu Listener Registration Completed")
+    Debug:Print("ContextMenu" .. CONTROLLER_MODE and '(Controller)' or '' ..  " Listener Registration Completed")
 end
 
 --  =====================
