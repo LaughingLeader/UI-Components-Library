@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-doc-class
 ---@class UIRoot_actionProgression: FlashObject @actionProgression
 ---@field container_mc FlashObject
 ---@field events FlashArray
