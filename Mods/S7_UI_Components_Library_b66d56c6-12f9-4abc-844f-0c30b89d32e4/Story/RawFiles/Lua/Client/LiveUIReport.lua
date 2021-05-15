@@ -2,41 +2,69 @@
 --  LIVE UI REPORTS
 --  ===============
 
-local spammers = {
-    ['updateStatuses'] = true,
-    ['update'] = true,
-    ['removeLabel'] = true
+---@class LIVE_UI_REPORTS
+---@field Enable boolean
+---@field Track table<string, boolean>
+---@field Spammers table<string, boolean>
+LIVE_UI_REPORTS = {
+    --=============
+    ENABLE = false,
+    --=============
+    Track = {
+        ['UIObjectCreated'] = true,
+        ['UIInvoke'] = true,
+        ['UICall'] = true,
+        ['InputEvent'] = false
+    },
+    Spammers = {
+        ['updateStatuses'] = true,
+        ['updateBtnInfos'] = true,
+        ['update'] = true,
+        ['removeLabel'] = true
+    }
 }
 
---  -------------------
-LIVE_UI_REPORTS = false
---  -------------------
+function LIVE_UI_REPORTS:Toggle() self.ENABLE = not self.ENABLE end
+function LIVE_UI_REPORTS:ToggleTrack(event) if self.Track[event] then self.Track[event] = false else self.Track[event] = true end end
+function LIVE_UI_REPORTS:ToggleSpammer(spam) if self.Spammers[spam] then self.Spammers[spam] = false else self.Spammers[spam] = true end end
 
-Ext.RegisterListener("UIObjectCreated", function (...)
+--  =========
+--  LISTENERS
+--  =========
+
+Ext.RegisterListener('UIObjectCreated', function (...)
     if not LIVE_UI_REPORTS then return end
-    Ext.Print("UIObjectCreated:", ...)
+    if not LIVE_UI_REPORTS.Track['UIObjectCreated'] then return end
+    Ext.Print('UIObjectCreated:', ...)
 end)
 
-Ext.RegisterListener("UIInvoke", function (ui, call, ...)
+Ext.RegisterListener('UIInvoke', function (ui, call, ...)
     if not LIVE_UI_REPORTS then return end
-    if spammers[call] then return end   --  Prevent spam
-    Ext.Print("UIInvoke:", ui:GetTypeId(), call, ...)
+    if not LIVE_UI_REPORTS.Track['UIInvoke'] then return end
+    if LIVE_UI_REPORTS.Spammers[call] then return end   --  Prevent spam
+    Ext.Print('UIInvoke:', ui:GetTypeId(), call, ...)
 end)
 
-Ext.RegisterListener("UICall", function (ui, call, ...)
+Ext.RegisterListener('UICall', function (ui, call, ...)
     if not LIVE_UI_REPORTS then return end
-    if spammers[call] then return end   --  Prevent spam
-    Ext.Print("UICall:", ui:GetTypeId(), call, ...)
+    if not LIVE_UI_REPORTS.Track['UICall'] then return end
+    if LIVE_UI_REPORTS.Spammers[call] then return end   --  Prevent spam
+    Ext.Print('UICall:', ui:GetTypeId(), call, ...)
 end)
 
-Ext.RegisterListener("InputEvent", function (...)
+Ext.RegisterListener('InputEvent', function (...)
     if not LIVE_UI_REPORTS then return end
+    if not LIVE_UI_REPORTS.Track['InputEvent'] then return end
     local args = {...}
-    Ext.Print("InputEvent:", Ext.JsonStringify(Rematerialize(args[1])))
+    Ext.Print('InputEvent:', Ext.JsonStringify(Rematerialize(args[1])))
 end)
 
---  TOGGLE UI REPORT CONSOLE COMMAND
---  --------------------------------
+--  ================
+--  CONSOLE COMMANDS
+--  ================
+
+--  TOGGLE UI REPORT
+--  ----------------
 
 ConsoleCommander:Register({
 
@@ -47,5 +75,37 @@ ConsoleCommander:Register({
     Name = "ToggleLiveUIReports",
     Description = "Displays a live feed of UI changes in the debug-console. (spam alert)",
     Context = "Client",
-    Action = function() LIVE_UI_REPORTS = not LIVE_UI_REPORTS end
+    Action = function() LIVE_UI_REPORTS:Toggle() end
+})
+
+--  TRACK/UNTRACK EVENT
+--  -------------------
+
+ConsoleCommander:Register({
+
+    --  ------------------------------------------------------------
+    --  !S7_UI_Components_Library ToggleTrackLiveUIEvent <EventName>
+    --  ------------------------------------------------------------
+
+    Name = "ToggleTrackLiveUIEvent",
+    Description = "Toggles tracking of an UI Event",
+    Context = "Client",
+    Params = {[1] = 'EventName'},
+    Action = function(eventName) LIVE_UI_REPORTS:ToggleTrack(eventName) end
+})
+
+--  TRACK/UNTRACK SPAMMER
+--  ---------------------
+
+ConsoleCommander:Register({
+
+    --  -----------------------------------------------------------
+    --  !S7_UI_Components_Library ToggleLiveUISpammer <SpammerName>
+    --  -----------------------------------------------------------
+
+    Name = "ToggleLiveUISpammer",
+    Description = "Toggles tracking of an spammer",
+    Context = "Client",
+    Params = {[1] = 'SpammerName'},
+    Action = function(spammerName) LIVE_UI_REPORTS:ToggleSpammer(spammerName) end
 })

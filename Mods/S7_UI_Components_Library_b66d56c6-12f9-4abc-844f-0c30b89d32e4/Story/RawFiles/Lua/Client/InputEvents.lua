@@ -18,7 +18,7 @@
 -- (ESC) => 223 press, 241 press
 --  ===============================================================
 
----@class InputEvent @Input Event
+---@class S7_InputEvent @Input Event
 ---@field AcceleratedRepeat boolean
 ---@field EventId number
 ---@field Hold number
