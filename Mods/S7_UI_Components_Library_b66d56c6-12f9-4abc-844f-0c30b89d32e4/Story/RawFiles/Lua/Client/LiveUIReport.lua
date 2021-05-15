@@ -33,27 +33,27 @@ function LIVE_UI_REPORTS:ToggleSpammer(spam) if self.Spammers[spam] then self.Sp
 --  =========
 
 Ext.RegisterListener('UIObjectCreated', function (ui)
-    if not LIVE_UI_REPORTS then return end
+    if not LIVE_UI_REPORTS.ENABLE then return end
     if not LIVE_UI_REPORTS.Track['UIObjectCreated'] then return end
     Ext.Print('UIObjectCreated:', ui:GetTypeId())
 end)
 
 Ext.RegisterListener('UIInvoke', function (ui, call, ...)
-    if not LIVE_UI_REPORTS then return end
+    if not LIVE_UI_REPORTS.ENABLE then return end
     if not LIVE_UI_REPORTS.Track['UIInvoke'] then return end
     if LIVE_UI_REPORTS.Spammers[call] then return end   --  Prevent spam
     Ext.Print('UIInvoke:', ui:GetTypeId(), call, ...)
 end)
 
 Ext.RegisterListener('UICall', function (ui, call, ...)
-    if not LIVE_UI_REPORTS then return end
+    if not LIVE_UI_REPORTS.ENABLE then return end
     if not LIVE_UI_REPORTS.Track['UICall'] then return end
     if LIVE_UI_REPORTS.Spammers[call] then return end   --  Prevent spam
     Ext.Print('UICall:', ui:GetTypeId(), call, ...)
 end)
 
 Ext.RegisterListener('InputEvent', function (...)
-    if not LIVE_UI_REPORTS then return end
+    if not LIVE_UI_REPORTS.ENABLE then return end
     if not LIVE_UI_REPORTS.Track['InputEvent'] then return end
     local args = {...}
     Ext.Print('InputEvent:', Ext.JsonStringify(Rematerialize(args[1])))
