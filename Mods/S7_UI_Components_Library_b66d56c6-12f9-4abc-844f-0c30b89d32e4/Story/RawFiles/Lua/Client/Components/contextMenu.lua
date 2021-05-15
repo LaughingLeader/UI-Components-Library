@@ -43,7 +43,6 @@ end
 ---@field Target EclItem|EclCharacter Item that was right-clicked (can also be a game-world character)
 ---@field Character EclCharacter Character that right-clicked (i.e. the player character)
 ---@field Origin number Origin of the CtxMenu. UI TypeID.
----@field MouseTarget string DisplayName of the mouse-target
 ---@field MouseTargetDistance number Distance between player and mouse-target
 ---@field SearchRadius number MaxDistance to search
 ---@field TargetType string Character or Item
@@ -59,8 +58,7 @@ UILibrary.contextMenu = {
     Component = {},
     ContextEntries = {},
     Origin = -1,
-    MouseTarget = "",
-    MouseTargetDistance = 0,
+    TargetDistance = 0,
     SearchRadius = 20,
     TargetType = "Item",
     UI = {},
@@ -175,6 +173,7 @@ end
 ---@param targetPos number[]
 ---@return number
 local function calculateDistance(sourcePos, targetPos)
+    if not sourcePos or not targetPos then return 0 end
     local x2, y2, z2 = table.unpack(sourcePos)
     local x1, y1, z1 = table.unpack(targetPos)
     return math.floor(math.sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2))
@@ -196,8 +195,7 @@ local function preInterceptSetup(ui, call, itemDouble, x, y, origin)
     ContextMenu.Target = Ext.GetItem(Ext.DoubleToHandle(itemDouble))  --  Set Item
     if not ContextMenu.Target then return end
     ContextMenu.TargetType = 'Item'
-    ContextMenu.MouseTarget = nil
-    ContextMenu.MouseTargetDistance = 0
+    ContextMenu.TargetDistance = 0
 
     local statsActivator = 'StatsId::' .. ContextMenu.Target.StatsId  ---@type activator
     local templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id  ---@type activator
@@ -222,10 +220,12 @@ local function RegisterContextMenuListeners()
     end)
 
     --  Setup Party Inventory UI (Controller)
-    local partyInventory_c_UI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory_c.swf')
-    Ext.RegisterUICall(partyInventory_c_UI, 'showActionMenuItem', function(ui, call, itemDouble, ownerDouble, itemIndex, x, y)
-        preInterceptSetup(ui, call, itemDouble, x, y, partyInventory_c_UI)
-    end)
+    -- local partyInventory_c_UI = Ext.GetBuiltinUI(Dir.GameGUI .. 'partyInventory_c.swf')
+    -- if partyInventory_c_UI then
+    --     Ext.RegisterUICall(partyInventory_c_UI, 'showActionMenuItem', function(ui, call, itemDouble, ownerDouble, itemIndex, x, y)
+    --         preInterceptSetup(ui, call, itemDouble, x, y, partyInventory_c_UI)
+    --     end)
+    -- end
 
     --  Setup Container Inventory UI
     local containerInventoryUI = Ext.GetUIByType(9) or Ext.GetBuiltinUI(Dir.GameGUI .. 'containerInventory.swf')
@@ -233,10 +233,10 @@ local function RegisterContextMenuListeners()
         preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
     end)
 
-    -- Setup Container Inventory UI (Controller)
-    Ext.RegisterUICall(containerInventoryUI, 'showActionMenuItem', function(ui, call, itemDouble, HLSlot, x, y)
-        preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
-    end)
+    -- -- Setup Container Inventory UI (Controller)
+    -- Ext.RegisterUICall(containerInventoryUI, 'showActionMenuItem', function(ui, call, itemDouble, HLSlot, x, y)
+    --     preInterceptSetup(ui, call, itemDouble, x, y, containerInventoryUI)
+    -- end)
 
     --  Setup Character Sheet UI
     local characterSheetUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf')
@@ -253,50 +253,35 @@ local function RegisterContextMenuListeners()
     --  Setup Game World
     --  ----------------
 
-    ---Requests information about MouseTarget from the server
-    ---@param text string DisplayName from enemyHealthBar.swf or tooltip.swf
-    ---@param type string Character|Item
-    local function requestInfoAboutMouseTarget(text, type)
-        ContextMenu.MouseTarget, ContextMenu.TargetType, ContextMenu.Origin = text, type, -1
-        if not IsValid(text) then return end
+    local function setupGameWorldIntercept()
+        local pickingState = Ext.GetPickingState()
+        if not (pickingState.HoverEntity) then return end
+        ContextMenu.Origin = -1
+        ContextMenu.Character = Ext.GetCharacter(UserInformation.CurrentCharacter)
 
-        local character = UserInformation.CurrentCharacter or Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf'):GetPlayerHandle()
-        ContextMenu.Character = Ext.GetCharacter(character)
-        if not ContextMenu.Character then return end
+        ---@type activator
+        local statsActivator, templateActivator
+        if Ext.GetHandleType(pickingState.HoverEntity) == 'ClientCharacter' then
+            ContextMenu.TargetType = 'Character'
+            ContextMenu.Target = Ext.GetCharacter(pickingState.HoverEntity)
+            statsActivator = 'StatsId::' .. ContextMenu.Target.Stats.Name
+            templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id
+        elseif Ext.GetHandleType(pickingState.HoverEntity) == 'ClientItem' then
+            ContextMenu.TargetType = 'Item'
+            ContextMenu.Target = Ext.GetItem(pickingState.HoverEntity)
+            statsActivator = 'StatsId::' .. ContextMenu.Target.StatsId
+            templateActivator = 'RootTemplate::' .. ContextMenu.Target.RootTemplate.Id
+        end
 
-        local payload = {
-            ['CharacterGUID'] = ContextMenu.Character.MyGuid,
-            ['Target'] = ContextMenu.MouseTarget,
-            ['TargetType'] = ContextMenu.TargetType,
-            ['Position'] = ContextMenu.Character.WorldPos,
-            ['SearchRadius'] = ContextMenu.SearchRadius
-        }
-        Ext.PostMessageToServer(Channel.GameWorldTarget, Ext.JsonStringify(payload))
-    end
-
-    Ext.RegisterUITypeInvokeListener(EnemyHealthBar.TypeID, 'setText', function (ui, call, text, ...)
-        requestInfoAboutMouseTarget(text, 'Character')
-    end, 'Before')
-
-    Ext.RegisterUITypeInvokeListener(Tooltip.TypeID, 'addTooltip', function(ui, call, text, ...)
-        requestInfoAboutMouseTarget(text, 'Item')
-    end, 'Before')
-
-    Ext.RegisterNetListener(Channel.GameWorldTarget, function (channel, payload)
-        local payload = Ext.JsonParse(payload) or {}
-        if not IsValid(payload) then return end
-
-        ContextMenu.TargetType = payload.Type
-        ContextMenu.Target = ContextMenu.TargetType == 'Character' and Ext.GetCharacter(payload.GUID) or Ext.GetItem(payload.GUID) --  Game-world target (item or character)
-        ContextMenu.MouseTargetDistance = calculateDistance(ContextMenu.Character.WorldPos, ContextMenu.Target.WorldPos)
-
-        local statsActivator = 'StatsId::' .. payload.StatsId  ---@type activator
-        local templateActivator = 'RootTemplate::' .. payload.RootTemplate ---@type activator
+        if not ContextMenu.Character or not ContextMenu.Target then return end
+        ContextMenu.TargetDistance = calculateDistance(ContextMenu.Character.WorldPos, ContextMenu.Target.WorldPos)
 
         determineActivator(ContextMenu.TargetType, statsActivator, templateActivator)   --  Set Activator
-
         ContextMenu.Intercept = IsValid(ContextMenu.Activator)    -- Go for Intercept if Activator IsValid
-    end)
+    end
+
+    Ext.RegisterUITypeInvokeListener(Tooltip.TypeID, 'addTooltip', function (ui, call, ...) setupGameWorldIntercept() end, 'Before')
+    Ext.RegisterUITypeInvokeListener(EnemyHealthBar.TypeID, 'setText', function (ui, call, ...) setupGameWorldIntercept() end, 'Before')
 
     --  REGISTER CONTEXT MENU HOOKS ON INTERCEPT
     --  ========================================
@@ -315,8 +300,7 @@ local function RegisterContextMenuListeners()
             ['Target'] = ContextMenu.Target,
             ['Character'] = ContextMenu.Character,
             ['Activator'] = ContextMenu.Activator,
-            ['MouseTarget'] = ContextMenu.MouseTarget,
-            ['MouseTargetDistance'] = ContextMenu.MouseTargetDistance,
+            ['TargetDistance'] = ContextMenu.TargetDistance,
             ['SearchRadius'] = ContextMenu.SearchRadius,
             ['TargetType'] = ContextMenu.TargetType,
             ['UI'] = ContextMenu.UI,
@@ -338,7 +322,7 @@ local function RegisterContextMenuListeners()
 
             if resolved.isUnavailable then return end -- if isUnavailable is true then return
             if resolved.restrictUI ~= nil and IsValid(Pinpoint(ContextMenu.Origin, resolved.restrictUI)) then return end -- If UI TypeID is in restrictUI array then return.
-            if ContextMenu.Origin == -1 and resolved.range < ContextMenu.MouseTargetDistance then return end
+            if ContextMenu.Origin == -1 and resolved.range < ContextMenu.TargetDistance then return end
 
             --  Create buttons
             ContextMenu.Root.addButton(resolved.ID, resolved.actionID, resolved.clickSound, "", resolved.text, resolved.isDisabled, resolved.isLegal)
@@ -363,8 +347,7 @@ local function RegisterContextMenuListeners()
             ['CharacterGUID'] = ContextMenu.Character.MyGuid,
             ['Activator'] = ContextMenu.Activator,
             ['actionID'] = actionID,
-            ['MouseTarget'] = ContextMenu.MouseTarget,
-            ['MouseTargetDistance'] = ContextMenu.MouseTargetDistance,
+            ['MouseTargetDistance'] = ContextMenu.TargetDistance,
             ['SearchRadius'] = ContextMenu.SearchRadius,
             ['TargetType'] = ContextMenu.TargetType,
             ['ItemNetID'] = itemNetID
@@ -376,8 +359,7 @@ local function RegisterContextMenuListeners()
     --  ==========
 
     Ext.RegisterUITypeCall(ContextMenu.TypeID, 'menuClosed', function()
-        ContextMenu.MouseTargetDistance = 0
-        ContextMenu.MouseTarget = nil
+        ContextMenu.TargetDistance = 0
         ContextMenu.Target = nil
         ContextMenu.Origin = nil
         ContextMenu.Activator = nil
@@ -417,16 +399,18 @@ Ext.RegisterListener('SessionLoaded', RegisterContextMenuListeners)
 
 ---Print a snapshot of ContextMenu's current state to the debug-console and (optionally) save it in Osiris Data/S7Debug
 ---@param fileName string|nil if specified, will save the results in a .yaml file in `Osiris Data/S7Debug/`
-local function SnapshotContextMenu(fileName)
+function SnapshotContextMenu(fileName)
     local ctxInfo = Rematerialize(ContextMenu) -- Drops non-stringifiable elements
     ctxInfo['ContextEntries'] = nil  --  Too big to be useful in the debug-console
 
     --  Pretty print snapshot
     Write:SetHeader('ContextMenu:')
     Write:Tabulate(ctxInfo)
-    ctxInfo['ContextEntry'] = Yamlify(ContextMenu.ContextEntries[ContextMenu.Activator])
-    Write:NewLine('ContextEntry:\n')
-    Write:NewLine(ctxInfo['ContextEntry'])
+    if ContextMenu.ContextEntries[ContextMenu.Activator] then
+        ctxInfo['ContextEntry'] = Yamlify(ContextMenu.ContextEntries[ContextMenu.Activator])
+        Write:NewLine('ContextEntry:\n')
+        Write:NewLine(ctxInfo['ContextEntry'])
+    end
     Debug:Print(Write:Display())
 
     ctxInfo['ContextEntries'] = ContextMenu.ContextEntries    --  Re-add ContextEntries for printing
