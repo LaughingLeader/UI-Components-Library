@@ -21,6 +21,8 @@ UILibrary = {
     ['inputEvents'] = {},
 }
 
+Ext.Require('Client/TypeIDs.lua')
+
 Ext.Require('Client/Components/containerInventory.lua')
 Ext.Require('Client/Components/contextMenu.lua')
 Ext.Require('Client/Components/contextMenuC.lua')

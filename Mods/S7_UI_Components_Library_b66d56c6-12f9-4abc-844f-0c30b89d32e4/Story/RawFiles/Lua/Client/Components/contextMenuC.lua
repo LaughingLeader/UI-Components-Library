@@ -22,15 +22,15 @@ function ContextMenuC:preIntercept()
         self:prepareUIIntercept(ui, call, itemDouble, x, y, containerInventoryUI)
     end)
 
-    --  Setup Character Sheet UI
-    local characterSheetUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'characterSheet.swf')
-    Ext.RegisterUICall(characterSheetUI, 'openContextMenu', function(ui, call, itemDouble, x, y)
-        self:prepareUIIntercept(ui, call, itemDouble, x, y, characterSheetUI)
+    --  Setup Equipment Panel UI
+    local equipmentPanelUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'equipmentPanel_c.swf')
+    Ext.RegisterUICall(equipmentPanelUI, 'showActionMenuItem', function(ui, call, itemDouble, pos, x, y)
+        self:prepareUIIntercept(ui, call, itemDouble, x, y, equipmentPanelUI)
     end)
 
     Ext.RegisterUITypeInvokeListener(5, 'updateOHs', function (ui, call, ...) self:prepareGameWorldIntercept() end, 'Before')
 end
 
--- ===============================================================================================
-Ext.RegisterListener('SessionLoaded', function () ContextMenuC:RegisterContextMenuListeners() end)
--- ===============================================================================================
+-- ===========================================================================================================================
+if CONTROLLER_MODE then Ext.RegisterListener('SessionLoaded', function () ContextMenuC:RegisterContextMenuListeners() end) end
+-- ===========================================================================================================================

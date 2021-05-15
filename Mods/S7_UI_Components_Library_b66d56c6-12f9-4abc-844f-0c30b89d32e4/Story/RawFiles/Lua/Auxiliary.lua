@@ -34,8 +34,7 @@ Dir = {
 --  ============
 
 Channel = {
-    ContextMenu = 'S7UCL::ContextMenu',
-    GameWorldTarget = 'S7UCL::GameWorldTarget'
+    ContextMenu = 'S7UCL::ContextMenu'
 }
 
 --  =======================

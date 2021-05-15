@@ -378,9 +378,9 @@ end
 ContextMenu = UILibrary.contextMenu:New()
 --  =====================================
 
---  ============================================================================================
--- Ext.RegisterListener('SessionLoaded', function() ContextMenu:RegisterContextMenuListeners() end)
---  ============================================================================================
+--  ============================================================================================================================
+if not CONTROLLER_MODE then Ext.RegisterListener('SessionLoaded', function() ContextMenu:RegisterContextMenuListeners() end) end
+--  ============================================================================================================================
 
 --  =====================
 --  SNAPSHOT CONTEXT MENU

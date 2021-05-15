@@ -32,10 +32,10 @@ function LIVE_UI_REPORTS:ToggleSpammer(spam) if self.Spammers[spam] then self.Sp
 --  LISTENERS
 --  =========
 
-Ext.RegisterListener('UIObjectCreated', function (...)
+Ext.RegisterListener('UIObjectCreated', function (ui)
     if not LIVE_UI_REPORTS then return end
     if not LIVE_UI_REPORTS.Track['UIObjectCreated'] then return end
-    Ext.Print('UIObjectCreated:', ...)
+    Ext.Print('UIObjectCreated:', ui:GetTypeId())
 end)
 
 Ext.RegisterListener('UIInvoke', function (ui, call, ...)
