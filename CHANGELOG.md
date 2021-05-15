@@ -2,19 +2,20 @@
 
 ---
 
-## [0.4.3.0] --- 26th March 2021 --- **_InputEvents for fun and profit_**
+## [0.4.3.0] --- 15th May 2021 --- **_InputEvents for fun and profit + Controller_Mode_**
 
 ### NEW
 
 - _Created_ `InputEvent.lua` to track **InputEvents**.
 - _Added_ `InputEvents` as a resolver argument to Context-Menu entries.
+- _Created_ `UIIDEHelpers`.
 - _Added_ `TypeIDs.lua` for reference.
 - _Created_ `CONTROLLER_MODE` global.
 - _Added_ Controller support for `ContextMenu`
 
 ### CHANGED
 
-- Major _Refactor_ of `ContextMenu` component to allow inheritance.
+- Major _Refactor_ of `ContextMenu` component to allow proper inheritance.
 
 ### FIXED
 
