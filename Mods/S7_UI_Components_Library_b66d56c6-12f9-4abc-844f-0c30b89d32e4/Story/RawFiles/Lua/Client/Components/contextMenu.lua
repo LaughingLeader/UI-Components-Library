@@ -269,7 +269,7 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
         local ctxEntries = self.ContextEntries[self.Activator] or ContextMenu.ContextEntries[self.Activator]    --  Get ContextEntries. (if ContextMenuC then fallback and retrieve base ContextEntries)
         if not ctxEntries then return end
 
-        Debug:Print("Intercepted ContextMenu" .. CONTROLLER_MODE and '(Controller)' or '' .. ". Registering Hooks")
+        Debug:Print("Intercepted ContextMenu. Registering Hooks")
         self:GetUI(ui)   --  Fetch UI details
 
         --  These will be passed into Resolver functions below
@@ -340,7 +340,7 @@ function UILibrary.contextMenu:RegisterContextMenuListeners()
         self.Activator = nil
     end)
 
-    Debug:Print("ContextMenu" .. CONTROLLER_MODE and '(Controller)' or '' ..  " Listener Registration Completed")
+    Debug:Print("ContextMenu Listener Registration Completed")
 end
 
 --  =====================
