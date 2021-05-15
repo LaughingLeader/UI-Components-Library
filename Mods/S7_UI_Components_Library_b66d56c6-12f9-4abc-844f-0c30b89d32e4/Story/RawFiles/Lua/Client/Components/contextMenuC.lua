@@ -24,7 +24,7 @@ function ContextMenuC:preIntercept()
 
     --  Setup Equipment Panel UI
     local equipmentPanelUI = Ext.GetBuiltinUI(Dir.GameGUI .. 'equipmentPanel_c.swf')
-    Ext.RegisterUICall(equipmentPanelUI, 'showActionMenuItem', function(ui, call, itemDouble, pos, x, y)
+    Ext.RegisterUITypeCall(equipmentPanelUI, 'showActionMenuItem', function(ui, call, itemDouble, pos, x, y)
         self:prepareUIIntercept(ui, call, itemDouble, x, y, equipmentPanelUI)
     end)
 
@@ -32,5 +32,5 @@ function ContextMenuC:preIntercept()
 end
 
 -- ===========================================================================================================================
-if CONTROLLER_MODE then Ext.RegisterListener('SessionLoaded', function () ContextMenuC:RegisterContextMenuListeners() end) end
+Ext.RegisterListener('SessionLoaded', function () if CONTROLLER_MODE then ContextMenuC:RegisterContextMenuListeners() end end)
 -- ===========================================================================================================================

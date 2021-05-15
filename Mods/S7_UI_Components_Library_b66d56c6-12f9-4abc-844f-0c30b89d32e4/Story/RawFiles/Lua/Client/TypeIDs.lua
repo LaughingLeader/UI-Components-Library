@@ -47,5 +47,6 @@ CONTROLLER_MODE = false
 Ext.RegisterListener('UIObjectCreated', function (ui)
     if ui:GetTypeId() == UILibrary.TypeID.bottomBar_c then
         CONTROLLER_MODE = true
+        Debug:HFPrint('ControllerMode: Activated')
     end
 end)

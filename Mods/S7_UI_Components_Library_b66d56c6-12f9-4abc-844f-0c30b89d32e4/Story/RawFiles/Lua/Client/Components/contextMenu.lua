@@ -379,7 +379,7 @@ ContextMenu = UILibrary.contextMenu:New()
 --  =====================================
 
 --  ============================================================================================================================
-if not CONTROLLER_MODE then Ext.RegisterListener('SessionLoaded', function() ContextMenu:RegisterContextMenuListeners() end) end
+Ext.RegisterListener('SessionLoaded', function() if not CONTROLLER_MODE then ContextMenu:RegisterContextMenuListeners() end end)
 --  ============================================================================================================================
 
 --  =====================
