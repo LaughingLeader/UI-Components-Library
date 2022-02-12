@@ -45,7 +45,7 @@ InputEvent = {
 ---@return InputEvent event
 function InputEvent:New(event)
     local event = event or {}
-    event = Integrate(self, event)
+    event = Integrate(event, self)
     return event
 end
 
